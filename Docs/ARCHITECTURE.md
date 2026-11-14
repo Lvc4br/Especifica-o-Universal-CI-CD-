@@ -17,7 +17,7 @@ cicd.ps1
 3. `detect`: identifica tecnologias sem executar o projeto.
 4. `plan`: gera plano declarativo e verifica ferramentas.
 5. `run`: simula por padrão; `run -Approve` executa adaptadores reconhecidos.
-6. Relatórios JSON são gravados em `.cicd/reports/`. Com `pipeline.delivery`, um ZIP de código-fonte é criado em `.cicd/artifacts/` após aprovação. Etapas de segurança podem executar Gitleaks, Trivy, Semgrep e OSV-Scanner após aprovação explícita.
+6. Relatórios JSON são gravados em `.cicd/reports/`.\n7. O módulo Workspace descobre manifestos em subdiretórios e permite planejar/executar projetos separadamente. Com `pipeline.delivery`, um ZIP de código-fonte é criado em `.cicd/artifacts/` após aprovação. Etapas de segurança podem executar Gitleaks, Trivy, Semgrep e OSV-Scanner após aprovação explícita.
 
 ## Processo externo
 `Core/Process.ps1` usa `System.Diagnostics.Process`, `UseShellExecute = false` e `ArgumentList`. Captura stdout/stderr, exit code, timestamps e duração, com timeout e tentativa de encerrar a árvore de processos.
