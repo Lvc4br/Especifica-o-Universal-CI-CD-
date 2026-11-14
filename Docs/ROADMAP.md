@@ -16,7 +16,7 @@
 - [x] Fixtures reais de Go, Rust, .NET e Maven executadas pelo pipeline em CI Ubuntu.
 - [ ] Expandir validação real para Windows, Gradle e os demais ecossistemas.
 - [ ] Suporte a wrappers (mvnw/gradlew), soluções .NET e monorepos.
-- [ ] Validação integral usando motor JSON Schema.
+- [x] Validação estrutural expandida, com tipos e propriedades adicionais restritos.\n- [ ] Validação integral usando motor JSON Schema.
 - [ ] Testes unitários e integração dedicados por módulo.
 - [ ] Cobertura consolidada, relatórios Markdown/HTML e histórico.
 - [ ] Cancelamento interativo e limites de memória/CPU.
@@ -28,7 +28,7 @@
 - [ ] Lua.
 - [ ] HTML/CSS: validação, acessibilidade e qualidade.
 - [ ] SQL com banco configurado e fixtures isoladas.
-- [ ] Segurança: SAST, dependências, segredos e licenças.
+- [x] Varredura inicial de segredos com Gitleaks.\n- [x] Varredura inicial de vulnerabilidades e misconfigurações com Trivy.\n- [ ] SAST específico por linguagem e verificação de licenças.
 - [ ] Artefatos, cache, paralelismo e deploy com aprovação separada.
 
 ## Critério de suporte
