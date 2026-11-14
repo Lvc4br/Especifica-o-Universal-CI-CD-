@@ -17,7 +17,7 @@ cicd.ps1
 3. `detect`: identifica tecnologias sem executar o projeto.
 4. `plan`: gera plano declarativo e verifica ferramentas.
 5. `run`: simula por padrão; `run -Approve` executa adaptadores reconhecidos.
-6. Relatórios JSON são gravados em `.cicd/reports/`.
+6. Relatórios JSON são gravados em `.cicd/reports/`. O módulo Report lista o histórico e exporta resultados em HTML ou Markdown.
 7. O módulo Workspace descobre manifestos em subdiretórios e permite planejar/executar projetos separadamente. Com `pipeline.delivery`, um ZIP de código-fonte é criado em `.cicd/artifacts/` após aprovação. Etapas de segurança podem executar Gitleaks, Trivy, Semgrep e OSV-Scanner após aprovação explícita.
 
 ## Processo externo
