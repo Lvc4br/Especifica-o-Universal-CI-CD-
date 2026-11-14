@@ -24,3 +24,72 @@ jobs:
       - name: Run smoke tests
         shell: pwsh
         run: ./Tests/Smoke.ps1
+
+  integration:
+    name: Real pipeline integration (${{ matrix.language }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [go, rust, dotnet, maven]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Go
+        if: matrix.language == 'go'
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23.x'
+      - name: Set up Rust
+        if: matrix.language == 'rust'
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+      - name: Set up .NET
+        if: matrix.language == 'dotnet'
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Set up Java and Maven
+        if: matrix.language == 'maven'
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+      - name: Run complete fixture pipeline
+        shell: pwsh
+        env:
+          FIXTURE: Tests/Fixtures/${{ matrix.language == 'dotnet' && 'DotNet' || matrix.language == 'maven' && 'Maven' || matrix.language == 'rust' && 'Rust' || 'Go' }}
+          LANGUAGE: ${{ matrix.language }}
+        run: |
+          $fixture = Join-Path $env:GITHUB_WORKSPACE $env:FIXTURE
+          pwsh ./cicd.ps1 init -ProjectPath $fixture
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $configPath = Join-Path $fixture ".cicd/config.json"
+          $config = Get-Content -LiteralPath $configPath -Raw | ConvertFrom-Json
+          $config.pipeline.check = $true
+          $config.pipeline.test = $true
+          $config.pipeline.build = $true
+          $config | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $configPath -Encoding utf8
+          pwsh ./cicd.ps1 plan -ProjectPath $fixture
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          pwsh ./cicd.ps1 run -ProjectPath $fixture -Approve -TimeoutSeconds 900
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $reportFile = Get-ChildItem -LiteralPath (Join-Path $fixture ".cicd/reports") -Filter "*-run.json" |
+            Sort-Object LastWriteTime -Descending | Select-Object -First 1
+          if ($null -eq $reportFile) { throw "Relatório de execução não foi criado." }
+          $report = Get-Content -LiteralPath $reportFile.FullName -Raw | ConvertFrom-Json
+          $expected = switch ($env:LANGUAGE) {
+            "go" { @("go-vet", "go-tests", "go-build") }
+            "rust" { @("rust-format", "rust-tests", "rust-build") }
+            "dotnet" { @("dotnet-format", "dotnet-tests", "dotnet-build") }
+            "maven" { @("java-check", "java-tests", "java-build") }
+          }
+          foreach ($id in $expected) {
+            $result = @($report.results | Where-Object { $_.id -eq $id }) | Select-Object -First 1
+            if ($null -eq $result -or $result.status -ne "PASSED") {
+              throw "Etapa $id não foi aprovada. Resultado: $($result | ConvertTo-Json -Compress)"
+            }
+          }
+          Write-Host "Fixture $env:LANGUAGE: todas as etapas reais passaram."
