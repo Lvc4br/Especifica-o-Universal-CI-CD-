@@ -13,6 +13,8 @@ function Get-CicdAdapter {
         "sql-lint" { return [pscustomobject]@{ tool="sqlfluff"; arguments=@("lint", ".") } }
         "security-secrets" { return [pscustomobject]@{ tool="gitleaks"; arguments=@("dir", "--redact", "--exit-code", "1", ".") } }
         "security-vulnerabilities" { return [pscustomobject]@{ tool="trivy"; arguments=@("fs", "--scanners", "vuln,misconfig", "--exit-code", "1", "--no-progress", ".") } }
+        "security-sast" { return [pscustomobject]@{ tool="semgrep"; arguments=@("scan", "--config", "auto", "--error", ".") } }
+        "security-supply-chain" { return [pscustomobject]@{ tool="osv-scanner"; arguments=@("scan", "--recursive", ".") } }
         "php-lint" { return [pscustomobject]@{ tool="composer"; arguments=@("run-script", "lint") } }
         "php-tests" { return [pscustomobject]@{ tool="composer"; arguments=@("run-script", "test") } }
         "php-build" { return [pscustomobject]@{ tool="composer"; arguments=@("validate", "--no-check-publish") } }
