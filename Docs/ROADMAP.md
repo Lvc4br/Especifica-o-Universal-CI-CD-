@@ -1,55 +1,45 @@
 # Roadmap
 
-## Etapa 0 — Bootstrap
-- [x] Repositório, documentação e CLI inicial.
-- [x] CI do próprio projeto em Windows e Ubuntu.
-- [x] Testes smoke do bootstrap.
+## Bootstrap
+- [x] Repositório, CLI, documentação e CI Windows/Linux.
+- [x] Testes smoke iniciais.
 
-## Etapa 1 — Core e configuração
-- [x] Separar CLI, Core e módulos.
-- [x] Implementar logger central.
-- [x] Definir contrato padronizado de resultado.
-- [x] Criar configuração sem sobrescrita silenciosa.
-- [x] Implementar validação estrutural inicial da configuração.
-- [x] Ampliar testes para configuração, detecção e contrato de resultado.
-- [ ] Adicionar schema JSON formal e validação de tipos completa.
+## Core e configuração
+- [x] Módulos Core, Config e Detector.
+- [x] Logger e contrato de resultado.
+- [x] Criação de configuração sem sobrescrita.
+- [x] Validação estrutural inicial.
+- [x] Documento JSON Schema.
+- [ ] Validação completa com motor JSON Schema.
 
-## Etapa 2 — Detecção
-- [x] Detecção inicial de linguagens e evidências.
-- [ ] Detectar versões e gerenciadores de pacotes.
-- [ ] Detectar ferramentas instaladas e versões.
-- [ ] Adicionar confiança e regras configuráveis por tecnologia.
+## Detecção e planejamento
+- [x] Identificação inicial de linguagens por evidências.
+- [x] Inspeção da disponibilidade de ferramentas no PATH.
+- [x] Plano JSON não executável.
+- [x] Estados de planejamento separados dos estados de execução.
+- [ ] Detectar versões de ferramentas e gerenciadores de pacotes.
+- [ ] Adicionar adaptadores de mais ecossistemas.
 
-## Etapa 3 — Engine e execução
-- [ ] Implementar plano de execução sem executar comandos por padrão.
-- [ ] Criar executor controlado de processos externos.
-- [ ] Exigir aprovação para comandos definidos pelo projeto.
-- [ ] Implementar códigos de saída e cancelamento.
+## Engine de execução
+- [ ] Executor isolado de processos externos.
+- [ ] Allowlist de executáveis e argumentos.
+- [ ] Aprovação explícita por etapa.
+- [ ] Timeout, cancelamento, captura de stdout/stderr.
+- [ ] Registro de duração, exit code e artefatos.
 
-## Etapa 4 — Validação e testes
+## Adaptadores
 - [ ] Python: Ruff e pytest.
-- [ ] JavaScript/TypeScript: ESLint e scripts de teste configurados.
-- [ ] React: validação no ecossistema JS.
-- [ ] HTML/CSS: validadores dedicados.
-- [ ] Java: Maven/Gradle e testes configurados.
-- [ ] Lua: ferramentas selecionáveis.
-- [ ] SQL: validação estática; testes reais exigem banco e fixtures.
+- [ ] JavaScript/TypeScript: ESLint e testes declarados no package manifest.
+- [ ] Java: Maven/Gradle.
+- [ ] HTML/CSS e Lua: validadores específicos.
+- [ ] SQL: validação estática e testes com banco configurado.
+- [ ] C#, Go e Rust.
 
-## Etapa 5 — Build e artefatos
-- [ ] Adaptadores de build por ecossistema.
-- [ ] Diretório de artefatos configurável.
-- [ ] Manifesto e checksums.
-
-## Etapa 6 — Segurança e relatórios
-- [ ] Verificação de segredos e dependências.
-- [ ] Relatórios JSON e Markdown.
-- [ ] Redação de informações sensíveis nos logs.
-
-## Etapa 7 — Entrega e distribuição
-- [ ] Integração GitHub Actions reutilizável.
-- [ ] Templates e instalação documentados.
-- [ ] Versionamento semântico e releases.
-- [ ] Testes em repositórios de exemplo.
+## Relatórios, segurança e entrega
+- [ ] Relatórios JSON/Markdown de execução.
+- [ ] Verificação de segredos e vulnerabilidades.
+- [ ] Build e manifesto de artefatos.
+- [ ] GitHub Actions reutilizável e releases.
 
 ## Critério de conclusão
-Uma tarefa só será marcada como concluída após implementação, teste reproduzível e documentação. Detecção isolada não comprova validação, teste ou build.
+Marcar uma tarefa como concluída exige implementação, teste reproduzível e documentação. Detecção e planejamento nunca serão apresentados como testes ou builds executados.
