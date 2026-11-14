@@ -49,6 +49,7 @@ function Get-CicdExecutionPlan {
         $pythonBuildEnabled = $pythonProjectText -match "(?m)^\s*\[build-system\]\s*$"
     }
     $packageScripts = @{}
+    $composerScripts = @{}
     $packagePath = Join-Path $ProjectRoot "package.json"
     if ($hasJs -and (Test-Path -LiteralPath $packagePath)) {
         try {
@@ -57,6 +58,13 @@ function Get-CicdExecutionPlan {
                 foreach ($property in $packageJson.scripts.PSObject.Properties) { $packageScripts[$property.Name] = [string]$property.Value }
             }
         } catch { throw "package.json inválido: $($_.Exception.Message)" }
+    }
+    $composerPath = Join-Path $ProjectRoot "composer.json"
+    if ($hasPhp -and (Test-Path -LiteralPath $composerPath)) {
+        try {
+            $composerJson = Get-Content -LiteralPath $composerPath -Raw | ConvertFrom-Json -ErrorAction Stop
+            if ($null -ne $composerJson.scripts) { foreach ($property in $composerJson.scripts.PSObject.Properties) { $composerScripts[$property.Name] = [string]$property.Value } }
+        } catch { throw "composer.json inválido: $($_.Exception.Message)" }
     }
     if ($hasJs) { $toolNames.Add("npm"); $toolNames.Add("node") }
     if ($hasGo) { $toolNames.Add("go") }
@@ -81,8 +89,8 @@ function Get-CicdExecutionPlan {
         @{ enabled=[bool]$Config.pipeline.check; id="js-lint"; name="JavaScript/TypeScript lint"; category="check"; technology="JavaScript/TypeScript"; tool="npm"; command="npm run lint"; applies=$hasJs; scriptName="lint" },
         @{ enabled=[bool]$Config.pipeline.test; id="js-tests"; name="JavaScript/TypeScript tests"; category="test"; technology="JavaScript/TypeScript"; tool="npm"; command="npm test"; applies=$hasJs; scriptName="test" },
         @{ enabled=[bool]$Config.pipeline.build; id="js-build"; name="JavaScript/TypeScript build"; category="build"; technology="JavaScript/TypeScript"; tool="npm"; command="npm run build"; applies=$hasJs; scriptName="build" },
-        @{ enabled=[bool]$Config.pipeline.check; id="php-lint"; name="PHP static analysis"; category="check"; technology="PHP"; tool="composer"; command="composer run-script lint"; applies=($hasPhp -and (Test-Path (Join-Path $ProjectRoot "composer.json"))) },
-        @{ enabled=[bool]$Config.pipeline.test; id="php-tests"; name="PHP tests"; category="test"; technology="PHP"; tool="composer"; command="composer run-script test"; applies=($hasPhp -and (Test-Path (Join-Path $ProjectRoot "composer.json"))) },
+        @{ enabled=[bool]$Config.pipeline.check; id="php-lint"; name="PHP static analysis"; category="check"; technology="PHP"; tool="composer"; command="composer run-script lint"; applies=($hasPhp -and (Test-Path (Join-Path $ProjectRoot "composer.json"))); scriptName="lint"; scriptManifest="composer" },
+        @{ enabled=[bool]$Config.pipeline.test; id="php-tests"; name="PHP tests"; category="test"; technology="PHP"; tool="composer"; command="composer run-script test"; applies=($hasPhp -and (Test-Path (Join-Path $ProjectRoot "composer.json"))); scriptName="test"; scriptManifest="composer" },
         @{ enabled=[bool]$Config.pipeline.build; id="php-build"; name="PHP dependency validation"; category="build"; technology="PHP"; tool="composer"; command="composer validate --no-check-publish"; applies=($hasPhp -and (Test-Path (Join-Path $ProjectRoot "composer.json"))) },
         @{ enabled=[bool]$Config.pipeline.check; id="ruby-lint"; name="Ruby lint"; category="check"; technology="Ruby"; tool="bundle"; command="bundle exec rubocop"; applies=($hasRuby -and (Test-Path (Join-Path $ProjectRoot "Gemfile"))) },
         @{ enabled=[bool]$Config.pipeline.test; id="ruby-tests"; name="Ruby tests"; category="test"; technology="Ruby"; tool="bundle"; command="bundle exec rspec"; applies=($hasRuby -and (Test-Path (Join-Path $ProjectRoot "Gemfile"))) },
@@ -91,8 +99,8 @@ function Get-CicdExecutionPlan {
         @{ enabled=[bool]$Config.pipeline.test; id="lua-tests"; name="Lua tests"; category="test"; technology="Lua"; tool="busted"; command="busted"; applies=$hasLua },
         @{ enabled=[bool]$Config.pipeline.build; id="lua-build"; name="Lua syntax validation"; category="build"; technology="Lua"; tool="lua"; command="lua -e \"assert(loadfile('init.lua'))\""; applies=$false },
         @{ enabled=[bool]$Config.pipeline.check; id="cpp-configure"; name="C/C++ configure"; category="check"; technology="C/C++"; tool="cmake"; command="cmake -S . -B build"; applies=($hasCpp -and (Test-Path (Join-Path $ProjectRoot "CMakeLists.txt"))) },
-        @{ enabled=[bool]$Config.pipeline.test; id="cpp-tests"; name="C/C++ tests"; category="test"; technology="C/C++"; tool="ctest"; command="ctest --test-dir build --output-on-failure"; applies=($hasCpp -and (Test-Path (Join-Path $ProjectRoot "CMakeLists.txt"))) },
         @{ enabled=[bool]$Config.pipeline.build; id="cpp-build"; name="C/C++ build"; category="build"; technology="C/C++"; tool="cmake"; command="cmake --build build --parallel"; applies=($hasCpp -and (Test-Path (Join-Path $ProjectRoot "CMakeLists.txt"))) },
+        @{ enabled=[bool]$Config.pipeline.test; id="cpp-tests"; name="C/C++ tests"; category="test"; technology="C/C++"; tool="ctest"; command="ctest --test-dir build --output-on-failure"; applies=($hasCpp -and (Test-Path (Join-Path $ProjectRoot "CMakeLists.txt"))) },
         @{ enabled=[bool]$Config.pipeline.check; id="kotlin-check"; name="Kotlin checks"; category="check"; technology="Kotlin"; tool="gradle"; command="gradle check"; applies=($hasKotlin -and ($names -contains "build.gradle" -or $names -contains "build.gradle.kts")) },
         @{ enabled=[bool]$Config.pipeline.test; id="kotlin-tests"; name="Kotlin tests"; category="test"; technology="Kotlin"; tool="gradle"; command="gradle test"; applies=($hasKotlin -and ($names -contains "build.gradle" -or $names -contains "build.gradle.kts")) },
         @{ enabled=[bool]$Config.pipeline.build; id="kotlin-build"; name="Kotlin build"; category="build"; technology="Kotlin"; tool="gradle"; command="gradle build"; applies=($hasKotlin -and ($names -contains "build.gradle" -or $names -contains "build.gradle.kts")) },
@@ -123,7 +131,12 @@ function Get-CicdExecutionPlan {
             $steps.Add((New-CicdPlanStep -Id $item.id -Name $item.name -Category $item.category -Technology $item.technology -Tool $item.tool -Command $item.command -Status "DISABLED" -Reason "Etapa desabilitada em pipeline.$($item.category)."))
             continue
         }
-        if ($item.ContainsKey("scriptName") -and -not $packageScripts.ContainsKey([string]$item.scriptName)) {
+        $scriptExists = $true
+        if ($item.ContainsKey("scriptName")) {
+            if ($item.ContainsKey("scriptManifest") -and $item.scriptManifest -eq "composer") { $scriptExists = $composerScripts.ContainsKey([string]$item.scriptName) }
+            else { $scriptExists = $packageScripts.ContainsKey([string]$item.scriptName) }
+        }
+        if (-not $scriptExists) {
             $steps.Add((New-CicdPlanStep -Id $item.id -Name $item.name -Category $item.category -Technology $item.technology -Tool $item.tool -Command $item.command -Status "NOT_APPLICABLE" -Reason "O script '$($item.scriptName)' não está definido em package.json."))
             continue
         }
