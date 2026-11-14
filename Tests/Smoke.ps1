@@ -73,6 +73,29 @@ try {
     $externalPlanJson = Get-Content -LiteralPath (Join-Path $externalProject ".cicd/plans/latest-plan.json") -Raw | ConvertFrom-Json
     Assert-True ($externalPlanJson.technologies -contains "Go") "external project detection must use target directory"
 
+    $adapterProject = Join-Path $tempRoot "adapter-project"
+    New-Item -ItemType Directory -Path $adapterProject | Out-Null
+    & pwsh -NoProfile -File $scriptPath init -ProjectPath $adapterProject
+    $adapterConfigPath = Join-Path $adapterProject ".cicd/config.json"
+    $adapterConfig = Get-Content -LiteralPath $adapterConfigPath -Raw | ConvertFrom-Json
+    $adapterConfig.pipeline.check = $true
+    $adapterConfig.pipeline.test = $true
+    $adapterConfig.pipeline.build = $true
+    $adapterConfig | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $adapterConfigPath -Encoding utf8
+    Set-Content -LiteralPath (Join-Path $adapterProject "pyproject.toml") -Value "[build-system]
+requires = ['setuptools']
+build-backend = 'setuptools.build_meta'" -Encoding utf8
+    Set-Content -LiteralPath (Join-Path $adapterProject "sample.py") -Value "def add(a, b): return a + b" -Encoding utf8
+    Set-Content -LiteralPath (Join-Path $adapterProject "package.json") -Value '{"scripts":{"test":"node --test"}}' -Encoding utf8
+    Set-Content -LiteralPath (Join-Path $adapterProject "index.js") -Value "module.exports = {}" -Encoding utf8
+    $null = & pwsh -NoProfile -File $scriptPath plan -ProjectPath $adapterProject 2>&1 | Out-String
+    Assert-True ($LASTEXITCODE -eq 0) "adapter fixture plan must succeed"
+    $adapterPlan = Get-Content -LiteralPath (Join-Path $adapterProject ".cicd/plans/latest-plan.json") -Raw | ConvertFrom-Json
+    Assert-True (@($adapterPlan.steps | Where-Object { $_.id -eq "python-build" -and $_.status -in @("PLANNED", "BLOCKED") }).Count -eq 1) "Python package build must be planned when build-system exists"
+    Assert-True (@($adapterPlan.steps | Where-Object { $_.id -eq "js-tests" -and $_.status -in @("PLANNED", "BLOCKED") }).Count -eq 1) "declared npm test script must be planned"
+    Assert-True (@($adapterPlan.steps | Where-Object { $_.id -eq "js-lint" -and $_.status -eq "NOT_APPLICABLE" }).Count -eq 1) "missing npm lint script must be NOT_APPLICABLE"
+    Assert-True (@($adapterPlan.steps | Where-Object { $_.id -eq "js-build" -and $_.status -eq "NOT_APPLICABLE" }).Count -eq 1) "missing npm build script must be NOT_APPLICABLE"
+
     . (Join-Path $tempRoot "Core/Result.ps1")
     $result = New-CicdResult -Id "unit" -Name "Unit result" -Status "FAILED" -Summary "expected failure"
     Assert-True ($result.status -eq "FAILED") "result contract must preserve status"
