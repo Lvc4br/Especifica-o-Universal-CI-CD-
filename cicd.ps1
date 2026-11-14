@@ -1,7 +1,7 @@
  [CmdletBinding()]
 param(
     [Parameter(Position = 0)]
-    [ValidateSet("version", "init", "detect", "status", "validate-config", "plan", "run", "help")]
+    [ValidateSet("version", "init", "detect", "status", "validate-config", "plan", "run", "discover-projects", "run-workspaces", "help")]
     [string]$Command = "help",
     [switch]$Approve,
     [ValidateRange(1, 86400)][int]$TimeoutSeconds = 600,
@@ -25,6 +25,7 @@ $script:Version = "0.5.0-dev"
 . (Join-Path $script:ToolRoot "Modules/Engine/Plan.ps1")
 . (Join-Path $script:ToolRoot "Core/Process.ps1")
 . (Join-Path $script:ToolRoot "Modules/Engine/Executor.ps1")
+. (Join-Path $script:ToolRoot "Modules/Engine/Workspace.ps1")
 function Show-Help {
 @"
 Universal CI/CD $script:Version
@@ -34,7 +35,9 @@ Uso: pwsh ./cicd.ps1 <comando> [-ProjectPath <diretório>]
   detect           Detecta tecnologias e apresenta evidências
   validate-config  Valida a configuração local
   plan             Gera plano de pipeline sem executar comandos
-  run              Executa etapas allowlisted (exige -Approve)\n  -ProjectPath     Diretório do projeto-alvo (padrão: diretório atual)
+  run              Executa etapas allowlisted (exige -Approve)
+  discover-projects Localiza projetos em um workspace/monorepo
+  run-workspaces   Planeja ou executa projetos encontrados\n  -ProjectPath     Diretório do projeto-alvo (padrão: diretório atual)
   status           Exibe estado da configuração e relatórios
   help             Exibe esta ajuda
 "@
@@ -99,6 +102,25 @@ function Invoke-Run {
     Write-Host "Relatório: $($execution.reportPath)"
     if ($execution.exitCode -ne 0) { exit $execution.exitCode }
 }
+function Show-WorkspaceProjects {
+    $config = Get-CicdConfig -Path $script:ConfigPath
+    $projects = @(Get-CicdWorkspaceProjects -Root $script:ProjectRoot -ExcludeDirectories @($config.detection.excludeDirectories))
+    if ($projects.Count -eq 0) { Write-CicdLog -Level WARN -Message "Nenhum projeto encontrado."; return }
+    Write-Host "Projetos encontrados: $($projects.Count)"
+    foreach ($project in $projects) { Write-Host ("  - {0} ({1}) [{2}]" -f $project.relativePath, $project.name, ($project.markers -join ", ")) }
+}
+function Invoke-WorkspaceRun {
+    $config = Get-CicdConfig -Path $script:ConfigPath
+    $execution = Invoke-CicdWorkspacePipeline -Root $script:ProjectRoot -Config $config -Approve:$Approve -TimeoutSeconds $TimeoutSeconds
+    foreach ($project in $execution.projects) {
+        $state = if ($project.exitCode -eq 0) { "OK" } else { "FAIL" }
+        Write-Host ("[{0}] {1} — {2} tecnologia(s)" -f $state, $project.project, $project.technologies.Count)
+        foreach ($result in $project.results) { Write-Host ("    [{0}] {1}" -f $result.status, $result.name) }
+        if ($project.reportPath) { Write-Host "    Relatório: $($project.reportPath)" }
+    }
+    Write-Host "Projetos processados: $($execution.projectCount)"
+    if ($execution.exitCode -ne 0) { exit $execution.exitCode }
+}
 function Show-Status {
     Write-Host "Universal CI/CD - status local"
     Write-Host "Raiz: $script:ProjectRoot"
@@ -125,6 +147,8 @@ try {
         "validate-config" { Invoke-ConfigValidation }
         "plan" { Invoke-Plan }
         "run" { Invoke-Run }
+        "discover-projects" { Show-WorkspaceProjects }
+        "run-workspaces" { Invoke-WorkspaceRun }
         "status" { Show-Status }
         default { Show-Help }
     }
