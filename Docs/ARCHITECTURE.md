@@ -17,7 +17,8 @@ cicd.ps1
 3. `detect`: identifica tecnologias sem executar o projeto.
 4. `plan`: gera plano declarativo e verifica ferramentas.
 5. `run`: simula por padrão; `run -Approve` executa adaptadores reconhecidos.
-6. Relatórios JSON são gravados em `.cicd/reports/`.\n7. O módulo Workspace descobre manifestos em subdiretórios e permite planejar/executar projetos separadamente. Com `pipeline.delivery`, um ZIP de código-fonte é criado em `.cicd/artifacts/` após aprovação. Etapas de segurança podem executar Gitleaks, Trivy, Semgrep e OSV-Scanner após aprovação explícita.
+6. Relatórios JSON são gravados em `.cicd/reports/`.
+7. O módulo Workspace descobre manifestos em subdiretórios e permite planejar/executar projetos separadamente. Com `pipeline.delivery`, um ZIP de código-fonte é criado em `.cicd/artifacts/` após aprovação. Etapas de segurança podem executar Gitleaks, Trivy, Semgrep e OSV-Scanner após aprovação explícita.
 
 ## Processo externo
 `Core/Process.ps1` usa `System.Diagnostics.Process`, `UseShellExecute = false` e `ArgumentList`. Captura stdout/stderr, exit code, timestamps e duração, com timeout e tentativa de encerrar a árvore de processos.
@@ -30,5 +31,8 @@ cicd.ps1
 
 O executor não lê comandos arbitrários do plano/configuração. Scripts npm são código do projeto e serão executados após aprovação explícita. PHP/Composer, Ruby/Bundler, Lua, C/C++/CMake, Kotlin/Gradle, Swift e Dart possuem adaptadores iniciais com comandos fixos; a existência do adaptador não significa validação real da integração.
 
-## Artefatos e entrega\nA etapa delivery cria um ZIP local do código-fonte, excluindo diretórios de dependências, builds, caches e `.cicd`. Isso não publica o artefato nem realiza deploy.\n\n## Limites
+## Artefatos e entrega
+A etapa delivery cria um ZIP local do código-fonte, excluindo diretórios de dependências, builds, caches e `.cicd`. Isso não publica o artefato nem realiza deploy.
+
+## Limites
 Detecção é heurística. O executor não isola processos em sandbox. Builds, segurança, cobertura, bancos de dados e delivery ainda não possuem adaptadores. O validador ainda não usa motor JSON Schema.
