@@ -1,63 +1,7 @@
 function Get-CicdAdapter {
     [CmdletBinding()]
     param([Parameter(Mandatory)][string]$StepId,[Parameter(Mandatory)][string]$ProjectRoot)
-    switch ($StepId) {
-        "python-lint" { return [pscustomobject]@{ tool="ruff"; arguments=@("check", ".") } }
-        "python-tests" { return [pscustomobject]@{ tool="pytest"; arguments=@() } }
-        "python-build" { return [pscustomobject]@{ tool="python"; arguments=@("-m", "build") } }
-        "js-lint" { return [pscustomobject]@{ tool="npm"; arguments=@("run", "lint") } }
-        "js-tests" { return [pscustomobject]@{ tool="npm"; arguments=@("test") } }
-        "js-build" { return [pscustomobject]@{ tool="npm"; arguments=@("run", "build") } }
-        "html-lint" { return [pscustomobject]@{ tool="htmlhint"; arguments=@(".") } }
-        "css-lint" { return [pscustomobject]@{ tool="stylelint"; arguments=@("**/*.{css,scss,sass}") } }
-        "sql-lint" { return [pscustomobject]@{ tool="sqlfluff"; arguments=@("lint", ".") } }
-        "security-secrets" { return [pscustomobject]@{ tool="gitleaks"; arguments=@("dir", "--redact", "--exit-code", "1", ".") } }
-        "security-vulnerabilities" { return [pscustomobject]@{ tool="trivy"; arguments=@("fs", "--scanners", "vuln,misconfig", "--exit-code", "1", "--no-progress", ".") } }
-        "security-sast" { return [pscustomobject]@{ tool="semgrep"; arguments=@("scan", "--config", "auto", "--error", ".") } }
-        "security-supply-chain" { return [pscustomobject]@{ tool="osv-scanner"; arguments=@("scan", "--recursive", ".") } }
-        "php-lint" { return [pscustomobject]@{ tool="composer"; arguments=@("run-script", "lint") } }
-        "php-tests" { return [pscustomobject]@{ tool="composer"; arguments=@("run-script", "test") } }
-        "php-build" { return [pscustomobject]@{ tool="composer"; arguments=@("validate", "--no-check-publish") } }
-        "ruby-lint" { return [pscustomobject]@{ tool="bundle"; arguments=@("exec", "rubocop") } }
-        "ruby-tests" { return [pscustomobject]@{ tool="bundle"; arguments=@("exec", "rspec") } }
-        "ruby-build" { return [pscustomobject]@{ tool="bundle"; arguments=@("check") } }
-        "lua-lint" { return [pscustomobject]@{ tool="luacheck"; arguments=@(".") } }
-        "lua-tests" { return [pscustomobject]@{ tool="busted"; arguments=@() } }
-        "cpp-configure" { return [pscustomobject]@{ tool="cmake"; arguments=@("-S", ".", "-B", "build") } }
-        "cpp-tests" { return [pscustomobject]@{ tool="ctest"; arguments=@("--test-dir", "build", "--output-on-failure") } }
-        "cpp-build" { return [pscustomobject]@{ tool="cmake"; arguments=@("--build", "build", "--parallel") } }
-        "kotlin-check" { return [pscustomobject]@{ tool="gradle"; arguments=@("check") } }
-        "kotlin-tests" { return [pscustomobject]@{ tool="gradle"; arguments=@("test") } }
-        "kotlin-build" { return [pscustomobject]@{ tool="gradle"; arguments=@("build") } }
-        "swift-check" { return [pscustomobject]@{ tool="swift"; arguments=@("package", "diagnose") } }
-        "swift-tests" { return [pscustomobject]@{ tool="swift"; arguments=@("test") } }
-        "swift-build" { return [pscustomobject]@{ tool="swift"; arguments=@("build") } }
-        "dart-check" { return [pscustomobject]@{ tool="dart"; arguments=@("analyze") } }
-        "dart-tests" { return [pscustomobject]@{ tool="dart"; arguments=@("test") } }
-        "dart-build" { return [pscustomobject]@{ tool="dart"; arguments=@("compile", "exe", "bin/main.dart") } }
-        "go-vet" { return [pscustomobject]@{ tool="go"; arguments=@("vet", "./...") } }
-        "go-tests" { return [pscustomobject]@{ tool="go"; arguments=@("test", "./...") } }
-        "go-build" { return [pscustomobject]@{ tool="go"; arguments=@("build", "./...") } }
-        "rust-format" { return [pscustomobject]@{ tool="cargo"; arguments=@("fmt", "--all", "--", "--check") } }
-        "rust-tests" { return [pscustomobject]@{ tool="cargo"; arguments=@("test", "--workspace") } }
-        "rust-build" { return [pscustomobject]@{ tool="cargo"; arguments=@("build", "--workspace") } }
-        "dotnet-format" { return [pscustomobject]@{ tool="dotnet"; arguments=@("format", "--verify-no-changes") } }
-        "dotnet-tests" { return [pscustomobject]@{ tool="dotnet"; arguments=@("test") } }
-        "dotnet-build" { return [pscustomobject]@{ tool="dotnet"; arguments=@("build") } }
-        "java-check" {
-            if (Test-Path -LiteralPath (Join-Path $ProjectRoot "pom.xml")) { return [pscustomobject]@{ tool="mvn"; arguments=@("validate") } }
-            return [pscustomobject]@{ tool="gradle"; arguments=@("check") }
-        }
-        "java-tests" {
-            if (Test-Path -LiteralPath (Join-Path $ProjectRoot "pom.xml")) { return [pscustomobject]@{ tool="mvn"; arguments=@("test") } }
-            return [pscustomobject]@{ tool="gradle"; arguments=@("test") }
-        }
-        "java-build" {
-            if (Test-Path -LiteralPath (Join-Path $ProjectRoot "pom.xml")) { return [pscustomobject]@{ tool="mvn"; arguments=@("package") } }
-            return [pscustomobject]@{ tool="gradle"; arguments=@("build") }
-        }
-        default { return $null }
-    }
+    return Get-CicdAdapterDefinition -StepId $StepId -ProjectRoot $ProjectRoot
 }
 
 function New-CicdSourceArtifact {
