@@ -11,7 +11,7 @@ $ErrorActionPreference = "Stop"
 $script:ProjectRoot = $PSScriptRoot
 $script:CicdRoot = Join-Path $script:ProjectRoot ".cicd"
 $script:ConfigPath = Join-Path $script:CicdRoot "config.json"
-$script:Version = "0.4.0-dev"
+$script:Version = "0.5.0-dev"
 . (Join-Path $PSScriptRoot "Core/Logger.ps1")
 . (Join-Path $PSScriptRoot "Core/Result.ps1")
 . (Join-Path $PSScriptRoot "Modules/Config/Config.ps1")
