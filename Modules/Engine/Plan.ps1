@@ -41,7 +41,10 @@ function Get-CicdExecutionPlan {
         [Parameter(Mandatory)][object]$Config
     )
 
-    . (Join-Path $PSScriptRoot "..\Detector\Detector.ps1")
+    $detectorPath = Join-Path (Join-Path $PSScriptRoot "..") "Detector/Detector.ps1"
+    if (-not (Get-Command Get-CicdDetection -ErrorAction SilentlyContinue)) {
+        . $detectorPath
+    }
     $detection = Get-CicdDetection -ProjectRoot $ProjectRoot -ExcludeDirectories @($Config.detection.excludeDirectories)
     $steps = [System.Collections.Generic.List[object]]::new()
     $tools = [System.Collections.Generic.List[object]]::new()
@@ -59,7 +62,7 @@ function Get-CicdExecutionPlan {
     }
 
     $checks = @(
-        @{ enabled = [bool]$Config.pipeline.check; id = "python-lint"; name = "Python static checks"; category = "check"; technology = "Python"; tool = "ruff"; command = "ruff check ." ; applies = $python },
+        @{ enabled = [bool]$Config.pipeline.check; id = "python-lint"; name = "Python static checks"; category = "check"; technology = "Python"; tool = "ruff"; command = "ruff check ."; applies = $python },
         @{ enabled = [bool]$Config.pipeline.test; id = "python-tests"; name = "Python tests"; category = "test"; technology = "Python"; tool = "pytest"; command = "pytest"; applies = $python },
         @{ enabled = [bool]$Config.pipeline.check; id = "js-lint"; name = "JavaScript/TypeScript static checks"; category = "check"; technology = "JavaScript/TypeScript"; tool = "npm"; command = "npm run lint --if-present"; applies = ($javascript -or $typescript) },
         @{ enabled = [bool]$Config.pipeline.test; id = "js-tests"; name = "JavaScript/TypeScript tests"; category = "test"; technology = "JavaScript/TypeScript"; tool = "npm"; command = "npm test -- --run"; applies = ($javascript -or $typescript) }
@@ -84,7 +87,9 @@ function Get-CicdExecutionPlan {
 
     foreach ($category in @("build", "security", "delivery")) {
         $enabled = [bool]$Config.pipeline.$category
-        $steps.Add((New-CicdPlanStep -Id $category -Name "$category pipeline" -Category $category -Technology "All" -Tool "" -Command "" -Status $(if ($enabled) { "NOT_IMPLEMENTED" } else { "DISABLED" }) -Reason $(if ($enabled) { "Etapa habilitada, mas o adaptador ainda não foi implementado." } else { "Etapa desabilitada na configuração." })))
+        $status = if ($enabled) { "NOT_IMPLEMENTED" } else { "DISABLED" }
+        $reason = if ($enabled) { "Etapa habilitada, mas o adaptador ainda não foi implementado." } else { "Etapa desabilitada na configuração." }
+        $steps.Add((New-CicdPlanStep -Id $category -Name "$category pipeline" -Category $category -Technology "All" -Tool "" -Command "" -Status $status -Reason $reason))
     }
 
     [pscustomobject]@{
