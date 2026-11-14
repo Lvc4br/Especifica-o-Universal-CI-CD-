@@ -15,17 +15,17 @@ try {
         Copy-Item -LiteralPath (Join-Path $repoRoot $folder) -Destination $tempRoot -Recurse
     }
     $scriptPath = Join-Path $tempRoot "cicd.ps1"
-    $version = & pwsh -NoProfile -File $scriptPath version 2>&1 | Out-String
+    $version = & pwsh -NoProfile -File $scriptPath version -ProjectPath $tempRoot 2>&1 | Out-String
     Assert-True ($version -match "0[.]5[.]0-dev") "version must report 0.5.0-dev"
-    & pwsh -NoProfile -File $scriptPath init
+    & pwsh -NoProfile -File $scriptPath init -ProjectPath $tempRoot
     $configPath = Join-Path $tempRoot ".cicd/config.json"
     Assert-True (Test-Path -LiteralPath $configPath) "init must create config"
-    $validation = & pwsh -NoProfile -File $scriptPath validate-config 2>&1 | Out-String
+    $validation = & pwsh -NoProfile -File $scriptPath validate-config -ProjectPath $tempRoot 2>&1 | Out-String
     Assert-True ($validation -match "Configuração válida") "default config must validate"
     Set-Content -LiteralPath $configPath -Value '{"sentinel":"preserve-me"}' -Encoding utf8
-    & pwsh -NoProfile -File $scriptPath init
+    & pwsh -NoProfile -File $scriptPath init -ProjectPath $tempRoot
     Assert-True ((Get-Content -LiteralPath $configPath -Raw) -match "preserve-me") "init must preserve existing config"
-    $null = & pwsh -NoProfile -File $scriptPath validate-config 2>&1 | Out-String
+    $null = & pwsh -NoProfile -File $scriptPath validate-config -ProjectPath $tempRoot 2>&1 | Out-String
     Assert-True ($LASTEXITCODE -ne 0) "invalid config must fail validation"
     $validConfig = @{
         schemaVersion = "1.0"
@@ -42,10 +42,10 @@ try {
     Set-Content -LiteralPath (Join-Path $tempRoot "main.rs") -Value "fn main() {}" -Encoding utf8
     Set-Content -LiteralPath (Join-Path $tempRoot "Example.cs") -Value "public class Example {}" -Encoding utf8
     Set-Content -LiteralPath (Join-Path $tempRoot "pom.xml") -Value "<project></project>" -Encoding utf8
-    $detection = & pwsh -NoProfile -File $scriptPath detect 2>&1 | Out-String
+    $detection = & pwsh -NoProfile -File $scriptPath detect -ProjectPath $tempRoot 2>&1 | Out-String
     Assert-True ($detection -match "Python") "detect must identify Python"
     Assert-True ($detection -match "sample[.]py") "detect must print evidence"
-    $planOutput = & pwsh -NoProfile -File $scriptPath plan 2>&1 | Out-String
+    $planOutput = & pwsh -NoProfile -File $scriptPath plan -ProjectPath $tempRoot 2>&1 | Out-String
     Assert-True ($LASTEXITCODE -eq 0) "plan command must exit successfully; output: $planOutput" 
     Assert-True ($planOutput -match "Execução realizada: não") "plan must state no execution occurred; output: $planOutput"
     $planPath = Join-Path $tempRoot ".cicd/plans/latest-plan.json"
@@ -59,8 +59,20 @@ try {
     Assert-True ($plan.planVersion -eq "0.5.0-dev") "plan must report current version"
     Assert-True (@($plan.steps | Where-Object { $_.executed }).Count -eq 0) "no step may be executed by planner"
     Assert-True (@($plan.steps | Where-Object { $_.id -eq "python-tests" }).Count -eq 1) "python test stage must be represented"
-    $status = & pwsh -NoProfile -File $scriptPath status 2>&1 | Out-String
+    $status = & pwsh -NoProfile -File $scriptPath status -ProjectPath $tempRoot 2>&1 | Out-String
     Assert-True ($status -match "Plano: encontrado") "status must report generated plan"
+
+    $externalProject = Join-Path $tempRoot "external-project"
+    New-Item -ItemType Directory -Path $externalProject | Out-Null
+    & pwsh -NoProfile -File $scriptPath init -ProjectPath $externalProject
+    Set-Content -LiteralPath (Join-Path $externalProject "go.mod") -Value "module externalfixture" -Encoding utf8
+    Set-Content -LiteralPath (Join-Path $externalProject "main.go") -Value "package main" -Encoding utf8
+    $externalPlan = & pwsh -NoProfile -File $scriptPath plan -ProjectPath $externalProject 2>&1 | Out-String
+    Assert-True ($LASTEXITCODE -eq 0) "CLI must plan an external project directory"
+    Assert-True (Test-Path -LiteralPath (Join-Path $externalProject ".cicd/plans/latest-plan.json")) "external project plan must be saved in target directory"
+    $externalPlanJson = Get-Content -LiteralPath (Join-Path $externalProject ".cicd/plans/latest-plan.json") -Raw | ConvertFrom-Json
+    Assert-True ($externalPlanJson.technologies -contains "Go") "external project detection must use target directory"
+
     . (Join-Path $tempRoot "Core/Result.ps1")
     $result = New-CicdResult -Id "unit" -Name "Unit result" -Status "FAILED" -Summary "expected failure"
     Assert-True ($result.status -eq "FAILED") "result contract must preserve status"
