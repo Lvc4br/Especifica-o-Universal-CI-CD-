@@ -8,6 +8,26 @@ function Get-CicdAdapter {
         "js-lint" { return [pscustomobject]@{ tool="npm"; arguments=@("run", "lint") } }
         "js-tests" { return [pscustomobject]@{ tool="npm"; arguments=@("test") } }
         "js-build" { return [pscustomobject]@{ tool="npm"; arguments=@("run", "build") } }
+        "php-lint" { return [pscustomobject]@{ tool="composer"; arguments=@("run-script", "lint") } }
+        "php-tests" { return [pscustomobject]@{ tool="composer"; arguments=@("run-script", "test") } }
+        "php-build" { return [pscustomobject]@{ tool="composer"; arguments=@("validate", "--no-check-publish") } }
+        "ruby-lint" { return [pscustomobject]@{ tool="bundle"; arguments=@("exec", "rubocop") } }
+        "ruby-tests" { return [pscustomobject]@{ tool="bundle"; arguments=@("exec", "rspec") } }
+        "ruby-build" { return [pscustomobject]@{ tool="bundle"; arguments=@("check") } }
+        "lua-lint" { return [pscustomobject]@{ tool="luacheck"; arguments=@(".") } }
+        "lua-tests" { return [pscustomobject]@{ tool="busted"; arguments=@() } }
+        "cpp-configure" { return [pscustomobject]@{ tool="cmake"; arguments=@("-S", ".", "-B", "build") } }
+        "cpp-tests" { return [pscustomobject]@{ tool="ctest"; arguments=@("--test-dir", "build", "--output-on-failure") } }
+        "cpp-build" { return [pscustomobject]@{ tool="cmake"; arguments=@("--build", "build", "--parallel") } }
+        "kotlin-check" { return [pscustomobject]@{ tool="gradle"; arguments=@("check") } }
+        "kotlin-tests" { return [pscustomobject]@{ tool="gradle"; arguments=@("test") } }
+        "kotlin-build" { return [pscustomobject]@{ tool="gradle"; arguments=@("build") } }
+        "swift-check" { return [pscustomobject]@{ tool="swift"; arguments=@("package", "diagnose") } }
+        "swift-tests" { return [pscustomobject]@{ tool="swift"; arguments=@("test") } }
+        "swift-build" { return [pscustomobject]@{ tool="swift"; arguments=@("build") } }
+        "dart-check" { return [pscustomobject]@{ tool="dart"; arguments=@("analyze") } }
+        "dart-tests" { return [pscustomobject]@{ tool="dart"; arguments=@("test") } }
+        "dart-build" { return [pscustomobject]@{ tool="dart"; arguments=@("compile", "exe", "bin/main.dart") } }
         "go-vet" { return [pscustomobject]@{ tool="go"; arguments=@("vet", "./...") } }
         "go-tests" { return [pscustomobject]@{ tool="go"; arguments=@("test", "./...") } }
         "go-build" { return [pscustomobject]@{ tool="go"; arguments=@("build", "./...") } }
