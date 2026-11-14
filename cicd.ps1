@@ -25,6 +25,7 @@ $script:Version = "0.5.0-dev"
 . (Join-Path $script:ToolRoot "Modules/Config/Config.ps1")
 . (Join-Path $script:ToolRoot "Modules/Detector/Detector.ps1")
 . (Join-Path $script:ToolRoot "Modules/Engine/Plan.ps1")
+. (Join-Path $script:ToolRoot "Modules/Adapters/Registry.ps1")
 . (Join-Path $script:ToolRoot "Core/Process.ps1")
 . (Join-Path $script:ToolRoot "Core/Report.ps1")
 . (Join-Path $script:ToolRoot "Modules/Engine/Executor.ps1")
