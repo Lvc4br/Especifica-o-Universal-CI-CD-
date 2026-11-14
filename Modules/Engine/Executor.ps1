@@ -76,7 +76,7 @@ function New-CicdSourceArtifact {
     $archive = [System.IO.Compression.ZipFile]::Open($artifactPath, [System.IO.Compression.ZipArchiveMode]::Create)
     try {
         foreach ($file in $files) {
-            $relative = [System.IO.Path]::GetRelativePath($ProjectRoot, $file.FullName).Replace("\\", "/")
+            $relative = [System.IO.Path]::GetRelativePath($ProjectRoot, $file.FullName).Replace('\', '/')
             [void][System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($archive, $file.FullName, $relative, [System.IO.Compression.CompressionLevel]::Optimal)
         }
     } finally { $archive.Dispose() }
