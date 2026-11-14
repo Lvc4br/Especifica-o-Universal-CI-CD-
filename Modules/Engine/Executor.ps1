@@ -4,9 +4,10 @@ function Get-CicdAdapter {
     switch ($StepId) {
         "python-lint" { return [pscustomobject]@{ tool="ruff"; arguments=@("check", ".") } }
         "python-tests" { return [pscustomobject]@{ tool="pytest"; arguments=@() } }
-        "js-lint" { return [pscustomobject]@{ tool="npm"; arguments=@("run", "lint", "--if-present") } }
+        "python-build" { return [pscustomobject]@{ tool="python"; arguments=@("-m", "build") } }
+        "js-lint" { return [pscustomobject]@{ tool="npm"; arguments=@("run", "lint") } }
         "js-tests" { return [pscustomobject]@{ tool="npm"; arguments=@("test") } }
-        "js-build" { return [pscustomobject]@{ tool="npm"; arguments=@("run", "build", "--if-present") } }
+        "js-build" { return [pscustomobject]@{ tool="npm"; arguments=@("run", "build") } }
         "go-vet" { return [pscustomobject]@{ tool="go"; arguments=@("vet", "./...") } }
         "go-tests" { return [pscustomobject]@{ tool="go"; arguments=@("test", "./...") } }
         "go-build" { return [pscustomobject]@{ tool="go"; arguments=@("build", "./...") } }
