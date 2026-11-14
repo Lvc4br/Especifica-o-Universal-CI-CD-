@@ -31,7 +31,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [go, rust, dotnet, maven]
+        include:
+          - language: go
+            fixture: Go
+          - language: rust
+            fixture: Rust
+          - language: dotnet
+            fixture: DotNet
+          - language: maven
+            fixture: Maven
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -60,7 +68,7 @@ jobs:
       - name: Run complete fixture pipeline
         shell: pwsh
         env:
-          FIXTURE: Tests/Fixtures/${{ matrix.language == 'dotnet' && 'DotNet' || matrix.language == 'maven' && 'Maven' || matrix.language == 'rust' && 'Rust' || 'Go' }}
+          FIXTURE: Tests/Fixtures/${{ matrix.fixture }}
           LANGUAGE: ${{ matrix.language }}
         run: |
           $fixture = Join-Path $env:GITHUB_WORKSPACE $env:FIXTURE
