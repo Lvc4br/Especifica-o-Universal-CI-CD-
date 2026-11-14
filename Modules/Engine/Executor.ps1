@@ -1,6 +1,6 @@
 function Get-CicdAdapter {
     [CmdletBinding()]
-    param([Parameter(Mandatory)][string]$StepId)
+    param([Parameter(Mandatory)][string]$StepId,[Parameter(Mandatory)][string]$ProjectRoot)
     switch ($StepId) {
         "python-lint" { return [pscustomobject]@{ tool="ruff"; arguments=@("check", ".") } }
         "python-tests" { return [pscustomobject]@{ tool="pytest"; arguments=@() } }
@@ -17,7 +17,7 @@ function Get-CicdAdapter {
         "dotnet-tests" { return [pscustomobject]@{ tool="dotnet"; arguments=@("test") } }
         "dotnet-build" { return [pscustomobject]@{ tool="dotnet"; arguments=@("build") } }
         "java-check" {
-            if (Test-Path -LiteralPath (Join-Path (Get-Location) "pom.xml")) { return [pscustomobject]@{ tool="mvn"; arguments=@("validate") } }
+            if (Test-Path -LiteralPath (Join-Path $ProjectRoot "pom.xml")) { return [pscustomobject]@{ tool="mvn"; arguments=@("validate") } }
             return [pscustomobject]@{ tool="gradle"; arguments=@("check") }
         }
         "java-tests" {
@@ -47,7 +47,7 @@ function Invoke-CicdPipeline {
             $results.Add((New-CicdResult -Id $step.id -Name $step.name -Status $status -Summary $step.reason))
             continue
         }
-        $adapter = Get-CicdAdapter -StepId $step.id
+        $adapter = Get-CicdAdapter -StepId $step.id -ProjectRoot $ProjectRoot
         if ($null -eq $adapter) { $results.Add((New-CicdResult -Id $step.id -Name $step.name -Status "NOT_IMPLEMENTED" -Summary "Adaptador não registrado na allowlist.")); continue }
         $command = Get-Command -Name $adapter.tool -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1
         if ($null -eq $command) { $results.Add((New-CicdResult -Id $step.id -Name $step.name -Status "BLOCKED" -Summary "Executável '$($adapter.tool)' não encontrado.")); continue }
