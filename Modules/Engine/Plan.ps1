@@ -73,7 +73,7 @@ function Get-CicdExecutionPlan {
     if ($technologies -contains "HTML") { $toolNames.Add("htmlhint") }
     if ($technologies -contains "CSS") { $toolNames.Add("stylelint") }
     if ($technologies -contains "SQL") { $toolNames.Add("sqlfluff") }
-    if ([bool]$Config.pipeline.security) { $toolNames.Add("gitleaks"); $toolNames.Add("trivy") }
+    if ([bool]$Config.pipeline.security) { $toolNames.Add("gitleaks"); $toolNames.Add("trivy"); $toolNames.Add("semgrep"); $toolNames.Add("osv-scanner") }
     $checks = @(
         @{ enabled=[bool]$Config.pipeline.check; id="python-lint"; name="Python static checks"; category="check"; technology="Python"; tool="ruff"; command="ruff check ."; applies=$hasPython },
         @{ enabled=[bool]$Config.pipeline.test; id="python-tests"; name="Python tests"; category="test"; technology="Python"; tool="pytest"; command="pytest"; applies=$hasPython },
@@ -142,7 +142,9 @@ function Get-CicdExecutionPlan {
     if ([bool]$Config.pipeline.security) {
         foreach ($securityStep in @(
             @{ id="security-secrets"; name="Secret scanning"; tool="gitleaks"; command="gitleaks dir --redact --exit-code 1 ." },
-            @{ id="security-vulnerabilities"; name="Dependency and filesystem scanning"; tool="trivy"; command="trivy fs --scanners vuln,misconfig --exit-code 1 --no-progress ." }
+            @{ id="security-vulnerabilities"; name="Dependency and filesystem scanning"; tool="trivy"; command="trivy fs --scanners vuln,misconfig --exit-code 1 --no-progress ." },
+            @{ id="security-sast"; name="Static application security testing"; tool="semgrep"; command="semgrep scan --config auto --error ." },
+            @{ id="security-supply-chain"; name="Open source vulnerability database scan"; tool="osv-scanner"; command="osv-scanner scan --recursive ." }
         )) {
             $availability = Get-CicdCommandAvailability -Name $securityStep.tool
             $status = if ($availability.available) { "PLANNED" } else { "BLOCKED" }
