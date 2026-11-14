@@ -55,6 +55,8 @@ try {
     $result = New-CicdResult -Id "unit" -Name "Unit result" -Status "FAILED" -Summary "expected failure"
     Assert-True ($result.status -eq "FAILED") "result contract must preserve status"
     Assert-True ((Get-CicdExitCode -Results @($result)) -eq 1) "failed result maps to exit code 1"
+    $blockedResult = New-CicdResult -Id "blocked" -Name "Missing tool" -Status "BLOCKED"
+    Assert-True ((Get-CicdExitCode -Results @($blockedResult)) -eq 3) "blocked result must not look successful"
 
     . (Join-Path $tempRoot "Core/Process.ps1")
     . (Join-Path $tempRoot "Modules/Engine/Executor.ps1")
