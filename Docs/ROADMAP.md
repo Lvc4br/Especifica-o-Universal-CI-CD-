@@ -51,7 +51,7 @@ Esses adaptadores estão implementados no planejador/executor, mas ainda não fo
 - [x] SAST inicial com Semgrep.
 - [x] Verificação de vulnerabilidades conhecidas com OSV-Scanner.
 - [ ] SAST específico por linguagem e verificação de licenças.
-- [x] Empacotamento local do código-fonte em ZIP com exclusões.
+- [x] Empacotamento local do código-fonte em ZIP com exclusões de dependências, caches e arquivos sensíveis comuns.
 - [ ] Publicação remota, cache, paralelismo e deploy com aprovação separada.
 
 ## Critério de suporte
