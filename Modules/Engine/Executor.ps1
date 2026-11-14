@@ -7,7 +7,7 @@ function Get-CicdAdapter {
         "python-lint" { return [pscustomobject]@{ tool = "ruff"; arguments = @("check", ".") } }
         "python-tests" { return [pscustomobject]@{ tool = "pytest"; arguments = @() } }
         "js-lint" { return [pscustomobject]@{ tool = "npm"; arguments = @("run", "lint", "--if-present") } }
-        "js-tests" { return [pscustomobject]@{ tool = "npm"; arguments = @("test", "--", "--run") } }
+        "js-tests" { return [pscustomobject]@{ tool = "npm"; arguments = @("test") } }
         default { return $null }
     }
 }
