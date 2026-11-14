@@ -19,6 +19,6 @@ A redação de stdout/stderr cobre apenas padrões comuns. Não garante remoçã
 
 Quando `pipeline.security` estiver habilitado, o planejador procura:
 - Gitleaks: procura segredos no diretório do projeto e redige os achados na saída.
-- Trivy: verifica vulnerabilidades e misconfigurações no filesystem.
+- Trivy: verifica vulnerabilidades e misconfigurações no filesystem.\n- Semgrep: análise estática com regras automáticas.\n- OSV-Scanner: consulta vulnerabilidades conhecidas nas dependências detectáveis.
 
 Os scanners precisam estar instalados no PATH. A ausência de uma ferramenta bloqueia a etapa; não é interpretada como aprovação. Os scanners podem retornar falha quando encontram achados, o que faz a execução terminar com código diferente de zero. Revise as políticas e falsos positivos antes de usar em CI obrigatória.
