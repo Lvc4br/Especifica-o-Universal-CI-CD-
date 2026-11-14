@@ -15,7 +15,7 @@
 ## Próximas etapas prioritárias
 - [x] Fixtures reais de Go, Rust, .NET e Maven executadas pelo pipeline em CI Ubuntu.
 - [ ] Expandir validação real para Windows, Gradle e os demais ecossistemas.
-- [ ] Suporte a wrappers (mvnw/gradlew), soluções .NET e monorepos.
+- [x] Descoberta e execução individual de projetos em workspaces/monorepos.\n- [ ] Wrappers (mvnw/gradlew) e seleção de soluções .NET específicas.
 - [x] Validação estrutural expandida, com tipos e propriedades adicionais restritos.
 - [ ] Validação integral usando motor JSON Schema.
 - [ ] Testes unitários e integração dedicados por módulo.
