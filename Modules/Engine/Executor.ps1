@@ -21,11 +21,11 @@ function Get-CicdAdapter {
             return [pscustomobject]@{ tool="gradle"; arguments=@("check") }
         }
         "java-tests" {
-            if (Test-Path -LiteralPath (Join-Path (Get-Location) "pom.xml")) { return [pscustomobject]@{ tool="mvn"; arguments=@("test") } }
+            if (Test-Path -LiteralPath (Join-Path $ProjectRoot "pom.xml")) { return [pscustomobject]@{ tool="mvn"; arguments=@("test") } }
             return [pscustomobject]@{ tool="gradle"; arguments=@("test") }
         }
         "java-build" {
-            if (Test-Path -LiteralPath (Join-Path (Get-Location) "pom.xml")) { return [pscustomobject]@{ tool="mvn"; arguments=@("package") } }
+            if (Test-Path -LiteralPath (Join-Path $ProjectRoot "pom.xml")) { return [pscustomobject]@{ tool="mvn"; arguments=@("package") } }
             return [pscustomobject]@{ tool="gradle"; arguments=@("build") }
         }
         default { return $null }
