@@ -40,7 +40,8 @@ try {
     Assert-True ($detection -match "Python") "detect must identify Python"
     Assert-True ($detection -match "sample[.]py") "detect must print evidence"
     $planOutput = & pwsh -NoProfile -File $scriptPath plan 2>&1 | Out-String
-    Assert-True ($planOutput -match "Execução realizada: não") "plan must state no execution occurred"
+    Assert-True ($LASTEXITCODE -eq 0) "plan command must exit successfully; output: $planOutput" 
+    Assert-True ($planOutput -match "Execução realizada: não") "plan must state no execution occurred; output: $planOutput"
     $planPath = Join-Path $tempRoot ".cicd/plans/latest-plan.json"
     Assert-True (Test-Path -LiteralPath $planPath) "plan must persist JSON"
     $plan = Get-Content -LiteralPath $planPath -Raw | ConvertFrom-Json
