@@ -102,14 +102,28 @@ function Get-DetectedTechnologies {
 
     if ($extensions.ContainsKey(".py") -or ($names -contains "pyproject.toml") -or ($names -contains "requirements.txt")) { $found.Add("Python") }
     if ($extensions.ContainsKey(".js") -or $extensions.ContainsKey(".mjs") -or $extensions.ContainsKey(".cjs") -or ($names -contains "package.json")) { $found.Add("JavaScript") }
-    if ($extensions.ContainsKey(".jsx") -or ($names -contains "package.json" -and ($files | Where-Object { $_.Name -eq "package.json" } | Select-Object -First 1))) { $found.Add("React candidate (requires package inspection)") }
+    $reactDetected = $false
+    foreach ($packageFile in @($files | Where-Object { $_.Name -eq "package.json" })) {
+        try {
+            $package = Get-Content -LiteralPath $packageFile.FullName -Raw | ConvertFrom-Json
+            foreach ($section in @("dependencies", "devDependencies", "peerDependencies")) {
+                $sectionValue = $package.$section
+                if ($null -ne $sectionValue -and $sectionValue.PSObject.Properties.Name -contains "react") {
+                    $reactDetected = $true
+                }
+            }
+        } catch {
+            Write-WarningMessage "Manifesto package.json inválido ou ilegível: $($packageFile.FullName)"
+        }
+    }
+    if ($extensions.ContainsKey(".jsx") -or $extensions.ContainsKey(".tsx") -or $reactDetected) { $found.Add("React (indício; requer validação do projeto)") }
     if ($extensions.ContainsKey(".ts") -or $extensions.ContainsKey(".tsx")) { $found.Add("TypeScript") }
     if ($extensions.ContainsKey(".html") -or ($names -contains "index.html")) { $found.Add("HTML") }
     if ($extensions.ContainsKey(".css") -or $extensions.ContainsKey(".scss") -or $extensions.ContainsKey(".sass")) { $found.Add("CSS") }
     if ($extensions.ContainsKey(".java") -or ($names -contains "pom.xml") -or ($names -contains "build.gradle") -or ($names -contains "build.gradle.kts")) { $found.Add("Java") }
     if ($extensions.ContainsKey(".lua")) { $found.Add("Lua") }
     if ($extensions.ContainsKey(".sql")) { $found.Add("SQL") }
-    if ($extensions.ContainsKey(".cs") -or ($names -contains "*.csproj")) { $found.Add("C#") }
+    if ($extensions.ContainsKey(".cs") -or @($names | Where-Object { $_ -like "*.csproj" }).Count -gt 0) { $found.Add("C#") }
     if ($extensions.ContainsKey(".go") -or ($names -contains "go.mod")) { $found.Add("Go") }
     if ($extensions.ContainsKey(".rs") -or ($names -contains "Cargo.toml")) { $found.Add("Rust") }
 
