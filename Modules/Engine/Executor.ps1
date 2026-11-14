@@ -8,6 +8,8 @@ function Get-CicdAdapter {
         "js-lint" { return [pscustomobject]@{ tool="npm"; arguments=@("run", "lint") } }
         "js-tests" { return [pscustomobject]@{ tool="npm"; arguments=@("test") } }
         "js-build" { return [pscustomobject]@{ tool="npm"; arguments=@("run", "build") } }
+        "security-secrets" { return [pscustomobject]@{ tool="gitleaks"; arguments=@("dir", "--redact", "--exit-code", "1", ".") } }
+        "security-vulnerabilities" { return [pscustomobject]@{ tool="trivy"; arguments=@("fs", "--scanners", "vuln,misconfig", "--exit-code", "1", "--no-progress", ".") } }
         "php-lint" { return [pscustomobject]@{ tool="composer"; arguments=@("run-script", "lint") } }
         "php-tests" { return [pscustomobject]@{ tool="composer"; arguments=@("run-script", "test") } }
         "php-build" { return [pscustomobject]@{ tool="composer"; arguments=@("validate", "--no-check-publish") } }
@@ -57,13 +59,13 @@ function Invoke-CicdPipeline {
     param([Parameter(Mandatory)][string]$ProjectRoot,[Parameter(Mandatory)][object]$Config,[switch]$Approve,[ValidateRange(1,86400)][int]$TimeoutSeconds=600)
     $plan = Get-CicdExecutionPlan -ProjectRoot $ProjectRoot -Config $Config
     $results = [System.Collections.Generic.List[object]]::new()
-    $planned = @($plan.steps | Where-Object { $_.status -eq "PLANNED" -and $_.category -in @("check","test","build") })
+    $planned = @($plan.steps | Where-Object { $_.status -eq "PLANNED" -and $_.category -in @("check","test","build","security") })
     if (-not $Approve) {
         foreach ($step in $planned) { $results.Add((New-CicdResult -Id $step.id -Name $step.name -Status "SKIPPED" -Summary "Aguardando aprovação explícita.")) }
         return [pscustomobject]@{ approved=$false; performed=$false; plan=$plan; results=@($results); exitCode=0; reportPath=$null }
     }
     foreach ($step in $plan.steps) {
-        if ($step.status -ne "PLANNED" -or $step.category -notin @("check","test","build")) {
+        if ($step.status -ne "PLANNED" -or $step.category -notin @("check","test","build","security")) {
             $status = switch ($step.status) { "BLOCKED" {"BLOCKED"} "DISABLED" {"SKIPPED"} "NOT_APPLICABLE" {"SKIPPED"} "NOT_IMPLEMENTED" {"NOT_IMPLEMENTED"} default {"SKIPPED"} }
             $results.Add((New-CicdResult -Id $step.id -Name $step.name -Status $status -Summary $step.reason))
             continue
