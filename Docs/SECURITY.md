@@ -1,28 +1,20 @@
 # Segurança
 
-## Regras obrigatórias
+## Garantias atuais
+1. Detecção e planejamento não executam código.
+2. Execução requer `-Approve`.
+3. IDs de etapa selecionam adaptadores fixos no código.
+4. Executáveis e argumentos são passados separadamente, sem shell intermediário.
+5. Há timeout e captura de stdout/stderr.
+6. Não há publicação, release ou deploy automático.
 
-1. Não executar scripts do projeto automaticamente durante detecção.
-2. Não avaliar conteúdo de configuração como código.
-3. Não executar comandos montados por concatenação de strings não confiáveis.
-4. Preferir executáveis e argumentos separados; validar caminhos e opções.
-5. Não registrar tokens, senhas, chaves privadas ou variáveis secretas.
-6. Não sobrescrever arquivos sem confirmação explícita.
-7. Não publicar pacotes, criar releases ou realizar deploy sem autorização.
-8. Tratar nomes de arquivos, manifestos e saídas de ferramentas como dados não confiáveis.
-
-## Execução de ferramentas
-
-Antes de executar adaptadores, o sistema deverá informar o executável, argumentos, diretório de trabalho e efeitos esperados. A configuração poderá habilitar etapas específicas, mas não deverá permitir execução arbitrária irrestrita.
+## Antes de aprovar
+- Revise `.cicd/plans/latest-plan.json`.
+- Revise scripts do `package.json`, configuração de testes e dependências.
+- Não execute projetos desconhecidos com credenciais ou acesso administrativo.
+- Para código não confiável, use VM/contêiner descartável, sem mounts sensíveis e com rede restrita. O executor não é sandbox.
 
 ## Segredos
+A ferramenta mascara padrões comuns (token, password, bearer e tokens GitHub) antes de salvar stdout/stderr. Isso não é garantia: formatos não reconhecidos podem vazar. Prefira executar sem credenciais e revise relatórios antes de compartilhá-los.
 
-Segredos devem ser fornecidos por variáveis de ambiente ou mecanismo seguro do provedor de CI. Nunca devem ser armazenados em .cicd/config.json, commits, relatórios ou logs.
-
-## Relatórios
-
-Remover ou mascarar valores de variáveis conhecidas como secret, token, password, key e credential. A redação deve ocorrer antes da persistência dos logs.
-
-## Modelo de ameaça inicial
-
-Considerar repositórios não confiáveis, dependências comprometidas, comandos maliciosos em scripts de pacote, caminhos manipulados e vazamento acidental de credenciais.
+A allowlist limita executáveis/argumentos, mas não torna seguros scripts npm. Aprovação significa consentimento para executar o código do projeto. Não use esta versão em pipelines críticos sem sandbox e revisão adicional.
