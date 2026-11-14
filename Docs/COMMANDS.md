@@ -3,25 +3,17 @@
 ```powershell
 pwsh ./cicd.ps1 help
 pwsh ./cicd.ps1 version
-pwsh ./cicd.ps1 init
-pwsh ./cicd.ps1 validate-config
-pwsh ./cicd.ps1 detect
-pwsh ./cicd.ps1 plan
-pwsh ./cicd.ps1 run
-pwsh ./cicd.ps1 run -Approve
-pwsh ./cicd.ps1 run -Approve -TimeoutSeconds 900
-pwsh ./cicd.ps1 status
+pwsh ./cicd.ps1 init -ProjectPath "D:\Projetos\MeuApp"
+pwsh ./cicd.ps1 validate-config -ProjectPath "D:\Projetos\MeuApp"
+pwsh ./cicd.ps1 detect -ProjectPath "D:\Projetos\MeuApp"
+pwsh ./cicd.ps1 plan -ProjectPath "D:\Projetos\MeuApp"
+pwsh ./cicd.ps1 run -ProjectPath "D:\Projetos\MeuApp"
+pwsh ./cicd.ps1 run -ProjectPath "D:\Projetos\MeuApp" -Approve -TimeoutSeconds 900
 ```
 
-## Pipeline
-As opções `pipeline.check`, `pipeline.test` e `pipeline.build` controlam as categorias. O plano cria etapas apenas para tecnologias reconhecidas e marca ferramentas ausentes como BLOCKED. Sem `-Approve`, nenhum processo é iniciado.
+`-ProjectPath` aponta para o projeto-alvo. Quando omitido, usa o diretório de trabalho atual. A configuração, planos e relatórios são criados dentro do projeto-alvo; módulos da ferramenta são carregados da pasta onde `cicd.ps1` está instalado.
 
-## Adaptadores disponíveis
-- Python: Ruff e pytest.
-- JavaScript/TypeScript: npm lint/test/build (scripts npm podem estar ausentes).
-- Go: vet, test e build.
-- Rust: fmt check, test e build.
-- C#/.NET: format check, test e build.
-- Java: Maven validate/test/package ou Gradle check/test/build, selecionado por manifesto.
+## Adaptadores
+Python (Ruff/pytest); JavaScript/TypeScript (npm lint/test/build); Go (vet/test/build); Rust (fmt/test/build); C#/.NET (format/test/build); Java Maven/Gradle (validate/check/test/package/build). As ferramentas precisam estar no PATH. Wrappers, monorepos e projetos complexos ainda não têm suporte completo.
 
-Ferramentas precisam estar no PATH. Java usa executáveis globais nesta versão. Wrappers, monorepos e projetos .NET multi-solução ainda não têm resolução específica.
+Sem `-Approve`, nenhuma etapa executa. Revise os comandos e o código de build antes de autorizar.
