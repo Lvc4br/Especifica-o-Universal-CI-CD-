@@ -39,7 +39,7 @@ Se `-ProjectPath` for omitido, o diretório de trabalho atual será usado. Sem `
 | CSS | Stylelint | — | — |
 | SQL | SQLFluff | — | — |
 
-Scripts npm ausentes são marcados como `NOT_APPLICABLE`; eles nunca são tratados como comandos executados com sucesso. O build Python só é planejado para pacotes com seção `[build-system]` no `pyproject.toml`. Ferramentas devem estar instaladas no PATH. Java exige `pom.xml` ou `build.gradle(.kts)`. Wrappers mvnw/gradlew, soluções .NET multi-projeto e monorepos ainda precisam de suporte dedicado.
+Scripts npm ausentes são marcados como `NOT_APPLICABLE`; eles nunca são tratados como comandos executados com sucesso. O build Python só é planejado para pacotes com seção `[build-system]` no `pyproject.toml`. Ferramentas devem estar instaladas no PATH. Java exige `pom.xml` ou `build.gradle(.kts)`. A descoberta e execução de projetos em workspaces/monorepos está disponível por `discover-projects` e `run-workspaces`. Wrappers `mvnw`/`gradlew` e seleção de soluções .NET específicas ainda precisam de suporte dedicado.
 
 ## Segurança e limites
 - Detecção e planejamento não executam código.
