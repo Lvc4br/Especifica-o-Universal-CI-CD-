@@ -43,7 +43,7 @@ function Get-CicdDetection {
     if ($extensions.ContainsKey(".ts") -or $extensions.ContainsKey(".tsx")) { $found.Add("TypeScript") }
     if ($extensions.ContainsKey(".html")) { $found.Add("HTML") }
     if ($extensions.ContainsKey(".css") -or $extensions.ContainsKey(".scss") -or $extensions.ContainsKey(".sass")) { $found.Add("CSS") }
-    if ($extensions.ContainsKey(".java") -or ($names -contains "pom.xml") -or ($names -contains "build.gradle") -or ($names -contains "build.gradle.kts")) { $found.Add("Java") }
+    if ($extensions.ContainsKey(".java") -or ($names -contains "pom.xml") -or ((($names -contains "build.gradle") -or ($names -contains "build.gradle.kts")) -and -not ($extensions.ContainsKey(".kt") -or $extensions.ContainsKey(".kts")))) { $found.Add("Java") }
     if ($extensions.ContainsKey(".lua")) { $found.Add("Lua") }
     if ($extensions.ContainsKey(".sql")) { $found.Add("SQL") }
     if ($extensions.ContainsKey(".cs") -or @($names | Where-Object { $_ -like "*.csproj" }).Count -gt 0) { $found.Add("C#") }
