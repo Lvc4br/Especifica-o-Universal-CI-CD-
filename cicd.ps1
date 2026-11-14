@@ -81,11 +81,12 @@ function Initialize-Project {
 }
 
 function Get-DetectedTechnologies {
-    $exclude = @("\.git\", "\.cicd\", "\node_modules\", "\.venv\", "\venv\", "\bin\", "\obj\", "\dist\", "\build\", "\target\")
+    $excludeDirectories = @(".git", ".cicd", "node_modules", ".venv", "venv", "bin", "obj", "dist", "build", "target")
     $files = Get-ChildItem -LiteralPath $script:ProjectRoot -File -Recurse -ErrorAction SilentlyContinue |
         Where-Object {
-            $fullName = $_.FullName
-            -not ($exclude | Where-Object { $fullName -match [regex]::Escape($_) })
+            $relativePath = [System.IO.Path]::GetRelativePath($script:ProjectRoot, $_.FullName)
+            $segments = $relativePath -split '[/\\]'
+            -not ($segments | Where-Object { $excludeDirectories -contains $_ })
         }
 
     $extensions = @{}
@@ -102,6 +103,7 @@ function Get-DetectedTechnologies {
 
     if ($extensions.ContainsKey(".py") -or ($names -contains "pyproject.toml") -or ($names -contains "requirements.txt")) { $found.Add("Python") }
     if ($extensions.ContainsKey(".js") -or $extensions.ContainsKey(".mjs") -or $extensions.ContainsKey(".cjs") -or ($names -contains "package.json")) { $found.Add("JavaScript") }
+
     $reactDetected = $false
     foreach ($packageFile in @($files | Where-Object { $_.Name -eq "package.json" })) {
         try {
