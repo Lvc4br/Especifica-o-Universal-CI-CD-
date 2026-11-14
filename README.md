@@ -21,15 +21,15 @@ Se `-ProjectPath` for omitido, o diretório de trabalho atual será usado. Sem `
 ## Adaptadores iniciais
 | Ecossistema | Check | Teste | Build |
 |---|---|---|---|
-| Python | Ruff | pytest | Não implementado |
-| JavaScript/TypeScript | npm lint (opcional) | npm test | npm build (opcional) |
+| Python | Ruff | pytest | `python -m build` (quando `pyproject.toml` declara `[build-system]`) |
+| JavaScript/TypeScript | `npm run lint` (se declarado) | `npm test` (se declarado) | `npm run build` (se declarado) |
 | Go | go vet | go test ./... | go build ./... |
 | Rust | cargo fmt --check | cargo test --workspace | cargo build --workspace |
 | C#/.NET | dotnet format --verify-no-changes | dotnet test | dotnet build |
 | Java/Maven | mvn validate | mvn test | mvn package |
 | Java/Gradle | gradle check | gradle test | gradle build |
 
-Ferramentas devem estar instaladas no PATH. Java exige `pom.xml` ou `build.gradle(.kts)`. Wrappers mvnw/gradlew, soluções .NET multi-projeto e monorepos ainda precisam de suporte dedicado.
+Scripts npm ausentes são marcados como `NOT_APPLICABLE`; eles nunca são tratados como comandos executados com sucesso. O build Python só é planejado para pacotes com seção `[build-system]` no `pyproject.toml`. Ferramentas devem estar instaladas no PATH. Java exige `pom.xml` ou `build.gradle(.kts)`. Wrappers mvnw/gradlew, soluções .NET multi-projeto e monorepos ainda precisam de suporte dedicado.
 
 ## Segurança e limites
 - Detecção e planejamento não executam código.
