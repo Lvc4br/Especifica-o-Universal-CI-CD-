@@ -16,7 +16,7 @@ try {
     }
     $scriptPath = Join-Path $tempRoot "cicd.ps1"
     $version = & pwsh -NoProfile -File $scriptPath version 2>&1 | Out-String
-    Assert-True ($version -match "0[.]3[.]0-dev") "version must report 0.3.0-dev"
+    Assert-True ($version -match "0[.]4[.]0-dev") "version must report 0.3.0-dev"
     & pwsh -NoProfile -File $scriptPath init
     $configPath = Join-Path $tempRoot ".cicd/config.json"
     Assert-True (Test-Path -LiteralPath $configPath) "init must create config"
@@ -55,6 +55,34 @@ try {
     $result = New-CicdResult -Id "unit" -Name "Unit result" -Status "FAILED" -Summary "expected failure"
     Assert-True ($result.status -eq "FAILED") "result contract must preserve status"
     Assert-True ((Get-CicdExitCode -Results @($result)) -eq 1) "failed result maps to exit code 1"
+
+    . (Join-Path $tempRoot "Core/Process.ps1")
+    . (Join-Path $tempRoot "Modules/Engine/Executor.ps1")
+    $pwsh = (Get-Command pwsh -CommandType Application).Source
+    $successScript = Join-Path $tempRoot "process-success.ps1"
+    Set-Content -LiteralPath $successScript -Value 'Write-Output "runner-ok"; exit 0' -Encoding utf8
+    $processOk = Invoke-CicdProcess -Executable $pwsh -Arguments @("-NoProfile", "-File", $successScript) -WorkingDirectory $tempRoot -TimeoutSeconds 15
+    Assert-True (-not $processOk.timedOut) "process runner must not time out a short process"
+    Assert-True ($processOk.exitCode -eq 0) "process runner must capture exit code 0"
+    Assert-True ($processOk.stdout -match "runner-ok") "process runner must capture stdout"
+    Assert-True ($processOk.durationMs -ge 0) "process runner must record duration"
+
+    $failureScript = Join-Path $tempRoot "process-failure.ps1"
+    Set-Content -LiteralPath $failureScript -Value 'Write-Error "expected-error"; exit 7' -Encoding utf8
+    $processFail = Invoke-CicdProcess -Executable $pwsh -Arguments @("-NoProfile", "-File", $failureScript) -WorkingDirectory $tempRoot -TimeoutSeconds 15
+    Assert-True ($processFail.exitCode -ne 0) "process runner must preserve non-zero exit codes"
+    Assert-True (-not [string]::IsNullOrEmpty($processFail.stderr)) "process runner must capture stderr"
+
+    $timeoutScript = Join-Path $tempRoot "process-timeout.ps1"
+    Set-Content -LiteralPath $timeoutScript -Value 'Start-Sleep -Seconds 5' -Encoding utf8
+    $processTimeout = Invoke-CicdProcess -Executable $pwsh -Arguments @("-NoProfile", "-File", $timeoutScript) -WorkingDirectory $tempRoot -TimeoutSeconds 1
+    Assert-True ($processTimeout.timedOut) "process runner must enforce timeout"
+
+    $redacted = Protect-CicdOutput -Text "token=supersecret authorization: Bearer abcdefghijklmnop"
+    Assert-True ($redacted -notmatch "supersecret|abcdefghijklmnop") "report output must redact common secrets"
+    Assert-True ((Get-CicdAdapter -StepId "python-tests").tool -eq "pytest") "known adapter must resolve from fixed allowlist"
+    Assert-True ($null -eq (Get-CicdAdapter -StepId "arbitrary-command")) "unknown command must not resolve to an adapter"
+
     Write-Host "Smoke tests: PASSED"
 } finally {
     if (Test-Path -LiteralPath $tempRoot) { Remove-Item -LiteralPath $tempRoot -Recurse -Force }
