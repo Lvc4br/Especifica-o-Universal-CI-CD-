@@ -70,6 +70,7 @@ function Get-CicdExecutionPlan {
     if ($hasKotlin) { $toolNames.Add("gradle") }
     if ($hasSwift) { $toolNames.Add("swift") }
     if ($hasDart) { $toolNames.Add("dart") }
+    if ([bool]$Config.pipeline.security) { $toolNames.Add("gitleaks"); $toolNames.Add("trivy") }
     $checks = @(
         @{ enabled=[bool]$Config.pipeline.check; id="python-lint"; name="Python static checks"; category="check"; technology="Python"; tool="ruff"; command="ruff check ."; applies=$hasPython },
         @{ enabled=[bool]$Config.pipeline.test; id="python-tests"; name="Python tests"; category="test"; technology="Python"; tool="pytest"; command="pytest"; applies=$hasPython },
@@ -132,12 +133,22 @@ function Get-CicdExecutionPlan {
         }
         $steps.Add((New-CicdPlanStep -Id $item.id -Name $item.name -Category $item.category -Technology $item.technology -Tool $item.tool -Command $item.command -Status "PLANNED" -Reason "Ferramenta encontrada; comando allowlisted aguardando aprovação."))
     }
-    foreach ($category in @("security", "delivery")) {
-        $enabled = [bool]$Config.pipeline.$category
-        $status = if ($enabled) { "NOT_IMPLEMENTED" } else { "DISABLED" }
-        $reason = if ($enabled) { "Etapa habilitada, mas o adaptador ainda não foi implementado." } else { "Etapa desabilitada na configuração." }
-        $steps.Add((New-CicdPlanStep -Id $category -Name "$category pipeline" -Category $category -Technology "All" -Tool "" -Command "" -Status $status -Reason $reason))
+    if ([bool]$Config.pipeline.security) {
+        foreach ($securityStep in @(
+            @{ id="security-secrets"; name="Secret scanning"; tool="gitleaks"; command="gitleaks dir --redact --exit-code 1 ." },
+            @{ id="security-vulnerabilities"; name="Dependency and filesystem scanning"; tool="trivy"; command="trivy fs --scanners vuln,misconfig --exit-code 1 --no-progress ." }
+        )) {
+            $availability = Get-CicdCommandAvailability -Name $securityStep.tool
+            $status = if ($availability.available) { "PLANNED" } else { "BLOCKED" }
+            $reason = if ($availability.available) { "Scanner encontrado; execução exige aprovação explícita." } else { "Ferramenta '$($securityStep.tool)' não encontrada no PATH." }
+            $steps.Add((New-CicdPlanStep -Id $securityStep.id -Name $securityStep.name -Category "security" -Technology "All" -Tool $securityStep.tool -Command $securityStep.command -Status $status -Reason $reason))
+        }
+    } else {
+        $steps.Add((New-CicdPlanStep -Id "security" -Name "Security pipeline" -Category "security" -Technology "All" -Tool "" -Command "" -Status "DISABLED" -Reason "Etapa desabilitada na configuração."))
     }
+    $deliveryStatus = if ([bool]$Config.pipeline.delivery) { "NOT_IMPLEMENTED" } else { "DISABLED" }
+    $deliveryReason = if ([bool]$Config.pipeline.delivery) { "Publicação e deploy ainda não possuem destino e credenciais configurados." } else { "Etapa desabilitada na configuração." }
+    $steps.Add((New-CicdPlanStep -Id "delivery" -Name "Delivery pipeline" -Category "delivery" -Technology "All" -Tool "" -Command "" -Status $deliveryStatus -Reason $deliveryReason))
     [pscustomobject]@{
         schemaVersion="1.0"; planVersion="0.5.0-dev"; project=[string]$Config.project.name
         projectRoot=[System.IO.Path]::GetFullPath($ProjectRoot); generatedAt=(Get-Date).ToString("o")
