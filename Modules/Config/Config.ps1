@@ -66,8 +66,33 @@ function Get-CicdConfig {
     if ([string]$config.schemaVersion -ne "1.0") {
         throw "Versão de schema não suportada: '$($config.schemaVersion)'. Esperado: '1.0'."
     }
-    if ([string]::IsNullOrWhiteSpace([string]$config.project.name)) {
-        throw "Configuração inválida: project.name não pode estar vazio."
+    $allowedRoot = @("schemaVersion", "project", "runtime", "detection", "pipeline")
+    foreach ($property in $config.PSObject.Properties.Name) {
+        if ($property -notin $allowedRoot) { throw "Configuração inválida: propriedade não permitida '$property'." }
+    }
+    foreach ($pair in @(
+        @{ name="project"; required=@("name","root") },
+        @{ name="runtime"; required=@("powershell") },
+        @{ name="detection"; required=@("enabled","excludeDirectories") },
+        @{ name="pipeline"; required=@("check","test","build","security","delivery") }
+    )) {
+        $object = $config.($pair.name)
+        if ($null -eq $object -or $object -isnot [pscustomobject]) { throw "Configuração inválida: '$($pair.name)' deve ser um objeto." }
+        foreach ($requiredProperty in $pair.required) {
+            if ($object.PSObject.Properties.Name -notcontains $requiredProperty) { throw "Configuração inválida: propriedade obrigatória ausente '$($pair.name).$requiredProperty'." }
+        }
+        $allowedProperties = @($pair.required)
+        foreach ($nestedProperty in $object.PSObject.Properties.Name) {
+            if ($nestedProperty -notin $allowedProperties) { throw "Configuração inválida: propriedade não permitida '$($pair.name).$nestedProperty'." }
+        }
+    }
+    if ([string]::IsNullOrWhiteSpace([string]$config.project.name)) { throw "Configuração inválida: project.name não pode estar vazio." }
+    if ([string]::IsNullOrWhiteSpace([string]$config.project.root)) { throw "Configuração inválida: project.root não pode estar vazio." }
+    if ([string]::IsNullOrWhiteSpace([string]$config.runtime.powershell)) { throw "Configuração inválida: runtime.powershell não pode estar vazio." }
+    if ($config.detection.enabled -isnot [bool]) { throw "Configuração inválida: detection.enabled deve ser booleano." }
+    if ($config.detection.excludeDirectories -isnot [array]) { throw "Configuração inválida: detection.excludeDirectories deve ser uma lista." }
+    foreach ($directory in $config.detection.excludeDirectories) {
+        if ($directory -isnot [string] -or [string]::IsNullOrWhiteSpace($directory)) { throw "Configuração inválida: cada item de detection.excludeDirectories deve ser texto não vazio." }
     }
     foreach ($flag in @("check", "test", "build", "security", "delivery")) {
         $property = $config.pipeline.PSObject.Properties[$flag]
