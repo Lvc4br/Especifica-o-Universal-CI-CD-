@@ -7,6 +7,7 @@
 - Adicionado Java via Maven e Gradle (validate/check, test, package/build).
 - Adicionada etapa build para JavaScript/TypeScript via script npm.
 - Relatórios identificam versão 0.5.0-dev.
+- CLI aceita -ProjectPath e mantém configuração, planos e relatórios dentro do projeto-alvo.
 - Smoke tests ampliados para verificar detecção/planejamento e allowlists desses ecossistemas.
 
 ## [0.4.0-dev] - 2026-11-14
