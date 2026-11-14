@@ -13,7 +13,8 @@
 - [x] CLI pode operar em diretório externo com -ProjectPath, separando ferramenta e projeto-alvo.
 
 ## Próximas etapas prioritárias
-- [ ] Validar comandos em fixtures reais com toolchains instaladas (Go, Rust, .NET, Maven e Gradle) em Windows e Linux.
+- [x] Fixtures reais de Go, Rust, .NET e Maven executadas pelo pipeline em CI Ubuntu.
+- [ ] Expandir validação real para Windows, Gradle e os demais ecossistemas.
 - [ ] Suporte a wrappers (mvnw/gradlew), soluções .NET e monorepos.
 - [ ] Validação integral usando motor JSON Schema.
 - [ ] Testes unitários e integração dedicados por módulo.
