@@ -20,7 +20,7 @@
 - [x] Validação estrutural expandida, com tipos e propriedades adicionais restritos.
 - [ ] Validação integral usando motor JSON Schema.
 - [ ] Testes unitários e integração dedicados por módulo.
-- [ ] Cobertura consolidada, relatórios Markdown/HTML e histórico.
+- [x] Histórico de execuções JSON.\n- [x] Exportação de relatórios HTML e Markdown.\n- [ ] Cobertura consolidada e tendências históricas.
 - [ ] Cancelamento interativo e limites de memória/CPU.
 - [ ] Sandbox real para projetos não confiáveis.
 
