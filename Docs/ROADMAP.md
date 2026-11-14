@@ -22,7 +22,7 @@
 - [ ] Cancelamento interativo e limites de memória/CPU.
 - [ ] Sandbox real para projetos não confiáveis.
 
-## Adaptadores ainda ausentes
+## Adaptadores iniciais adicionados nesta etapa\n- [x] PHP/Composer (lint/test/build via scripts e validação do manifesto).\n- [x] Ruby/Bundler (RuboCop/RSpec/check).\n- [x] Lua (Luacheck/Busted).\n- [x] C/C++ com CMake/CTest.\n- [x] Kotlin via Gradle.\n- [x] Swift Package Manager.\n- [x] Dart (analyze/test/compile).\n\nEsses adaptadores estão implementados no planejador/executor, mas ainda não foram validados por fixtures reais.\n\n## Adaptadores ainda ausentes
 - [ ] PHP/PHPUnit/PHPStan.
 - [ ] Ruby/RSpec/RuboCop.
 - [ ] Lua.
