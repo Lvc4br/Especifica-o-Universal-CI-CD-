@@ -10,6 +10,7 @@
 - [x] Adaptadores iniciais C#/.NET: format check, test e build.
 - [x] Adaptadores iniciais Java Maven/Gradle: validate/check, test e package/build.
 - [x] Testes de contrato para detecção/planejamento e mapeamento de comandos desses ecossistemas.
+- [x] CLI pode operar em diretório externo com -ProjectPath, separando ferramenta e projeto-alvo.
 
 ## Próximas etapas prioritárias
 - [ ] Validar comandos em fixtures reais com toolchains instaladas (Go, Rust, .NET, Maven e Gradle) em Windows e Linux.
