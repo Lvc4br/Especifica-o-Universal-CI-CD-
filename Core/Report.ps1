@@ -36,7 +36,8 @@ function Export-CicdReport {
     }
     $resolvedReport = (Resolve-Path -LiteralPath $ReportPath -ErrorAction Stop).Path
     $reportDirectory = (Resolve-Path -LiteralPath (Join-Path $ProjectRoot ".cicd/reports") -ErrorAction Stop).Path
-    if (-not $resolvedReport.StartsWith($reportDirectory, [System.StringComparison]::OrdinalIgnoreCase)) {
+    $relativeReport = [System.IO.Path]::GetRelativePath($reportDirectory, $resolvedReport)
+    if ([System.IO.Path]::IsPathRooted($relativeReport) -or $relativeReport -eq ".." -or $relativeReport.StartsWith(".." + [System.IO.Path]::DirectorySeparatorChar)) {
         throw "O relatório precisa estar dentro da pasta .cicd/reports do projeto."
     }
     $report = Get-Content -LiteralPath $resolvedReport -Raw | ConvertFrom-Json -ErrorAction Stop
