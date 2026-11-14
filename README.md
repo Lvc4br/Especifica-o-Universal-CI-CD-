@@ -46,4 +46,4 @@ Scripts npm ausentes são marcados como `NOT_APPLICABLE`; eles nunca são tratad
 - Aprovar npm, Maven, Gradle, Cargo, Go ou dotnet pode executar scripts/plugins do projeto. Revise manifests e dependências.
 - O executor não é sandbox. Para código não confiável, use VM/contêiner descartável sem credenciais.
 - Mascaramento de segredos é heurístico.
-- Scanners iniciais Gitleaks e Trivy estão disponíveis via `pipeline.security`. `pipeline.delivery` cria um pacote ZIP local do código-fonte; publicação remota e deploy ainda não estão implementados. Cobertura consolidada, banco de dados, cache, paralelismo e isolamento de recursos continuam pendentes.
+- Scanners Gitleaks, Trivy, Semgrep e OSV-Scanner estão disponíveis via `pipeline.security`. `pipeline.delivery` cria um pacote ZIP local do código-fonte; publicação remota e deploy ainda não estão implementados. Cobertura consolidada, banco de dados, cache, paralelismo e isolamento de recursos continuam pendentes.
