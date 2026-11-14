@@ -1,94 +1,28 @@
 # Arquitetura do Universal CI/CD
 
-## 1. Objetivo
-
-Fornecer uma interface consistente para orquestrar ferramentas nativas de cada ecossistema, mantendo os adaptadores desacoplados do núcleo.
-
-## 2. Princípios
-
-- Modularidade: cada domínio possui responsabilidade delimitada.
-- Adaptadores nativos: preferir ferramentas consolidadas do ecossistema.
-- Detecção não é validação: reconhecer arquivos não comprova que um projeto compila ou passa nos testes.
-- Resultados honestos: etapas não executadas devem ser SKIPPED ou NOT_IMPLEMENTED, nunca PASSED.
-- Segurança por padrão: comandos externos exigem seleção explícita, validação de argumentos e registro.
-- Portabilidade: evitar dependência exclusiva de recursos do Windows no núcleo.
-
-## 3. Camadas propostas
-
+## Camadas atuais
 ~~~text
-CLI (cicd.ps1)
-    |
-    v
-Core / Orchestrator
-    |
-    +-- Config
-    +-- Detector
-    +-- Validators
-    +-- Testing
-    +-- Builder
-    +-- Security
-    +-- Delivery
-    +-- GitHub
-    +-- Reporter
-    |
-    v
-Native ecosystem tools
+cicd.ps1 (CLI)
+  |-- Core/Logger.ps1
+  |-- Core/Result.ps1
+  |-- Modules/Config/Config.ps1
+  |-- Modules/Detector/Detector.ps1
 ~~~
+A CLI carrega os módulos em ordem determinística e mantém a interface de terminal. O Core fornece logging e um contrato comum para resultados. Config administra a criação e validação estrutural do arquivo local. Detector examina arquivos e manifestos sem executar código do projeto.
 
-### CLI
+## Contrato de resultado
+`New-CicdResult` produz um objeto com `id`, `name`, `status`, `startedAt`, `finishedAt`, `durationMs`, `tool`, `command`, `exitCode`, `summary` e `artifacts`.
+Status aceitos: `PASSED`, `FAILED`, `WARNING`, `SKIPPED` e `NOT_IMPLEMENTED`. O contrato existe; a orquestração completa e o preenchimento de métricas ainda serão implementados.
+`Get-CicdExitCode` retorna 1 quando há falha, 2 quando há etapa não implementada e 0 nos demais casos.
 
-Recebe comandos, valida opções e apresenta resultados. PowerShell 7 é o primeiro frontend; a lógica de domínio deve permanecer reutilizável.
+## Configuração
+A configuração local é `.cicd/config.json`, com `schemaVersion` igual a `1.0`. `validate-config` verifica seções obrigatórias, versão do schema, nome do projeto e booleanos do pipeline. Validação formal via JSON Schema ainda está no roadmap.
 
-### Core
+## Detector
+O detector identifica linguagens e indícios de frameworks por extensões e manifestos. O resultado inclui contagem de arquivos, extensões, evidências relativas e horário da varredura. Evidência de arquivo não prova que dependências estejam instaladas ou que o projeto compile.
 
-Coordena etapas, contexto de execução, logging, erros e contratos de resultado.
-
-### Config
-
-Lê e valida .cicd/config.json. Deve preservar configurações existentes e rejeitar propriedades inválidas quando o schema estiver disponível.
-
-### Detector
-
-Identifica linguagens, frameworks, gerenciadores e ferramentas instaladas. Deve registrar evidências (arquivos/manifestos) e nível de confiança.
-
-### Validators, Testing e Builder
-
-Executam adaptadores específicos. Cada adaptador declara pré-requisitos, comandos, arquivos de saída, códigos de saída e limitações.
-
-### Security
-
-Verifica dependências, segredos e configurações. Não envia dados ou segredos para serviços externos sem autorização.
-
-### Delivery e GitHub
-
-Preparam artefatos e integração com pipelines remotos. Publicação e deploy exigem configuração e aprovação explícitas.
-
-### Reporter
-
-Produz resultados JSON e resumos humanos. Um relatório deve incluir versão da ferramenta, ambiente, horário, etapas executadas e status.
-
-## 4. Contrato de resultado
-
-Cada etapa deverá retornar, no mínimo:
-
-- id e nome da etapa;
-- status: PASSED, FAILED, WARNING, SKIPPED ou NOT_IMPLEMENTED;
-- início, término e duração;
-- ferramenta e versão, quando aplicável;
-- comando executado (sem valores secretos);
-- código de saída;
-- resumo e caminho de artefatos.
-
-## 5. Fluxo planejado
-
-1. Carregar e validar configuração.
-2. Detectar projeto e ferramentas disponíveis.
-3. Construir plano de execução.
-4. Exibir plano e obter consentimento quando houver comandos externos.
-5. Executar etapas habilitadas.
-6. Consolidar resultados e gerar relatório.
-7. Retornar código de saída coerente com o resultado.
-
-## 6. Estado atual
-
-O bootstrap inicial contém uma CLI PowerShell simples com version, init, detect e status. Ainda não há orquestrador modular, validadores, executor de comandos, testes automatizados ou pipeline de entrega.
+## Próximas camadas
+- Engine/orquestrador e plano de execução.
+- Adaptadores de validação, teste e build por ecossistema.
+- Segurança, relatórios e entrega.
+- Aprovação explícita antes de executar comandos externos ou publicar artefatos.
