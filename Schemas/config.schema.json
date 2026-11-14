@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lvc4br.github.io/Especifica-o-Universal-CI-CD-/schemas/config.schema.json",
+  "title": "Universal CI/CD configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "project", "runtime", "detection", "pipeline"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "project": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "root"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "root": { "type": "string", "minLength": 1 }
+      }
+    },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["powershell"],
+      "properties": { "powershell": { "type": "string", "minLength": 1 } }
+    },
+    "detection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["enabled", "excludeDirectories"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "excludeDirectories": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "pipeline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["check", "test", "build", "security", "delivery"],
+      "properties": {
+        "check": { "type": "boolean" },
+        "test": { "type": "boolean" },
+        "build": { "type": "boolean" },
+        "security": { "type": "boolean" },
+        "delivery": { "type": "boolean" }
+      }
+    }
+  }
+}
