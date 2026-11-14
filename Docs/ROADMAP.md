@@ -2,37 +2,32 @@
 
 ## Concluído
 - [x] CLI, configuração, validação estrutural, detecção e plano JSON.
-- [x] Executor de processos sem shell intermediário.
-- [x] Allowlist de adaptadores e aprovação explícita.
-- [x] Timeout, captura stdout/stderr, exit code e duração.
-- [x] Relatório JSON e mascaramento heurístico de segredos.
-- [x] Testes do runner: sucesso, falha, stderr, timeout, redação e allowlist.
+- [x] Executor de processos sem shell intermediário, aprovação explícita e timeout.
+- [x] Relatórios JSON, stdout/stderr, exit code e duração.
+- [x] Adaptadores iniciais Python e JavaScript/TypeScript.
+- [x] Adaptadores iniciais Go: vet, test e build.
+- [x] Adaptadores iniciais Rust: format check, test e build.
+- [x] Adaptadores iniciais C#/.NET: format check, test e build.
+- [x] Adaptadores iniciais Java Maven/Gradle: validate/check, test e package/build.
+- [x] Testes de contrato para detecção/planejamento e mapeamento de comandos desses ecossistemas.
 
 ## Próximas etapas prioritárias
-- [ ] Validação integral com motor JSON Schema.
-- [ ] Descoberta de versões e validação de dependências.
-- [ ] Testes unitários/integrados por módulo e fixtures de projetos.
-- [ ] Relatórios Markdown, histórico e sumarização.
+- [ ] Validar comandos em fixtures reais com toolchains instaladas (Go, Rust, .NET, Maven e Gradle) em Windows e Linux.
+- [ ] Suporte a wrappers (mvnw/gradlew), soluções .NET e monorepos.
+- [ ] Validação integral usando motor JSON Schema.
+- [ ] Testes unitários e integração dedicados por módulo.
+- [ ] Cobertura consolidada, relatórios Markdown/HTML e histórico.
 - [ ] Cancelamento interativo e limites de memória/CPU.
 - [ ] Sandbox real para projetos não confiáveis.
 
-## Adaptadores
-- [x] Python: Ruff e pytest (básico).
-- [x] JavaScript/TypeScript: npm lint/test (básico).
-- [ ] Java: Maven/Gradle.
-- [ ] C#: dotnet test/build.
-- [ ] Go: go test/build.
-- [ ] Rust: cargo test/build.
-- [ ] PHP, Ruby, Lua, HTML/CSS.
-- [ ] SQL com banco configurado.
+## Adaptadores ainda ausentes
+- [ ] PHP/PHPUnit/PHPStan.
+- [ ] Ruby/RSpec/RuboCop.
+- [ ] Lua.
+- [ ] HTML/CSS: validação, acessibilidade e qualidade.
+- [ ] SQL com banco configurado e fixtures isoladas.
 - [ ] Segurança: SAST, dependências, segredos e licenças.
+- [ ] Artefatos, cache, paralelismo e deploy com aprovação separada.
 
-## Build, cobertura e entrega
-- [ ] Build e manifesto de artefatos.
-- [ ] Cobertura com thresholds.
-- [ ] Integração/e2e e banco de dados.
-- [ ] Cache e paralelismo controlado.
-- [ ] GitHub Actions reutilizável e deploy com aprovação separada.
-
-## Critério
-Uma linguagem só será anunciada como suportada após adaptador real, fixture reproduzível, testes multiplataforma e documentação. Etapas ignoradas/não implementadas nunca serão aprovadas.
+## Critério de suporte
+Uma linguagem só será considerada validada após execução real de fixture reproduzível, em Windows e Linux quando aplicável. A existência de um adaptador e testes de contrato não prova, por si só, compatibilidade integral com todo projeto daquele ecossistema.
