@@ -28,3 +28,15 @@ pwsh ./cicd.ps1 run-workspaces -ProjectPath "D:\Repos\Monorepo" -Approve -Timeou
 ```
 
 O descobridor procura manifestos e projetos em subdiretórios, respeitando as exclusões configuradas. Cada projeto recebe um plano e relatório próprios. Sem `-Approve`, a execução é simulada. A configuração de pipeline da raiz é aplicada a todos os projetos encontrados; revise cada plano antes de aprovar.
+
+
+## Histórico e exportação de relatórios
+
+```powershell
+pwsh ./cicd.ps1 history -ProjectPath "D:\Projetos\MeuApp"
+pwsh ./cicd.ps1 export-report -ProjectPath "D:\Projetos\MeuApp" -ReportFormat html
+pwsh ./cicd.ps1 export-report -ProjectPath "D:\Projetos\MeuApp" -ReportFormat markdown
+pwsh ./cicd.ps1 export-report -ProjectPath "D:\Projetos\MeuApp" -ReportPath "D:\Projetos\MeuApp\.cicd\reports\20261114-run.json" -ReportFormat html
+```
+
+Sem `-ReportPath`, exporta a execução mais recente. O arquivo de origem deve estar dentro de `.cicd/reports/`.
