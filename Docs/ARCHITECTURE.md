@@ -8,6 +8,7 @@ cicd.ps1
   |-- Modules/Config/Config.ps1
   |-- Modules/Detector/Detector.ps1
   |-- Modules/Engine/Plan.ps1
+  |-- Modules/Adapters/Registry.ps1
   |-- Modules/Engine/Executor.ps1
 ```
 
@@ -22,6 +23,9 @@ cicd.ps1
 
 ## Processo externo
 `Core/Process.ps1` usa `System.Diagnostics.Process`, `UseShellExecute = false` e `ArgumentList`. Captura stdout/stderr, exit code, timestamps e duração, com timeout e tentativa de encerrar a árvore de processos.
+
+## Registro de adaptadores
+O arquivo `Modules/Adapters/Registry.ps1` centraliza o mapeamento entre IDs de etapa e executáveis/argumentos fixos. O executor não aceita comandos arbitrários vindos da configuração ou do plano. Para adicionar um adaptador, o mapeamento e o planejador precisam ser atualizados em conjunto.
 
 ## Allowlist atual
 - `python-lint`: `ruff check .`
