@@ -31,6 +31,13 @@ function Get-CicdExecutionPlan {
     $hasRust = $technologies -contains "Rust"
     $hasDotnet = $technologies -contains "C#"
     $hasJava = $technologies -contains "Java"
+    $hasPhp = $technologies -contains "PHP"
+    $hasRuby = $technologies -contains "Ruby"
+    $hasLua = $technologies -contains "Lua"
+    $hasCpp = $technologies -contains "C/C++"
+    $hasKotlin = $technologies -contains "Kotlin"
+    $hasSwift = $technologies -contains "Swift"
+    $hasDart = $technologies -contains "Dart"
     $files = @(Get-ChildItem -LiteralPath $ProjectRoot -File -Recurse -ErrorAction SilentlyContinue)
     $names = @($files | ForEach-Object { $_.Name })
     $javaTool = if ($names -contains "pom.xml") { "mvn" } elseif (($names -contains "build.gradle") -or ($names -contains "build.gradle.kts")) { "gradle" } else { "" }
@@ -56,6 +63,13 @@ function Get-CicdExecutionPlan {
     if ($hasRust) { $toolNames.Add("cargo"); $toolNames.Add("rustfmt") }
     if ($hasDotnet) { $toolNames.Add("dotnet") }
     if ($javaTool) { $toolNames.Add($javaTool) }
+    if ($hasPhp) { $toolNames.Add("php"); $toolNames.Add("composer") }
+    if ($hasRuby) { $toolNames.Add("ruby"); $toolNames.Add("bundle") }
+    if ($hasLua) { $toolNames.Add("lua"); $toolNames.Add("luacheck"); $toolNames.Add("busted") }
+    if ($hasCpp) { $toolNames.Add("cmake"); $toolNames.Add("ctest") }
+    if ($hasKotlin) { $toolNames.Add("gradle") }
+    if ($hasSwift) { $toolNames.Add("swift") }
+    if ($hasDart) { $toolNames.Add("dart") }
     $checks = @(
         @{ enabled=[bool]$Config.pipeline.check; id="python-lint"; name="Python static checks"; category="check"; technology="Python"; tool="ruff"; command="ruff check ."; applies=$hasPython },
         @{ enabled=[bool]$Config.pipeline.test; id="python-tests"; name="Python tests"; category="test"; technology="Python"; tool="pytest"; command="pytest"; applies=$hasPython },
@@ -63,6 +77,27 @@ function Get-CicdExecutionPlan {
         @{ enabled=[bool]$Config.pipeline.check; id="js-lint"; name="JavaScript/TypeScript lint"; category="check"; technology="JavaScript/TypeScript"; tool="npm"; command="npm run lint"; applies=$hasJs; scriptName="lint" },
         @{ enabled=[bool]$Config.pipeline.test; id="js-tests"; name="JavaScript/TypeScript tests"; category="test"; technology="JavaScript/TypeScript"; tool="npm"; command="npm test"; applies=$hasJs; scriptName="test" },
         @{ enabled=[bool]$Config.pipeline.build; id="js-build"; name="JavaScript/TypeScript build"; category="build"; technology="JavaScript/TypeScript"; tool="npm"; command="npm run build"; applies=$hasJs; scriptName="build" },
+        @{ enabled=[bool]$Config.pipeline.check; id="php-lint"; name="PHP static analysis"; category="check"; technology="PHP"; tool="composer"; command="composer run-script lint"; applies=($hasPhp -and (Test-Path (Join-Path $ProjectRoot "composer.json"))) },
+        @{ enabled=[bool]$Config.pipeline.test; id="php-tests"; name="PHP tests"; category="test"; technology="PHP"; tool="composer"; command="composer run-script test"; applies=($hasPhp -and (Test-Path (Join-Path $ProjectRoot "composer.json"))) },
+        @{ enabled=[bool]$Config.pipeline.build; id="php-build"; name="PHP dependency validation"; category="build"; technology="PHP"; tool="composer"; command="composer validate --no-check-publish"; applies=($hasPhp -and (Test-Path (Join-Path $ProjectRoot "composer.json"))) },
+        @{ enabled=[bool]$Config.pipeline.check; id="ruby-lint"; name="Ruby lint"; category="check"; technology="Ruby"; tool="bundle"; command="bundle exec rubocop"; applies=($hasRuby -and (Test-Path (Join-Path $ProjectRoot "Gemfile"))) },
+        @{ enabled=[bool]$Config.pipeline.test; id="ruby-tests"; name="Ruby tests"; category="test"; technology="Ruby"; tool="bundle"; command="bundle exec rspec"; applies=($hasRuby -and (Test-Path (Join-Path $ProjectRoot "Gemfile"))) },
+        @{ enabled=[bool]$Config.pipeline.build; id="ruby-build"; name="Ruby dependency check"; category="build"; technology="Ruby"; tool="bundle"; command="bundle check"; applies=($hasRuby -and (Test-Path (Join-Path $ProjectRoot "Gemfile"))) },
+        @{ enabled=[bool]$Config.pipeline.check; id="lua-lint"; name="Lua lint"; category="check"; technology="Lua"; tool="luacheck"; command="luacheck ."; applies=$hasLua },
+        @{ enabled=[bool]$Config.pipeline.test; id="lua-tests"; name="Lua tests"; category="test"; technology="Lua"; tool="busted"; command="busted"; applies=$hasLua },
+        @{ enabled=[bool]$Config.pipeline.build; id="lua-build"; name="Lua syntax validation"; category="build"; technology="Lua"; tool="lua"; command="lua -e \"assert(loadfile('init.lua'))\""; applies=$false },
+        @{ enabled=[bool]$Config.pipeline.check; id="cpp-configure"; name="C/C++ configure"; category="check"; technology="C/C++"; tool="cmake"; command="cmake -S . -B build"; applies=($hasCpp -and (Test-Path (Join-Path $ProjectRoot "CMakeLists.txt"))) },
+        @{ enabled=[bool]$Config.pipeline.test; id="cpp-tests"; name="C/C++ tests"; category="test"; technology="C/C++"; tool="ctest"; command="ctest --test-dir build --output-on-failure"; applies=($hasCpp -and (Test-Path (Join-Path $ProjectRoot "CMakeLists.txt"))) },
+        @{ enabled=[bool]$Config.pipeline.build; id="cpp-build"; name="C/C++ build"; category="build"; technology="C/C++"; tool="cmake"; command="cmake --build build --parallel"; applies=($hasCpp -and (Test-Path (Join-Path $ProjectRoot "CMakeLists.txt"))) },
+        @{ enabled=[bool]$Config.pipeline.check; id="kotlin-check"; name="Kotlin checks"; category="check"; technology="Kotlin"; tool="gradle"; command="gradle check"; applies=($hasKotlin -and ($names -contains "build.gradle" -or $names -contains "build.gradle.kts")) },
+        @{ enabled=[bool]$Config.pipeline.test; id="kotlin-tests"; name="Kotlin tests"; category="test"; technology="Kotlin"; tool="gradle"; command="gradle test"; applies=($hasKotlin -and ($names -contains "build.gradle" -or $names -contains "build.gradle.kts")) },
+        @{ enabled=[bool]$Config.pipeline.build; id="kotlin-build"; name="Kotlin build"; category="build"; technology="Kotlin"; tool="gradle"; command="gradle build"; applies=($hasKotlin -and ($names -contains "build.gradle" -or $names -contains "build.gradle.kts")) },
+        @{ enabled=[bool]$Config.pipeline.check; id="swift-check"; name="Swift checks"; category="check"; technology="Swift"; tool="swift"; command="swift package diagnose"; applies=($hasSwift -and (Test-Path (Join-Path $ProjectRoot "Package.swift"))) },
+        @{ enabled=[bool]$Config.pipeline.test; id="swift-tests"; name="Swift tests"; category="test"; technology="Swift"; tool="swift"; command="swift test"; applies=($hasSwift -and (Test-Path (Join-Path $ProjectRoot "Package.swift"))) },
+        @{ enabled=[bool]$Config.pipeline.build; id="swift-build"; name="Swift build"; category="build"; technology="Swift"; tool="swift"; command="swift build"; applies=($hasSwift -and (Test-Path (Join-Path $ProjectRoot "Package.swift"))) },
+        @{ enabled=[bool]$Config.pipeline.check; id="dart-check"; name="Dart analysis"; category="check"; technology="Dart"; tool="dart"; command="dart analyze"; applies=($hasDart -and (Test-Path (Join-Path $ProjectRoot "pubspec.yaml"))) },
+        @{ enabled=[bool]$Config.pipeline.test; id="dart-tests"; name="Dart tests"; category="test"; technology="Dart"; tool="dart"; command="dart test"; applies=($hasDart -and (Test-Path (Join-Path $ProjectRoot "pubspec.yaml"))) },
+        @{ enabled=[bool]$Config.pipeline.build; id="dart-build"; name="Dart build"; category="build"; technology="Dart"; tool="dart"; command="dart compile exe bin/main.dart"; applies=($hasDart -and (Test-Path (Join-Path $ProjectRoot "bin/main.dart"))) },
         @{ enabled=[bool]$Config.pipeline.check; id="go-vet"; name="Go vet"; category="check"; technology="Go"; tool="go"; command="go vet ./..."; applies=$hasGo },
         @{ enabled=[bool]$Config.pipeline.test; id="go-tests"; name="Go tests"; category="test"; technology="Go"; tool="go"; command="go test ./..."; applies=$hasGo },
         @{ enabled=[bool]$Config.pipeline.build; id="go-build"; name="Go build"; category="build"; technology="Go"; tool="go"; command="go build ./..."; applies=$hasGo },
