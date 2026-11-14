@@ -14,3 +14,11 @@
 ## [0.4.0-dev] - 2026-11-14
 - Runner de processos com argumentos separados, timeout e captura stdout/stderr.
 - Executor allowlisted, aprovação explícita e relatórios JSON.
+
+## 0.5.0-dev — integração Python e JavaScript
+
+- Adicionado build de pacotes Python por `python -m build`, condicionado à presença de `[build-system]` em `pyproject.toml`.
+- Removido o comportamento permissivo `npm --if-present`; scripts npm inexistentes são `NOT_APPLICABLE`.
+- Adicionadas fixtures com testes e builds reais para Python e JavaScript.
+- CI agora executa pipelines completos dos dois ecossistemas e valida os resultados no relatório JSON.
+- Smoke tests cobrem a detecção de scripts npm ausentes e o planejamento do build Python.
