@@ -8,6 +8,9 @@ function Get-CicdAdapter {
         "js-lint" { return [pscustomobject]@{ tool="npm"; arguments=@("run", "lint") } }
         "js-tests" { return [pscustomobject]@{ tool="npm"; arguments=@("test") } }
         "js-build" { return [pscustomobject]@{ tool="npm"; arguments=@("run", "build") } }
+        "html-lint" { return [pscustomobject]@{ tool="htmlhint"; arguments=@(".") } }
+        "css-lint" { return [pscustomobject]@{ tool="stylelint"; arguments=@("**/*.{css,scss,sass}") } }
+        "sql-lint" { return [pscustomobject]@{ tool="sqlfluff"; arguments=@("lint", ".") } }
         "security-secrets" { return [pscustomobject]@{ tool="gitleaks"; arguments=@("dir", "--redact", "--exit-code", "1", ".") } }
         "security-vulnerabilities" { return [pscustomobject]@{ tool="trivy"; arguments=@("fs", "--scanners", "vuln,misconfig", "--exit-code", "1", "--no-progress", ".") } }
         "php-lint" { return [pscustomobject]@{ tool="composer"; arguments=@("run-script", "lint") } }
@@ -54,6 +57,32 @@ function Get-CicdAdapter {
         default { return $null }
     }
 }
+
+function New-CicdSourceArtifact {
+    [CmdletBinding()]
+    param([Parameter(Mandatory)][string]$ProjectRoot)
+    Add-Type -AssemblyName System.IO.Compression.FileSystem
+    $artifactDirectory = Join-Path $ProjectRoot ".cicd/artifacts"
+    if (-not (Test-Path -LiteralPath $artifactDirectory)) { New-Item -ItemType Directory -Path $artifactDirectory -Force | Out-Null }
+    $stamp = Get-Date -Format "yyyyMMdd-HHmmss-fff"
+    $artifactPath = Join-Path $artifactDirectory "$stamp-source.zip"
+    $excluded = @(".git", ".cicd", "node_modules", ".venv", "venv", "bin", "obj", "dist", "build", "target", "__pycache__", ".pytest_cache")
+    $files = @(Get-ChildItem -LiteralPath $ProjectRoot -File -Recurse -ErrorAction Stop | Where-Object {
+        $relative = [System.IO.Path]::GetRelativePath($ProjectRoot, $_.FullName)
+        $segments = $relative -split '[/\\]'
+        -not ($segments | Where-Object { $_ -in $excluded })
+    })
+    if ($files.Count -eq 0) { throw "Nenhum arquivo elegível encontrado para empacotar." }
+    $archive = [System.IO.Compression.ZipFile]::Open($artifactPath, [System.IO.Compression.ZipArchiveMode]::Create)
+    try {
+        foreach ($file in $files) {
+            $relative = [System.IO.Path]::GetRelativePath($ProjectRoot, $file.FullName).Replace("\\", "/")
+            [void][System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($archive, $file.FullName, $relative, [System.IO.Compression.CompressionLevel]::Optimal)
+        }
+    } finally { $archive.Dispose() }
+    return $artifactPath
+}
+
 function Invoke-CicdPipeline {
     [CmdletBinding()]
     param([Parameter(Mandatory)][string]$ProjectRoot,[Parameter(Mandatory)][object]$Config,[switch]$Approve,[ValidateRange(1,86400)][int]$TimeoutSeconds=600)
@@ -65,9 +94,20 @@ function Invoke-CicdPipeline {
         return [pscustomobject]@{ approved=$false; performed=$false; plan=$plan; results=@($results); exitCode=0; reportPath=$null }
     }
     foreach ($step in $plan.steps) {
-        if ($step.status -ne "PLANNED" -or $step.category -notin @("check","test","build","security")) {
+        if ($step.status -ne "PLANNED" -or $step.category -notin @("check","test","build","security","delivery")) {
             $status = switch ($step.status) { "BLOCKED" {"BLOCKED"} "DISABLED" {"SKIPPED"} "NOT_APPLICABLE" {"SKIPPED"} "NOT_IMPLEMENTED" {"NOT_IMPLEMENTED"} default {"SKIPPED"} }
             $results.Add((New-CicdResult -Id $step.id -Name $step.name -Status $status -Summary $step.reason))
+            continue
+        }
+        if ($step.id -eq "delivery-source-archive") {
+            try {
+                $artifact = New-CicdSourceArtifact -ProjectRoot $ProjectRoot
+                $deliveryResult = New-CicdResult -Id $step.id -Name $step.name -Status "PASSED" -Summary "Pacote de código-fonte criado." -Tool "internal" -Command "Create source archive"
+                $deliveryResult.artifacts = @($artifact)
+                $results.Add($deliveryResult)
+            } catch {
+                $results.Add((New-CicdResult -Id $step.id -Name $step.name -Status "FAILED" -Summary "Falha ao criar artefato: $($_.Exception.Message)" -Tool "internal"))
+            }
             continue
         }
         $adapter = Get-CicdAdapter -StepId $step.id -ProjectRoot $ProjectRoot
