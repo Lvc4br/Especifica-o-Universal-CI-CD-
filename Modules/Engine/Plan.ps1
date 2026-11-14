@@ -16,8 +16,8 @@ function New-CicdPlanStep {
         [Parameter(Mandatory)][string]$Name,
         [Parameter(Mandatory)][string]$Category,
         [Parameter(Mandatory)][string]$Technology,
-        [Parameter(Mandatory)][string]$Tool,
-        [Parameter(Mandatory)][string]$Command,
+        [Parameter(Mandatory)][AllowEmptyString()][string]$Tool,
+        [Parameter(Mandatory)][AllowEmptyString()][string]$Command,
         [Parameter(Mandatory)][string]$Status,
         [Parameter(Mandatory)][string]$Reason
     )
