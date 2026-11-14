@@ -37,7 +37,8 @@ Uso: pwsh ./cicd.ps1 <comando> [-ProjectPath <diretório>]
   plan             Gera plano de pipeline sem executar comandos
   run              Executa etapas allowlisted (exige -Approve)
   discover-projects Localiza projetos em um workspace/monorepo
-  run-workspaces   Planeja ou executa projetos encontrados\n  -ProjectPath     Diretório do projeto-alvo (padrão: diretório atual)
+  run-workspaces   Planeja ou executa projetos encontrados
+  -ProjectPath     Diretório do projeto-alvo (padrão: diretório atual)
   status           Exibe estado da configuração e relatórios
   help             Exibe esta ajuda
 "@
