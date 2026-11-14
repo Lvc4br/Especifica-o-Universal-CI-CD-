@@ -1,0 +1,21 @@
+stages:
+  - validate
+  - pipeline
+
+variables:
+  POWERSHELL_TELEMETRY_OPTOUT: "1"
+
+universal-cicd:
+  stage: pipeline
+  image: mcr.microsoft.com/powershell:7.4-ubuntu-22.04
+  script:
+    - pwsh ./cicd.ps1 init -ProjectPath "$CI_PROJECT_DIR"
+    - pwsh ./cicd.ps1 validate-config -ProjectPath "$CI_PROJECT_DIR"
+    - pwsh ./cicd.ps1 plan -ProjectPath "$CI_PROJECT_DIR"
+    - pwsh ./cicd.ps1 run -ProjectPath "$CI_PROJECT_DIR" -Approve -TimeoutSeconds 1800
+  artifacts:
+    when: always
+    paths:
+      - .cicd/reports/
+      - .cicd/artifacts/
+    expire_in: 14 days
