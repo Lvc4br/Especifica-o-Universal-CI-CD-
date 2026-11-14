@@ -14,6 +14,6 @@ pwsh ./cicd.ps1 run -ProjectPath "D:\Projetos\MeuApp" -Approve -TimeoutSeconds 9
 `-ProjectPath` aponta para o projeto-alvo. Quando omitido, usa o diretório de trabalho atual. A configuração, planos e relatórios são criados dentro do projeto-alvo; módulos da ferramenta são carregados da pasta onde `cicd.ps1` está instalado.
 
 ## Adaptadores
-Python (Ruff/pytest); JavaScript/TypeScript (npm lint/test/build); Go (vet/test/build); Rust (fmt/test/build); C#/.NET (format/test/build); Java Maven/Gradle (validate/check/test/package/build). As ferramentas precisam estar no PATH. Wrappers, monorepos e projetos complexos ainda não têm suporte completo.
+Python (Ruff/pytest/build); JavaScript/TypeScript (scripts npm declarados); Go; Rust; C#/.NET; Java Maven/Gradle; PHP/Composer; Ruby/Bundler; Lua; C/C++/CMake; Kotlin/Gradle; Swift; Dart. As ferramentas precisam estar no PATH. Wrappers, monorepos e projetos complexos ainda não têm suporte completo.
 
 Sem `-Approve`, nenhuma etapa executa. Revise os comandos e o código de build antes de autorizar.
