@@ -25,10 +25,10 @@ cicd.ps1
 ## Allowlist atual
 - `python-lint`: `ruff check .`
 - `python-tests`: `pytest`
-- `js-lint`: `npm run lint --if-present`
-- `js-tests`: `npm test -- --run`
+- `js-lint`: `npm run lint` (somente quando declarado no package.json)
+- `js-tests`: `npm test` (somente quando declarado no package.json)
 
-O executor não lê comandos arbitrários do plano/configuração. Scripts npm são código do projeto e serão executados após aprovação explícita.
+O executor não lê comandos arbitrários do plano/configuração. Scripts npm são código do projeto e serão executados após aprovação explícita. PHP/Composer, Ruby/Bundler, Lua, C/C++/CMake, Kotlin/Gradle, Swift e Dart possuem adaptadores iniciais com comandos fixos; a existência do adaptador não significa validação real da integração.
 
 ## Limites
 Detecção é heurística. O executor não isola processos em sandbox. Builds, segurança, cobertura, bancos de dados e delivery ainda não possuem adaptadores. O validador ainda não usa motor JSON Schema.
