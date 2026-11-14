@@ -17,3 +17,14 @@ pwsh ./cicd.ps1 run -ProjectPath "D:\Projetos\MeuApp" -Approve -TimeoutSeconds 9
 Python; JavaScript/TypeScript; Go; Rust; C#/.NET; Java Maven/Gradle; PHP/Composer; Ruby/Bundler; Lua; C/C++/CMake; Kotlin/Gradle; Swift; Dart; HTML/HTMLHint; CSS/Stylelint; SQL/SQLFluff. A segurança usa Gitleaks e Trivy; delivery cria ZIP local. As ferramentas precisam estar no PATH. Wrappers, monorepos e projetos complexos ainda não têm suporte completo.
 
 Sem `-Approve`, nenhuma etapa executa. Revise os comandos e o código de build antes de autorizar.
+
+
+## Workspaces e monorepos
+
+```powershell
+pwsh ./cicd.ps1 discover-projects -ProjectPath "D:\Repos\Monorepo"
+pwsh ./cicd.ps1 run-workspaces -ProjectPath "D:\Repos\Monorepo"
+pwsh ./cicd.ps1 run-workspaces -ProjectPath "D:\Repos\Monorepo" -Approve -TimeoutSeconds 1800
+```
+
+O descobridor procura manifestos e projetos em subdiretórios, respeitando as exclusões configuradas. Cada projeto recebe um plano e relatório próprios. Sem `-Approve`, a execução é simulada. A configuração de pipeline da raiz é aplicada a todos os projetos encontrados; revise cada plano antes de aprovar.
