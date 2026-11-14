@@ -60,7 +60,7 @@ try {
 
     . (Join-Path $tempRoot "Core/Process.ps1")
     . (Join-Path $tempRoot "Modules/Engine/Executor.ps1")
-    $pwsh = (Get-Command pwsh -CommandType Application).Source
+    $pwsh = Join-Path $PSHOME $(if ($IsWindows) { "pwsh.exe" } else { "pwsh" })
     $successScript = Join-Path $tempRoot "process-success.ps1"
     Set-Content -LiteralPath $successScript -Value 'Write-Output "runner-ok"; exit 0' -Encoding utf8
     $processOk = Invoke-CicdProcess -Executable $pwsh -Arguments @("-NoProfile", "-File", $successScript) -WorkingDirectory $tempRoot -TimeoutSeconds 15
