@@ -1,18 +1,20 @@
 # Changelog
 
+## [0.4.0-dev] - 2026-11-14
+- Runner de processos com argumentos separados, timeout e captura stdout/stderr.
+- Executor com allowlist de adaptadores Python e npm.
+- Aprovação explícita via `run -Approve`; simulação como padrão.
+- Relatórios JSON com exit code, timestamps, duração e redação heurística de segredos.
+- Smoke tests para sucesso, falha, stderr, timeout, redação e allowlist.
+- Documentadas limitações de segurança e adaptadores ausentes.
+
 ## [0.3.0-dev] - 2026-11-14
-- Adicionado planejador de pipeline sem execução de comandos.
-- Inspeção da disponibilidade de ferramentas no PATH.
-- Plano JSON salvo em .cicd/plans/latest-plan.json.
+- Planejador sem execução, disponibilidade de ferramentas e plano JSON.
 - Estados PLANNED, BLOCKED, DISABLED, NOT_APPLICABLE e NOT_IMPLEMENTED.
-- Adicionado JSON Schema formal da configuração como contrato documentado.
-- CI e smoke tests ampliados.
+- JSON Schema documentado.
 
 ## [0.2.0-dev] - 2026-11-14
-- Separação da CLI, Core, Config e Detector em módulos.
-- Logger central e contrato padronizado de resultados.
-- Criação e validação estrutural da configuração.
-- Detecção com evidências e exclusões configuráveis.
+- Módulos Core, Config e Detector; logger, resultados e validação estrutural.
 
 ## [0.1.0-dev] - 2026-11-14
 - Bootstrap inicial, CLI PowerShell e documentação.
