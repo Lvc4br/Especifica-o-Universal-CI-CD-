@@ -16,7 +16,7 @@ try {
     }
     $scriptPath = Join-Path $tempRoot "cicd.ps1"
     $version = & pwsh -NoProfile -File $scriptPath version 2>&1 | Out-String
-    Assert-True ($version -match "0[.]4[.]0-dev") "version must report 0.3.0-dev"
+    Assert-True ($version -match "0[.]5[.]0-dev") "version must report 0.5.0-dev"
     & pwsh -NoProfile -File $scriptPath init
     $configPath = Join-Path $tempRoot ".cicd/config.json"
     Assert-True (Test-Path -LiteralPath $configPath) "init must create config"
@@ -32,10 +32,16 @@ try {
         project = @{ name = "smoke"; root = "." }
         runtime = @{ powershell = "7.2+" }
         detection = @{ enabled = $true; excludeDirectories = @(".git", ".cicd", "node_modules") }
-        pipeline = @{ check = $true; test = $true; build = $false; security = $false; delivery = $false }
+        pipeline = @{ check = $true; test = $true; build = $true; security = $false; delivery = $false }
     }
     Set-Content -LiteralPath $configPath -Value ($validConfig | ConvertTo-Json -Depth 5) -Encoding utf8
     Set-Content -LiteralPath (Join-Path $tempRoot "sample.py") -Value "print('smoke')" -Encoding utf8
+    Set-Content -LiteralPath (Join-Path $tempRoot "go.mod") -Value "module fixture" -Encoding utf8
+    Set-Content -LiteralPath (Join-Path $tempRoot "main.go") -Value "package main" -Encoding utf8
+    Set-Content -LiteralPath (Join-Path $tempRoot "Cargo.toml") -Value "[package]" -Encoding utf8
+    Set-Content -LiteralPath (Join-Path $tempRoot "main.rs") -Value "fn main() {}" -Encoding utf8
+    Set-Content -LiteralPath (Join-Path $tempRoot "Example.cs") -Value "public class Example {}" -Encoding utf8
+    Set-Content -LiteralPath (Join-Path $tempRoot "pom.xml") -Value "<project></project>" -Encoding utf8
     $detection = & pwsh -NoProfile -File $scriptPath detect 2>&1 | Out-String
     Assert-True ($detection -match "Python") "detect must identify Python"
     Assert-True ($detection -match "sample[.]py") "detect must print evidence"
@@ -46,7 +52,11 @@ try {
     Assert-True (Test-Path -LiteralPath $planPath) "plan must persist JSON"
     $plan = Get-Content -LiteralPath $planPath -Raw | ConvertFrom-Json
     Assert-True (-not $plan.execution.performed) "plan execution flag must remain false"
-    Assert-True ($plan.steps.Count -ge 5) "plan must include configured and unsupported stages"
+    Assert-True ($plan.steps.Count -ge 15) "plan must include language-specific check/test/build stages"
+    foreach ($stageId in @("go-vet", "go-tests", "go-build", "rust-format", "rust-tests", "rust-build", "dotnet-format", "dotnet-tests", "dotnet-build", "java-check", "java-tests", "java-build")) {
+        Assert-True (@($plan.steps | Where-Object { $_.id -eq $stageId }).Count -eq 1) "plan must include adapter stage"
+    }
+    Assert-True ($plan.planVersion -eq "0.5.0-dev") "plan must report current version"
     Assert-True (@($plan.steps | Where-Object { $_.executed }).Count -eq 0) "no step may be executed by planner"
     Assert-True (@($plan.steps | Where-Object { $_.id -eq "python-tests" }).Count -eq 1) "python test stage must be represented"
     $status = & pwsh -NoProfile -File $scriptPath status 2>&1 | Out-String
@@ -82,8 +92,12 @@ try {
 
     $redacted = Protect-CicdOutput -Text "token=supersecret authorization: Bearer abcdefghijklmnop"
     Assert-True ($redacted -notmatch "supersecret|abcdefghijklmnop") "report output must redact common secrets"
-    Assert-True ((Get-CicdAdapter -StepId "python-tests").tool -eq "pytest") "known adapter must resolve from fixed allowlist"
-    Assert-True ($null -eq (Get-CicdAdapter -StepId "arbitrary-command")) "unknown command must not resolve to an adapter"
+    Assert-True ((Get-CicdAdapter -StepId "python-tests" -ProjectRoot $tempRoot).tool -eq "pytest") "known adapter must resolve from fixed allowlist"
+    Assert-True ((Get-CicdAdapter -StepId "go-tests" -ProjectRoot $tempRoot).arguments -join " " -eq "test ./...") "Go test adapter must use canonical test command"
+    Assert-True ((Get-CicdAdapter -StepId "rust-tests" -ProjectRoot $tempRoot).arguments -join " " -eq "test --workspace") "Rust test adapter must target workspace"
+    Assert-True ((Get-CicdAdapter -StepId "dotnet-tests" -ProjectRoot $tempRoot).arguments -join " " -eq "test") ".NET test adapter must use dotnet test"
+    Assert-True ((Get-CicdAdapter -StepId "java-tests" -ProjectRoot $tempRoot).tool -eq "mvn") "Java adapter must select Maven from pom.xml"
+    Assert-True ($null -eq (Get-CicdAdapter -StepId "arbitrary-command" -ProjectRoot $tempRoot)) "unknown command must not resolve to an adapter"
 
     Write-Host "Smoke tests: PASSED"
 } finally {
