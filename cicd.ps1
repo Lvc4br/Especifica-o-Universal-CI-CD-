@@ -4,31 +4,37 @@ param(
     [ValidateSet("version", "init", "detect", "status", "validate-config", "plan", "run", "help")]
     [string]$Command = "help",
     [switch]$Approve,
-    [ValidateRange(1, 86400)][int]$TimeoutSeconds = 600
+    [ValidateRange(1, 86400)][int]$TimeoutSeconds = 600,
+    [string]$ProjectPath = "."
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
-$script:ProjectRoot = $PSScriptRoot
+$script:ToolRoot = $PSScriptRoot
+if ([System.IO.Path]::IsPathRooted($ProjectPath)) {
+    $script:ProjectRoot = [System.IO.Path]::GetFullPath($ProjectPath)
+} else {
+    $script:ProjectRoot = [System.IO.Path]::GetFullPath((Join-Path (Get-Location).Path $ProjectPath))
+}
 $script:CicdRoot = Join-Path $script:ProjectRoot ".cicd"
 $script:ConfigPath = Join-Path $script:CicdRoot "config.json"
 $script:Version = "0.5.0-dev"
-. (Join-Path $PSScriptRoot "Core/Logger.ps1")
-. (Join-Path $PSScriptRoot "Core/Result.ps1")
-. (Join-Path $PSScriptRoot "Modules/Config/Config.ps1")
-. (Join-Path $PSScriptRoot "Modules/Detector/Detector.ps1")
-. (Join-Path $PSScriptRoot "Modules/Engine/Plan.ps1")
-. (Join-Path $PSScriptRoot "Core/Process.ps1")
-. (Join-Path $PSScriptRoot "Modules/Engine/Executor.ps1")
+. (Join-Path $script:ToolRoot "Core/Logger.ps1")
+. (Join-Path $script:ToolRoot "Core/Result.ps1")
+. (Join-Path $script:ToolRoot "Modules/Config/Config.ps1")
+. (Join-Path $script:ToolRoot "Modules/Detector/Detector.ps1")
+. (Join-Path $script:ToolRoot "Modules/Engine/Plan.ps1")
+. (Join-Path $script:ToolRoot "Core/Process.ps1")
+. (Join-Path $script:ToolRoot "Modules/Engine/Executor.ps1")
 function Show-Help {
 @"
 Universal CI/CD $script:Version
-Uso: pwsh ./cicd.ps1 <comando>
+Uso: pwsh ./cicd.ps1 <comando> [-ProjectPath <diretório>]
   version          Exibe a versão
   init             Cria configuração sem sobrescrever
   detect           Detecta tecnologias e apresenta evidências
   validate-config  Valida a configuração local
   plan             Gera plano de pipeline sem executar comandos
-  run              Executa etapas allowlisted (exige -Approve)
+  run              Executa etapas allowlisted (exige -Approve)\n  -ProjectPath     Diretório do projeto-alvo (padrão: diretório atual)
   status           Exibe estado da configuração e relatórios
   help             Exibe esta ajuda
 "@
