@@ -90,7 +90,7 @@ function Invoke-CicdPipeline {
     param([Parameter(Mandatory)][string]$ProjectRoot,[Parameter(Mandatory)][object]$Config,[switch]$Approve,[ValidateRange(1,86400)][int]$TimeoutSeconds=600)
     $plan = Get-CicdExecutionPlan -ProjectRoot $ProjectRoot -Config $Config
     $results = [System.Collections.Generic.List[object]]::new()
-    $planned = @($plan.steps | Where-Object { $_.status -eq "PLANNED" -and $_.category -in @("check","test","build","security") })
+    $planned = @($plan.steps | Where-Object { $_.status -eq "PLANNED" -and $_.category -in @("check","test","build","security","delivery") })
     if (-not $Approve) {
         foreach ($step in $planned) { $results.Add((New-CicdResult -Id $step.id -Name $step.name -Status "SKIPPED" -Summary "Aguardando aprovação explícita.")) }
         return [pscustomobject]@{ approved=$false; performed=$false; plan=$plan; results=@($results); exitCode=0; reportPath=$null }
