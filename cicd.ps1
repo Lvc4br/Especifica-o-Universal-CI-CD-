@@ -1,11 +1,13 @@
  [CmdletBinding()]
 param(
     [Parameter(Position = 0)]
-    [ValidateSet("version", "init", "detect", "status", "validate-config", "plan", "run", "discover-projects", "run-workspaces", "help")]
+    [ValidateSet("version", "init", "detect", "status", "validate-config", "plan", "run", "discover-projects", "run-workspaces", "history", "export-report", "help")]
     [string]$Command = "help",
     [switch]$Approve,
     [ValidateRange(1, 86400)][int]$TimeoutSeconds = 600,
-    [string]$ProjectPath = "."
+    [string]$ProjectPath = ".",
+    [string]$ReportPath,
+    [ValidateSet("html","markdown")][string]$ReportFormat = "html"
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
@@ -24,6 +26,7 @@ $script:Version = "0.5.0-dev"
 . (Join-Path $script:ToolRoot "Modules/Detector/Detector.ps1")
 . (Join-Path $script:ToolRoot "Modules/Engine/Plan.ps1")
 . (Join-Path $script:ToolRoot "Core/Process.ps1")
+. (Join-Path $script:ToolRoot "Core/Report.ps1")
 . (Join-Path $script:ToolRoot "Modules/Engine/Executor.ps1")
 . (Join-Path $script:ToolRoot "Modules/Engine/Workspace.ps1")
 function Show-Help {
@@ -38,6 +41,8 @@ Uso: pwsh ./cicd.ps1 <comando> [-ProjectPath <diretório>]
   run              Executa etapas allowlisted (exige -Approve)
   discover-projects Localiza projetos em um workspace/monorepo
   run-workspaces   Planeja ou executa projetos encontrados
+  history          Lista o histórico de execuções
+  export-report    Exporta relatório para HTML ou Markdown
   -ProjectPath     Diretório do projeto-alvo (padrão: diretório atual)
   status           Exibe estado da configuração e relatórios
   help             Exibe esta ajuda
@@ -122,6 +127,15 @@ function Invoke-WorkspaceRun {
     Write-Host "Projetos processados: $($execution.projectCount)"
     if ($execution.exitCode -ne 0) { exit $execution.exitCode }
 }
+function Show-RunHistory {
+    $reports = @(Get-CicdRunHistory -ProjectRoot $script:ProjectRoot)
+    if ($reports.Count -eq 0) { Write-Host "Nenhuma execução registrada."; return }
+    $reports | Format-Table generatedAt, project, exitCode, resultCount, path -AutoSize
+}
+function Export-LatestReport {
+    $path = Export-CicdReport -ProjectRoot $script:ProjectRoot -ReportPath $ReportPath -Format $ReportFormat
+    Write-CicdLog -Level INFO -Message "Relatório exportado: $path"
+}
 function Show-Status {
     Write-Host "Universal CI/CD - status local"
     Write-Host "Raiz: $script:ProjectRoot"
@@ -150,6 +164,8 @@ try {
         "run" { Invoke-Run }
         "discover-projects" { Show-WorkspaceProjects }
         "run-workspaces" { Invoke-WorkspaceRun }
+        "history" { Show-RunHistory }
+        "export-report" { Export-LatestReport }
         "status" { Show-Status }
         default { Show-Help }
     }
