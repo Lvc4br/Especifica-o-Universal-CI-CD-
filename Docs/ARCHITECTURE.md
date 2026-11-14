@@ -1,28 +1,27 @@
-# Arquitetura do Universal CI/CD
+# Arquitetura
 
-## Camadas atuais
 ~~~text
-cicd.ps1 (CLI)
+cicd.ps1
   |-- Core/Logger.ps1
   |-- Core/Result.ps1
   |-- Modules/Config/Config.ps1
   |-- Modules/Detector/Detector.ps1
+  |-- Modules/Engine/Plan.ps1
 ~~~
-A CLI carrega os módulos em ordem determinística e mantém a interface de terminal. O Core fornece logging e um contrato comum para resultados. Config administra a criação e validação estrutural do arquivo local. Detector examina arquivos e manifestos sem executar código do projeto.
 
-## Contrato de resultado
-`New-CicdResult` produz um objeto com `id`, `name`, `status`, `startedAt`, `finishedAt`, `durationMs`, `tool`, `command`, `exitCode`, `summary` e `artifacts`.
-Status aceitos: `PASSED`, `FAILED`, `WARNING`, `SKIPPED` e `NOT_IMPLEMENTED`. O contrato existe; a orquestração completa e o preenchimento de métricas ainda serão implementados.
-`Get-CicdExitCode` retorna 1 quando há falha, 2 quando há etapa não implementada e 0 nos demais casos.
+## Responsabilidades
+- **CLI:** interface e roteamento dos comandos.
+- **Core:** logs e contrato de resultados padronizados.
+- **Config:** criação sem sobrescrita e validação estrutural.
+- **Detector:** identifica tecnologias por arquivos/manifestos, sem executar código.
+- **Engine/Plan:** verifica disponibilidade de ferramentas no PATH e cria um plano declarativo. Não inicia subprocessos nem executa scripts do projeto.
 
-## Configuração
-A configuração local é `.cicd/config.json`, com `schemaVersion` igual a `1.0`. `validate-config` verifica seções obrigatórias, versão do schema, nome do projeto e booleanos do pipeline. Validação formal via JSON Schema ainda está no roadmap.
+## Plano de pipeline
+O plano contém versão, projeto, tecnologias detectadas, ferramentas encontradas, etapas, comandos propostos, status, justificativa e declaração explícita de que nada foi executado. Status de planejamento incluem `PLANNED`, `BLOCKED`, `DISABLED`, `NOT_APPLICABLE` e `NOT_IMPLEMENTED`; esses estados não devem ser confundidos com resultado de execução.
 
-## Detector
-O detector identifica linguagens e indícios de frameworks por extensões e manifestos. O resultado inclui contagem de arquivos, extensões, evidências relativas e horário da varredura. Evidência de arquivo não prova que dependências estejam instaladas ou que o projeto compile.
+O plano é salvo em `.cicd/plans/latest-plan.json`. Esse artefato é regenerável e será substituído na próxima chamada de `plan`.
 
-## Próximas camadas
-- Engine/orquestrador e plano de execução.
-- Adaptadores de validação, teste e build por ecossistema.
-- Segurança, relatórios e entrega.
-- Aprovação explícita antes de executar comandos externos ou publicar artefatos.
+## Segurança e limites
+A existência de uma ferramenta no PATH não garante dependências do projeto, configuração correta ou execução bem-sucedida. Comandos sugeridos são dados informativos. Um executor futuro deverá validar argumentos, diretório de trabalho, timeout, saída, cancelamento e consentimento.
+
+O arquivo `Schemas/config.schema.json` documenta o contrato formal da configuração. O validador PowerShell atual realiza validação estrutural própria; ainda não interpreta integralmente o JSON Schema.
