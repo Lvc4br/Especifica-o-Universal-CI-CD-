@@ -34,7 +34,23 @@ function Get-CicdExecutionPlan {
     $files = @(Get-ChildItem -LiteralPath $ProjectRoot -File -Recurse -ErrorAction SilentlyContinue)
     $names = @($files | ForEach-Object { $_.Name })
     $javaTool = if ($names -contains "pom.xml") { "mvn" } elseif (($names -contains "build.gradle") -or ($names -contains "build.gradle.kts")) { "gradle" } else { "" }
-    if ($hasPython) { $toolNames.Add("ruff"); $toolNames.Add("pytest") }
+    if ($hasPython) { $toolNames.Add("ruff"); $toolNames.Add("pytest"); $toolNames.Add("python") }
+    $pythonBuildEnabled = $false
+    $pythonProjectFile = Join-Path $ProjectRoot "pyproject.toml"
+    if ($hasPython -and (Test-Path -LiteralPath $pythonProjectFile)) {
+        $pythonProjectText = Get-Content -LiteralPath $pythonProjectFile -Raw
+        $pythonBuildEnabled = $pythonProjectText -match "(?m)^\s*\[build-system\]\s*$"
+    }
+    $packageScripts = @{}
+    $packagePath = Join-Path $ProjectRoot "package.json"
+    if ($hasJs -and (Test-Path -LiteralPath $packagePath)) {
+        try {
+            $packageJson = Get-Content -LiteralPath $packagePath -Raw | ConvertFrom-Json -ErrorAction Stop
+            if ($null -ne $packageJson.scripts) {
+                foreach ($property in $packageJson.scripts.PSObject.Properties) { $packageScripts[$property.Name] = [string]$property.Value }
+            }
+        } catch { throw "package.json inválido: $($_.Exception.Message)" }
+    }
     if ($hasJs) { $toolNames.Add("npm"); $toolNames.Add("node") }
     if ($hasGo) { $toolNames.Add("go") }
     if ($hasRust) { $toolNames.Add("cargo"); $toolNames.Add("rustfmt") }
@@ -43,9 +59,10 @@ function Get-CicdExecutionPlan {
     $checks = @(
         @{ enabled=[bool]$Config.pipeline.check; id="python-lint"; name="Python static checks"; category="check"; technology="Python"; tool="ruff"; command="ruff check ."; applies=$hasPython },
         @{ enabled=[bool]$Config.pipeline.test; id="python-tests"; name="Python tests"; category="test"; technology="Python"; tool="pytest"; command="pytest"; applies=$hasPython },
-        @{ enabled=[bool]$Config.pipeline.check; id="js-lint"; name="JavaScript/TypeScript lint"; category="check"; technology="JavaScript/TypeScript"; tool="npm"; command="npm run lint --if-present"; applies=$hasJs },
-        @{ enabled=[bool]$Config.pipeline.test; id="js-tests"; name="JavaScript/TypeScript tests"; category="test"; technology="JavaScript/TypeScript"; tool="npm"; command="npm test"; applies=$hasJs },
-        @{ enabled=[bool]$Config.pipeline.build; id="js-build"; name="JavaScript/TypeScript build"; category="build"; technology="JavaScript/TypeScript"; tool="npm"; command="npm run build --if-present"; applies=$hasJs },
+        @{ enabled=[bool]$Config.pipeline.build; id="python-build"; name="Python package build"; category="build"; technology="Python"; tool="python"; command="python -m build"; applies=($hasPython -and $pythonBuildEnabled) },
+        @{ enabled=[bool]$Config.pipeline.check; id="js-lint"; name="JavaScript/TypeScript lint"; category="check"; technology="JavaScript/TypeScript"; tool="npm"; command="npm run lint"; applies=$hasJs; scriptName="lint" },
+        @{ enabled=[bool]$Config.pipeline.test; id="js-tests"; name="JavaScript/TypeScript tests"; category="test"; technology="JavaScript/TypeScript"; tool="npm"; command="npm test"; applies=$hasJs; scriptName="test" },
+        @{ enabled=[bool]$Config.pipeline.build; id="js-build"; name="JavaScript/TypeScript build"; category="build"; technology="JavaScript/TypeScript"; tool="npm"; command="npm run build"; applies=$hasJs; scriptName="build" },
         @{ enabled=[bool]$Config.pipeline.check; id="go-vet"; name="Go vet"; category="check"; technology="Go"; tool="go"; command="go vet ./..."; applies=$hasGo },
         @{ enabled=[bool]$Config.pipeline.test; id="go-tests"; name="Go tests"; category="test"; technology="Go"; tool="go"; command="go test ./..."; applies=$hasGo },
         @{ enabled=[bool]$Config.pipeline.build; id="go-build"; name="Go build"; category="build"; technology="Go"; tool="go"; command="go build ./..."; applies=$hasGo },
@@ -62,6 +79,10 @@ function Get-CicdExecutionPlan {
     foreach ($item in $checks) {
         if (-not $item.enabled) {
             $steps.Add((New-CicdPlanStep -Id $item.id -Name $item.name -Category $item.category -Technology $item.technology -Tool $item.tool -Command $item.command -Status "DISABLED" -Reason "Etapa desabilitada em pipeline.$($item.category)."))
+            continue
+        }
+        if ($item.ContainsKey("scriptName") -and -not $packageScripts.ContainsKey([string]$item.scriptName)) {
+            $steps.Add((New-CicdPlanStep -Id $item.id -Name $item.name -Category $item.category -Technology $item.technology -Tool $item.tool -Command $item.command -Status "NOT_APPLICABLE" -Reason "O script '$($item.scriptName)' não está definido em package.json."))
             continue
         }
         if (-not $item.applies) {
