@@ -47,3 +47,14 @@ Scripts npm ausentes são marcados como `NOT_APPLICABLE`; eles nunca são tratad
 - O executor não é sandbox. Para código não confiável, use VM/contêiner descartável sem credenciais.
 - Mascaramento de segredos é heurístico.
 - Scanners Gitleaks, Trivy, Semgrep e OSV-Scanner estão disponíveis via `pipeline.security`. `pipeline.delivery` cria um pacote ZIP local do código-fonte; publicação remota e deploy ainda não estão implementados. Cobertura consolidada, banco de dados, cache, paralelismo e isolamento de recursos continuam pendentes.
+
+
+## Integrações de CI externas
+
+Modelos iniciais:
+- GitHub Actions: `.github/workflows/ci.yml`
+- GitLab CI: `.gitlab-ci.yml`
+- Azure Pipelines: `azure-pipelines.yml`
+- Jenkins: `Jenkinsfile`
+
+Os modelos pressupõem PowerShell 7 e executam o pipeline com aprovação no próprio runner. Ajuste permissões, segredos, ambientes e regras de aprovação conforme a política da organização antes de usar em produção. Consulte [Docs/INTEGRATIONS.md](Docs/INTEGRATIONS.md).
