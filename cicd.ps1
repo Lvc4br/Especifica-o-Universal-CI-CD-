@@ -1,7 +1,7 @@
-[CmdletBinding()]
+ [CmdletBinding()]
 param(
     [Parameter(Position = 0)]
-    [ValidateSet("version", "init", "detect", "status", "validate-config", "help")]
+    [ValidateSet("version", "init", "detect", "status", "validate-config", "plan", "help")]
     [string]$Command = "help"
 )
 Set-StrictMode -Version Latest
@@ -9,11 +9,12 @@ $ErrorActionPreference = "Stop"
 $script:ProjectRoot = $PSScriptRoot
 $script:CicdRoot = Join-Path $script:ProjectRoot ".cicd"
 $script:ConfigPath = Join-Path $script:CicdRoot "config.json"
-$script:Version = "0.2.0-dev"
+$script:Version = "0.3.0-dev"
 . (Join-Path $PSScriptRoot "Core/Logger.ps1")
 . (Join-Path $PSScriptRoot "Core/Result.ps1")
 . (Join-Path $PSScriptRoot "Modules/Config/Config.ps1")
 . (Join-Path $PSScriptRoot "Modules/Detector/Detector.ps1")
+. (Join-Path $PSScriptRoot "Modules/Engine/Plan.ps1")
 function Show-Help {
 @"
 Universal CI/CD $script:Version
@@ -22,9 +23,9 @@ Uso: pwsh ./cicd.ps1 <comando>
   init             Cria configuração sem sobrescrever
   detect           Detecta tecnologias e apresenta evidências
   validate-config  Valida a configuração local
+  plan             Gera plano de pipeline sem executar comandos
   status           Exibe estado da configuração e relatórios
   help             Exibe esta ajuda
-A detecção não executa código do projeto, validadores, testes ou builds.
 "@
 }
 function Initialize-Project {
@@ -60,6 +61,19 @@ function Invoke-ConfigValidation {
     $config = Get-CicdConfig -Path $script:ConfigPath
     Write-CicdLog -Level INFO -Message "Configuração válida (schema $($config.schemaVersion))."
 }
+function Invoke-Plan {
+    $config = Get-CicdConfig -Path $script:ConfigPath
+    $plan = Get-CicdExecutionPlan -ProjectRoot $script:ProjectRoot -Config $config
+    $path = Save-CicdExecutionPlan -Plan $plan -ProjectRoot $script:ProjectRoot
+    Write-CicdLog -Level INFO -Message "Plano gerado: $path"
+    Write-Host "Tecnologias: $($plan.technologies -join ', ')"
+    Write-Host "Etapas:"
+    foreach ($step in $plan.steps) {
+        Write-Host ("  [{0}] {1} — {2}" -f $step.status, $step.name, $step.reason)
+    }
+    Write-Host "Execução realizada: não"
+    Write-Host "Aprovação necessária antes de qualquer execução futura: sim"
+}
 function Show-Status {
     Write-Host "Universal CI/CD - status local"
     Write-Host "Raiz: $script:ProjectRoot"
@@ -74,7 +88,9 @@ function Show-Status {
         $reports = @(Get-ChildItem -LiteralPath $reportsPath -File -ErrorAction SilentlyContinue)
         Write-Host "Relatórios locais: $($reports.Count)"
     } else { Write-Host "Relatórios locais: 0" }
-    Write-Host "Pipeline: validadores, testes, builds e segurança ainda não implementados."
+    $planPath = Join-Path $script:CicdRoot "plans/latest-plan.json"
+    if (Test-Path -LiteralPath $planPath) { Write-Host "Plano: encontrado ($planPath)" } else { Write-Host "Plano: não gerado" }
+    Write-Host "Execução de comandos: ainda não implementada."
 }
 try {
     switch ($Command) {
@@ -82,6 +98,7 @@ try {
         "init" { Initialize-Project }
         "detect" { Invoke-Detection }
         "validate-config" { Invoke-ConfigValidation }
+        "plan" { Invoke-Plan }
         "status" { Show-Status }
         default { Show-Help }
     }
