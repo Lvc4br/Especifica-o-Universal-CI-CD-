@@ -1,65 +1,55 @@
 # Roadmap
 
 ## Etapa 0 — Bootstrap
-
-- [x] Criar repositório e documentação inicial.
-- [x] Criar CLI PowerShell mínima.
-- [x] Implementar version, init, detect e status básicos.
-- [ ] Validar execução em PowerShell 7 no Windows.
-- [ ] Criar testes automatizados para o bootstrap.
+- [x] Repositório, documentação e CLI inicial.
+- [x] CI do próprio projeto em Windows e Ubuntu.
+- [x] Testes smoke do bootstrap.
 
 ## Etapa 1 — Core e configuração
-
-- [ ] Separar CLI, Core e módulos.
-- [ ] Implementar logger e tratamento de erros padronizados.
-- [ ] Definir schema versionado de configuração.
-- [ ] Implementar códigos de saída e contratos de resultado.
-- [ ] Adicionar testes unitários.
+- [x] Separar CLI, Core e módulos.
+- [x] Implementar logger central.
+- [x] Definir contrato padronizado de resultado.
+- [x] Criar configuração sem sobrescrita silenciosa.
+- [x] Implementar validação estrutural inicial da configuração.
+- [x] Ampliar testes para configuração, detecção e contrato de resultado.
+- [ ] Adicionar schema JSON formal e validação de tipos completa.
 
 ## Etapa 2 — Detecção
+- [x] Detecção inicial de linguagens e evidências.
+- [ ] Detectar versões e gerenciadores de pacotes.
+- [ ] Detectar ferramentas instaladas e versões.
+- [ ] Adicionar confiança e regras configuráveis por tecnologia.
 
-- [ ] Detectar linguagens e versões.
-- [ ] Detectar frameworks e gerenciadores de pacotes.
-- [ ] Detectar ferramentas instaladas e suas versões.
-- [ ] Registrar evidências e confiança da detecção.
+## Etapa 3 — Engine e execução
+- [ ] Implementar plano de execução sem executar comandos por padrão.
+- [ ] Criar executor controlado de processos externos.
+- [ ] Exigir aprovação para comandos definidos pelo projeto.
+- [ ] Implementar códigos de saída e cancelamento.
 
-## Etapa 3 — Validação e testes
-
+## Etapa 4 — Validação e testes
 - [ ] Python: Ruff e pytest.
 - [ ] JavaScript/TypeScript: ESLint e scripts de teste configurados.
-- [ ] React: detecção via manifestos e validação no ecossistema JS.
+- [ ] React: validação no ecossistema JS.
 - [ ] HTML/CSS: validadores dedicados.
 - [ ] Java: Maven/Gradle e testes configurados.
 - [ ] Lua: ferramentas selecionáveis.
-- [ ] SQL: validação estática; testes reais exigem banco e fixtures configurados.
+- [ ] SQL: validação estática; testes reais exigem banco e fixtures.
 
-## Etapa 4 — Build e artefatos
-
+## Etapa 5 — Build e artefatos
 - [ ] Adaptadores de build por ecossistema.
 - [ ] Diretório de artefatos configurável.
-- [ ] Manifesto e checksums dos artefatos.
+- [ ] Manifesto e checksums.
 
-## Etapa 5 — Segurança e relatórios
-
-- [ ] Verificação de segredos.
-- [ ] Auditoria de dependências.
+## Etapa 6 — Segurança e relatórios
+- [ ] Verificação de segredos e dependências.
 - [ ] Relatórios JSON e Markdown.
 - [ ] Redação de informações sensíveis nos logs.
 
-## Etapa 6 — GitHub Actions e portabilidade
-
-- [ ] Workflow de CI do próprio projeto.
-- [ ] Testes Windows e Ubuntu.
-- [ ] Templates reutilizáveis.
-- [ ] Política de permissões mínimas.
-
-## Etapa 7 — Distribuição
-
-- [ ] Instalação e atualização documentadas.
-- [ ] Versionamento semântico.
-- [ ] Releases e changelog.
+## Etapa 7 — Entrega e distribuição
+- [ ] Integração GitHub Actions reutilizável.
+- [ ] Templates e instalação documentados.
+- [ ] Versionamento semântico e releases.
 - [ ] Testes em repositórios de exemplo.
 
 ## Critério de conclusão
-
 Uma tarefa só será marcada como concluída após implementação, teste reproduzível e documentação. Detecção isolada não comprova validação, teste ou build.
