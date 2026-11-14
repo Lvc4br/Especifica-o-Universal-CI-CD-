@@ -70,6 +70,9 @@ function Get-CicdExecutionPlan {
     if ($hasKotlin) { $toolNames.Add("gradle") }
     if ($hasSwift) { $toolNames.Add("swift") }
     if ($hasDart) { $toolNames.Add("dart") }
+    if ($technologies -contains "HTML") { $toolNames.Add("htmlhint") }
+    if ($technologies -contains "CSS") { $toolNames.Add("stylelint") }
+    if ($technologies -contains "SQL") { $toolNames.Add("sqlfluff") }
     if ([bool]$Config.pipeline.security) { $toolNames.Add("gitleaks"); $toolNames.Add("trivy") }
     $checks = @(
         @{ enabled=[bool]$Config.pipeline.check; id="python-lint"; name="Python static checks"; category="check"; technology="Python"; tool="ruff"; command="ruff check ."; applies=$hasPython },
@@ -99,6 +102,9 @@ function Get-CicdExecutionPlan {
         @{ enabled=[bool]$Config.pipeline.check; id="dart-check"; name="Dart analysis"; category="check"; technology="Dart"; tool="dart"; command="dart analyze"; applies=($hasDart -and (Test-Path (Join-Path $ProjectRoot "pubspec.yaml"))) },
         @{ enabled=[bool]$Config.pipeline.test; id="dart-tests"; name="Dart tests"; category="test"; technology="Dart"; tool="dart"; command="dart test"; applies=($hasDart -and (Test-Path (Join-Path $ProjectRoot "pubspec.yaml"))) },
         @{ enabled=[bool]$Config.pipeline.build; id="dart-build"; name="Dart build"; category="build"; technology="Dart"; tool="dart"; command="dart compile exe bin/main.dart"; applies=($hasDart -and (Test-Path (Join-Path $ProjectRoot "bin/main.dart"))) },
+        @{ enabled=[bool]$Config.pipeline.check; id="html-lint"; name="HTML validation"; category="check"; technology="HTML"; tool="htmlhint"; command="htmlhint ."; applies=($technologies -contains "HTML") },
+        @{ enabled=[bool]$Config.pipeline.check; id="css-lint"; name="CSS lint"; category="check"; technology="CSS"; tool="stylelint"; command="stylelint \"**/*.{css,scss,sass}\""; applies=($technologies -contains "CSS") },
+        @{ enabled=[bool]$Config.pipeline.check; id="sql-lint"; name="SQL lint"; category="check"; technology="SQL"; tool="sqlfluff"; command="sqlfluff lint ."; applies=($technologies -contains "SQL") },
         @{ enabled=[bool]$Config.pipeline.check; id="go-vet"; name="Go vet"; category="check"; technology="Go"; tool="go"; command="go vet ./..."; applies=$hasGo },
         @{ enabled=[bool]$Config.pipeline.test; id="go-tests"; name="Go tests"; category="test"; technology="Go"; tool="go"; command="go test ./..."; applies=$hasGo },
         @{ enabled=[bool]$Config.pipeline.build; id="go-build"; name="Go build"; category="build"; technology="Go"; tool="go"; command="go build ./..."; applies=$hasGo },
@@ -146,9 +152,9 @@ function Get-CicdExecutionPlan {
     } else {
         $steps.Add((New-CicdPlanStep -Id "security" -Name "Security pipeline" -Category "security" -Technology "All" -Tool "" -Command "" -Status "DISABLED" -Reason "Etapa desabilitada na configuração."))
     }
-    $deliveryStatus = if ([bool]$Config.pipeline.delivery) { "NOT_IMPLEMENTED" } else { "DISABLED" }
-    $deliveryReason = if ([bool]$Config.pipeline.delivery) { "Publicação e deploy ainda não possuem destino e credenciais configurados." } else { "Etapa desabilitada na configuração." }
-    $steps.Add((New-CicdPlanStep -Id "delivery" -Name "Delivery pipeline" -Category "delivery" -Technology "All" -Tool "" -Command "" -Status $deliveryStatus -Reason $deliveryReason))
+    $deliveryStatus = if ([bool]$Config.pipeline.delivery) { "PLANNED" } else { "DISABLED" }
+    $deliveryReason = if ([bool]$Config.pipeline.delivery) { "Pacote ZIP do código-fonte será criado localmente após aprovação; publicação remota/deploy não está configurada." } else { "Etapa desabilitada na configuração." }
+    $steps.Add((New-CicdPlanStep -Id "delivery-source-archive" -Name "Create source artifact" -Category "delivery" -Technology "All" -Tool "internal" -Command "Create .cicd/artifacts/source-<timestamp>.zip" -Status $deliveryStatus -Reason $deliveryReason))
     [pscustomobject]@{
         schemaVersion="1.0"; planVersion="0.5.0-dev"; project=[string]$Config.project.name
         projectRoot=[System.IO.Path]::GetFullPath($ProjectRoot); generatedAt=(Get-Date).ToString("o")
