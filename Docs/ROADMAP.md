@@ -56,3 +56,9 @@ Esses adaptadores estão implementados no planejador/executor, mas ainda não fo
 
 ## Critério de suporte
 Uma linguagem só será considerada validada após execução real de fixture reproduzível, em Windows e Linux quando aplicável. A existência de um adaptador e testes de contrato não prova, por si só, compatibilidade integral com todo projeto daquele ecossistema.
+
+
+## Política de validação desta fase
+- A campanha formal de testes abrangentes será executada após o congelamento das funcionalidades.
+- O workflow principal está temporariamente em execução manual (`workflow_dispatch`) para evitar rodar a matriz completa a cada commit durante a implementação.
+- Validações pontuais indispensáveis para corrigir regressões podem ser feitas durante o desenvolvimento, mas não substituem a campanha final.
