@@ -1,0 +1,24 @@
+trigger:
+  branches:
+    include:
+      - main
+      - develop
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - checkout: self
+  - pwsh: ./cicd.ps1 init -ProjectPath "$(Build.SourcesDirectory)"
+    displayName: Initialize Universal CI/CD
+  - pwsh: ./cicd.ps1 validate-config -ProjectPath "$(Build.SourcesDirectory)"
+    displayName: Validate configuration
+  - pwsh: ./cicd.ps1 plan -ProjectPath "$(Build.SourcesDirectory)"
+    displayName: Plan pipeline
+  - pwsh: ./cicd.ps1 run -ProjectPath "$(Build.SourcesDirectory)" -Approve -TimeoutSeconds 1800
+    displayName: Execute approved pipeline
+  - task: PublishBuildArtifacts@1
+    condition: always()
+    inputs:
+      PathtoPublish: '.cicd'
+      ArtifactName: 'universal-cicd-results'
