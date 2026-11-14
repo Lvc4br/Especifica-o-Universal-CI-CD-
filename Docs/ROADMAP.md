@@ -36,9 +36,9 @@
 Esses adaptadores estão implementados no planejador/executor, mas ainda não foram validados por fixtures reais.
 
 ## Adaptadores ainda ausentes
-- [ ] PHP/PHPUnit/PHPStan.
-- [ ] Ruby/RSpec/RuboCop.
-- [ ] Lua.
+- [x] PHP/Composer scripts e validação do manifesto (adaptador inicial).
+- [x] Ruby/Bundler com RuboCop/RSpec (adaptador inicial).
+- [x] Lua com Luacheck/Busted (adaptador inicial).
 - [x] HTML: validação inicial com HTMLHint.
 - [x] CSS: lint inicial com Stylelint.
 - [ ] Acessibilidade automatizada e auditorias visuais.
