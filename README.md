@@ -2,7 +2,7 @@
 
 Orquestrador modular de CI/CD para projetos de diferentes linguagens. Núcleo PowerShell 7.2+, multiplataforma, com detecção, planejamento, execução aprovada, timeout, captura de saída e relatórios JSON.
 
-> Estado: 0.5.0-dev. Adaptadores iniciais para Python, JavaScript/TypeScript, Go, Rust, C#/.NET, Java (Maven/Gradle), PHP, Ruby, Lua, C/C++, Kotlin, Swift, Dart, HTML, CSS e SQL. A maturidade varia por ecossistema; consulte as limitações.
+> Estado: 0.5.0-dev. Adaptadores iniciais para Python, JavaScript/TypeScript, Go, Rust, C#/.NET, Java (Maven/Gradle), PHP, Ruby, Lua, C/C++, Kotlin, Swift, Dart, HTML, CSS e SQL. A maturidade varia por ecossistema; consulte a matriz em Docs/ADAPTERS.md e as limitações.
 
 ## Uso em qualquer diretório
 O script pode ficar em uma pasta central e operar em outro projeto:
