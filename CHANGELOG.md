@@ -1,13 +1,14 @@
 # Changelog
 
-All notable changes to this project will be documented here.
+## [0.2.0-dev] - 2026-11-14
+- Separação da CLI, Core, Config e Detector em módulos.
+- Logger central com níveis INFO, WARN, ERROR e DEBUG.
+- Contrato padronizado de resultados e mapeamento inicial de exit codes.
+- Criação e validação estrutural da configuração.
+- Detecção com evidências de arquivos e exclusões configuráveis.
+- Testes smoke ampliados para validar os novos módulos.
+- CI continua cobrindo Windows e Ubuntu.
 
-## [0.1.0-dev] - Initial bootstrap
-
-- Initial repository structure and documentation.
-- PowerShell CLI with version, init, detect and status commands.
-- Safe initialization that does not overwrite an existing config.
-- Basic file/manifest-based technology detection.
-- Initial smoke test and Windows/Linux GitHub Actions workflow.
-
-This is a development bootstrap, not a feature-complete CI/CD engine.
+## [0.1.0-dev] - 2026-11-14
+- Bootstrap inicial, CLI PowerShell e documentação.
+- Detecção básica por arquivos e marcadores.
