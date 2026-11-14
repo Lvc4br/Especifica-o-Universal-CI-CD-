@@ -15,7 +15,8 @@
 ## Próximas etapas prioritárias
 - [x] Fixtures reais de Go, Rust, .NET e Maven executadas pelo pipeline em CI Ubuntu.
 - [ ] Expandir validação real para Windows, Gradle e os demais ecossistemas.
-- [x] Descoberta e execução individual de projetos em workspaces/monorepos.\n- [ ] Wrappers (mvnw/gradlew) e seleção de soluções .NET específicas.
+- [x] Descoberta e execução individual de projetos em workspaces/monorepos.
+- [ ] Wrappers (mvnw/gradlew) e seleção de soluções .NET específicas.
 - [x] Validação estrutural expandida, com tipos e propriedades adicionais restritos.
 - [ ] Validação integral usando motor JSON Schema.
 - [ ] Testes unitários e integração dedicados por módulo.
@@ -44,7 +45,9 @@ Esses adaptadores estão implementados no planejador/executor, mas ainda não fo
 - [x] SQL lint inicial com SQLFluff.
 - [ ] SQL com banco configurado e fixtures isoladas.
 - [x] Varredura inicial de segredos com Gitleaks.
-- [x] Varredura inicial de vulnerabilidades e misconfigurações com Trivy.\n- [x] SAST inicial com Semgrep.\n- [x] Verificação de vulnerabilidades conhecidas com OSV-Scanner.
+- [x] Varredura inicial de vulnerabilidades e misconfigurações com Trivy.
+- [x] SAST inicial com Semgrep.
+- [x] Verificação de vulnerabilidades conhecidas com OSV-Scanner.
 - [ ] SAST específico por linguagem e verificação de licenças.
 - [x] Empacotamento local do código-fonte em ZIP com exclusões.
 - [ ] Publicação remota, cache, paralelismo e deploy com aprovação separada.
