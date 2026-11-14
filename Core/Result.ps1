@@ -4,7 +4,7 @@ function New-CicdResult {
         [Parameter(Mandatory)][string]$Id,
         [Parameter(Mandatory)][string]$Name,
         [Parameter(Mandatory)]
-        [ValidateSet("PASSED", "FAILED", "WARNING", "SKIPPED", "NOT_IMPLEMENTED")]
+        [ValidateSet("PASSED", "FAILED", "WARNING", "SKIPPED", "BLOCKED", "NOT_IMPLEMENTED")]
         [string]$Status,
         [string]$Summary = "",
         [string]$Tool = "",
@@ -33,5 +33,6 @@ function Get-CicdExitCode {
 
     if (@($Results | Where-Object { $_.status -eq "FAILED" }).Count -gt 0) { return 1 }
     if (@($Results | Where-Object { $_.status -eq "NOT_IMPLEMENTED" }).Count -gt 0) { return 2 }
+    if (@($Results | Where-Object { $_.status -eq "BLOCKED" }).Count -gt 0) { return 3 }
     return 0
 }
