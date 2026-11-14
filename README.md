@@ -27,7 +27,17 @@ Se `-ProjectPath` for omitido, o diretório de trabalho atual será usado. Sem `
 | Rust | cargo fmt --check | cargo test --workspace | cargo build --workspace |
 | C#/.NET | dotnet format --verify-no-changes | dotnet test | dotnet build |
 | Java/Maven | mvn validate | mvn test | mvn package |
-| Java/Gradle | gradle check | gradle test | gradle build |\n| PHP | Composer scripts (lint) | Composer scripts (test) | composer validate |\n| Ruby | RuboCop | RSpec | bundle check |\n| Lua | Luacheck | Busted | Não aplicável |\n| C/C++ | CMake configure | CTest | CMake build |\n| Kotlin | Gradle check | Gradle test | Gradle build |\n| Swift | swift package diagnose | swift test | swift build |\n| Dart | dart analyze | dart test | dart compile (quando há bin/main.dart) |\n| HTML | HTMLHint | — | — |\n| CSS | Stylelint | — | — |\n| SQL | SQLFluff | — | — |
+| Java/Gradle | gradle check | gradle test | gradle build |
+| PHP | Composer scripts (lint) | Composer scripts (test) | composer validate |
+| Ruby | RuboCop | RSpec | bundle check |
+| Lua | Luacheck | Busted | Não aplicável |
+| C/C++ | CMake configure | CTest | CMake build |
+| Kotlin | Gradle check | Gradle test | Gradle build |
+| Swift | swift package diagnose | swift test | swift build |
+| Dart | dart analyze | dart test | dart compile (quando há bin/main.dart) |
+| HTML | HTMLHint | — | — |
+| CSS | Stylelint | — | — |
+| SQL | SQLFluff | — | — |
 
 Scripts npm ausentes são marcados como `NOT_APPLICABLE`; eles nunca são tratados como comandos executados com sucesso. O build Python só é planejado para pacotes com seção `[build-system]` no `pyproject.toml`. Ferramentas devem estar instaladas no PATH. Java exige `pom.xml` ou `build.gradle(.kts)`. Wrappers mvnw/gradlew, soluções .NET multi-projeto e monorepos ainda precisam de suporte dedicado.
 
