@@ -44,7 +44,7 @@ Esses adaptadores estão implementados no planejador/executor, mas ainda não fo
 - [x] SQL lint inicial com SQLFluff.
 - [ ] SQL com banco configurado e fixtures isoladas.
 - [x] Varredura inicial de segredos com Gitleaks.
-- [x] Varredura inicial de vulnerabilidades e misconfigurações com Trivy.
+- [x] Varredura inicial de vulnerabilidades e misconfigurações com Trivy.\n- [x] SAST inicial com Semgrep.\n- [x] Verificação de vulnerabilidades conhecidas com OSV-Scanner.
 - [ ] SAST específico por linguagem e verificação de licenças.
 - [x] Empacotamento local do código-fonte em ZIP com exclusões.
 - [ ] Publicação remota, cache, paralelismo e deploy com aprovação separada.
