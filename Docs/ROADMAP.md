@@ -26,10 +26,10 @@
 - [ ] PHP/PHPUnit/PHPStan.
 - [ ] Ruby/RSpec/RuboCop.
 - [ ] Lua.
-- [ ] HTML/CSS: validação, acessibilidade e qualidade.
-- [ ] SQL com banco configurado e fixtures isoladas.
+- [x] HTML: validação inicial com HTMLHint.\n- [x] CSS: lint inicial com Stylelint.\n- [ ] Acessibilidade automatizada e auditorias visuais.
+- [x] SQL lint inicial com SQLFluff.\n- [ ] SQL com banco configurado e fixtures isoladas.
 - [x] Varredura inicial de segredos com Gitleaks.\n- [x] Varredura inicial de vulnerabilidades e misconfigurações com Trivy.\n- [ ] SAST específico por linguagem e verificação de licenças.
-- [ ] Artefatos, cache, paralelismo e deploy com aprovação separada.
+- [x] Empacotamento local do código-fonte em ZIP com exclusões.\n- [ ] Publicação remota, cache, paralelismo e deploy com aprovação separada.
 
 ## Critério de suporte
 Uma linguagem só será considerada validada após execução real de fixture reproduzível, em Windows e Linux quando aplicável. A existência de um adaptador e testes de contrato não prova, por si só, compatibilidade integral com todo projeto daquele ecossistema.
