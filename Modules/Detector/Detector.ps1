@@ -48,14 +48,20 @@ function Get-CicdDetection {
     if ($extensions.ContainsKey(".sql")) { $found.Add("SQL") }
     if ($extensions.ContainsKey(".cs") -or @($names | Where-Object { $_ -like "*.csproj" }).Count -gt 0) { $found.Add("C#") }
     if ($extensions.ContainsKey(".go") -or ($names -contains "go.mod")) { $found.Add("Go") }
-    if ($extensions.ContainsKey(".rs") -or ($names -contains "Cargo.toml")) { $found.Add("Rust") }
+    if ($extensions.ContainsKey(".rs") -or ($names -contains "Cargo.toml", "composer.json", "Gemfile", "CMakeLists.txt", "Package.swift", "pubspec.yaml")) { $found.Add("Rust") }
+    if ($extensions.ContainsKey(".php") -or ($names -contains "composer.json")) { $found.Add("PHP") }
+    if ($extensions.ContainsKey(".rb") -or ($names -contains "Gemfile")) { $found.Add("Ruby") }
+    if ($extensions.ContainsKey(".c") -or $extensions.ContainsKey(".h") -or $extensions.ContainsKey(".cpp") -or $extensions.ContainsKey(".cc") -or $extensions.ContainsKey(".hpp") -or ($names -contains "CMakeLists.txt")) { $found.Add("C/C++") }
+    if ($extensions.ContainsKey(".kt") -or $extensions.ContainsKey(".kts")) { $found.Add("Kotlin") }
+    if ($extensions.ContainsKey(".swift") -or ($names -contains "Package.swift")) { $found.Add("Swift") }
+    if ($extensions.ContainsKey(".dart") -or ($names -contains "pubspec.yaml")) { $found.Add("Dart") }
 
     [pscustomobject]@{
         technologies = @($found | Sort-Object -Unique)
         fileCount = $files.Count
         extensionCounts = $extensions
         evidence = @($files | Where-Object {
-            $_.Extension.ToLowerInvariant() -in @(".py", ".js", ".mjs", ".cjs", ".jsx", ".ts", ".tsx", ".html", ".css", ".scss", ".sass", ".java", ".lua", ".sql", ".cs", ".go", ".rs") -or
+            $_.Extension.ToLowerInvariant() -in @(".py", ".js", ".mjs", ".cjs", ".jsx", ".ts", ".tsx", ".html", ".css", ".scss", ".sass", ".java", ".lua", ".sql", ".cs", ".go", ".rs", ".php", ".rb", ".lua", ".c", ".h", ".cpp", ".cc", ".hpp", ".kt", ".kts", ".swift", ".dart") -or
             $_.Name -in @("pyproject.toml", "requirements.txt", "package.json", "pom.xml", "build.gradle", "build.gradle.kts", "go.mod", "Cargo.toml")
         } | ForEach-Object { [System.IO.Path]::GetRelativePath($root, $_.FullName) })
         scannedAt = (Get-Date).ToString("o")
