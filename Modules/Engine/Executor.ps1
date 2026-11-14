@@ -34,7 +34,7 @@ function Invoke-CicdPipeline {
     foreach ($step in $plan.steps) {
         if ($step.status -ne "PLANNED" -or $step.category -notin @("check", "test")) {
             $status = switch ($step.status) {
-                "BLOCKED" { "SKIPPED" }
+                "BLOCKED" { "BLOCKED" }
                 "DISABLED" { "SKIPPED" }
                 "NOT_APPLICABLE" { "SKIPPED" }
                 "NOT_IMPLEMENTED" { "NOT_IMPLEMENTED" }
@@ -51,7 +51,7 @@ function Invoke-CicdPipeline {
         }
         $command = Get-Command -Name $adapter.tool -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1
         if ($null -eq $command) {
-            $results.Add((New-CicdResult -Id $step.id -Name $step.name -Status "SKIPPED" -Summary "Executável '$($adapter.tool)' não encontrado."))
+            $results.Add((New-CicdResult -Id $step.id -Name $step.name -Status "BLOCKED" -Summary "Executável '$($adapter.tool)' não encontrado."))
             continue
         }
 
