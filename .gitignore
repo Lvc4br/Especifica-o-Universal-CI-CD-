@@ -1,0 +1,27 @@
+# Local CI/CD state and reports
+.cicd/
+
+# PowerShell
+*.clixml
+
+# Editors and operating systems
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Common generated directories
+node_modules/
+.venv/
+venv/
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+dist/
+build/
+target/
+bin/
+obj/
+coverage/
+*.log
