@@ -13,15 +13,15 @@ pwsh ./cicd.ps1 run -Approve -TimeoutSeconds 900
 pwsh ./cicd.ps1 status
 ```
 
-## run
-Sem `-Approve`, apenas lista etapas que aguardam autorização. Com aprovação, executa etapas check/test com adaptador allowlisted e ferramenta instalada. Timeout padrão: 600 segundos por etapa. Timeout ou exit code diferente de zero marca FAILED. Relatório JSON em `.cicd/reports/`.
+## Pipeline
+As opções `pipeline.check`, `pipeline.test` e `pipeline.build` controlam as categorias. O plano cria etapas apenas para tecnologias reconhecidas e marca ferramentas ausentes como BLOCKED. Sem `-Approve`, nenhum processo é iniciado.
 
-## Outros comandos
-- `version`: versão.
-- `init`: cria configuração sem sobrescrita.
-- `validate-config`: valida JSON, propriedades obrigatórias e tipos básicos.
-- `detect`: detecção heurística, sem execução.
-- `plan`: cria plano em `.cicd/plans/latest-plan.json`.
-- `status`: mostra configuração, plano e relatórios.
+## Adaptadores disponíveis
+- Python: Ruff e pytest.
+- JavaScript/TypeScript: npm lint/test/build (scripts npm podem estar ausentes).
+- Go: vet, test e build.
+- Rust: fmt check, test e build.
+- C#/.NET: format check, test e build.
+- Java: Maven validate/test/package ou Gradle check/test/build, selecionado por manifesto.
 
-Habilite `pipeline.check` e/ou `pipeline.test` em `.cicd/config.json`. Revise o plano e scripts do projeto antes de aprovar. Build, security, SQL e deploy ainda não estão implementados.
+Ferramentas precisam estar no PATH. Java usa executáveis globais nesta versão. Wrappers, monorepos e projetos .NET multi-solução ainda não têm resolução específica.
