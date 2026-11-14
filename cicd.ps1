@@ -1,20 +1,24 @@
  [CmdletBinding()]
 param(
     [Parameter(Position = 0)]
-    [ValidateSet("version", "init", "detect", "status", "validate-config", "plan", "help")]
-    [string]$Command = "help"
+    [ValidateSet("version", "init", "detect", "status", "validate-config", "plan", "run", "help")]
+    [string]$Command = "help",
+    [switch]$Approve,
+    [ValidateRange(1, 86400)][int]$TimeoutSeconds = 600
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 $script:ProjectRoot = $PSScriptRoot
 $script:CicdRoot = Join-Path $script:ProjectRoot ".cicd"
 $script:ConfigPath = Join-Path $script:CicdRoot "config.json"
-$script:Version = "0.3.0-dev"
+$script:Version = "0.4.0-dev"
 . (Join-Path $PSScriptRoot "Core/Logger.ps1")
 . (Join-Path $PSScriptRoot "Core/Result.ps1")
 . (Join-Path $PSScriptRoot "Modules/Config/Config.ps1")
 . (Join-Path $PSScriptRoot "Modules/Detector/Detector.ps1")
 . (Join-Path $PSScriptRoot "Modules/Engine/Plan.ps1")
+. (Join-Path $PSScriptRoot "Core/Process.ps1")
+. (Join-Path $PSScriptRoot "Modules/Engine/Executor.ps1")
 function Show-Help {
 @"
 Universal CI/CD $script:Version
@@ -74,7 +78,7 @@ function Invoke-Plan {
     Write-Host "Execução realizada: não"
     Write-Host "Aprovação necessária antes de qualquer execução futura: sim"
 }
-function Show-Status {
+function Invoke-Run {\n    $config = Get-CicdConfig -Path $script:ConfigPath\n    $execution = Invoke-CicdPipeline -ProjectRoot $script:ProjectRoot -Config $config -Approve:$Approve -TimeoutSeconds $TimeoutSeconds\n    if (-not $execution.approved) {\n        Write-CicdLog -Level WARN -Message "Modo de simulação: nenhuma etapa foi executada. Use -Approve após revisar o plano."\n        foreach ($result in $execution.results) { Write-Host ("  [{0}] {1}" -f $result.status, $result.name) }\n        return\n    }\n    foreach ($result in $execution.results) {\n        Write-Host ("  [{0}] {1} — {2}" -f $result.status, $result.name, $result.summary)\n    }\n    Write-Host "Relatório: $($execution.reportPath)"\n    if ($execution.exitCode -ne 0) { exit $execution.exitCode }\n}\nfunction Show-Status {
     Write-Host "Universal CI/CD - status local"
     Write-Host "Raiz: $script:ProjectRoot"
     Write-Host "Versão: $script:Version"
@@ -90,7 +94,7 @@ function Show-Status {
     } else { Write-Host "Relatórios locais: 0" }
     $planPath = Join-Path $script:CicdRoot "plans/latest-plan.json"
     if (Test-Path -LiteralPath $planPath) { Write-Host "Plano: encontrado ($planPath)" } else { Write-Host "Plano: não gerado" }
-    Write-Host "Execução de comandos: ainda não implementada."
+    Write-Host "Execução: disponível com aprovação explícita (-Approve)."
 }
 try {
     switch ($Command) {
@@ -98,7 +102,7 @@ try {
         "init" { Initialize-Project }
         "detect" { Invoke-Detection }
         "validate-config" { Invoke-ConfigValidation }
-        "plan" { Invoke-Plan }
+        "plan" { Invoke-Plan }\n        "run" { Invoke-Run }
         "status" { Show-Status }
         default { Show-Help }
     }
