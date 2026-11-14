@@ -28,6 +28,7 @@ Uso: pwsh ./cicd.ps1 <comando>
   detect           Detecta tecnologias e apresenta evidências
   validate-config  Valida a configuração local
   plan             Gera plano de pipeline sem executar comandos
+  run              Executa etapas allowlisted (exige -Approve)
   status           Exibe estado da configuração e relatórios
   help             Exibe esta ajuda
 "@
@@ -78,7 +79,21 @@ function Invoke-Plan {
     Write-Host "Execução realizada: não"
     Write-Host "Aprovação necessária antes de qualquer execução futura: sim"
 }
-function Invoke-Run {\n    $config = Get-CicdConfig -Path $script:ConfigPath\n    $execution = Invoke-CicdPipeline -ProjectRoot $script:ProjectRoot -Config $config -Approve:$Approve -TimeoutSeconds $TimeoutSeconds\n    if (-not $execution.approved) {\n        Write-CicdLog -Level WARN -Message "Modo de simulação: nenhuma etapa foi executada. Use -Approve após revisar o plano."\n        foreach ($result in $execution.results) { Write-Host ("  [{0}] {1}" -f $result.status, $result.name) }\n        return\n    }\n    foreach ($result in $execution.results) {\n        Write-Host ("  [{0}] {1} — {2}" -f $result.status, $result.name, $result.summary)\n    }\n    Write-Host "Relatório: $($execution.reportPath)"\n    if ($execution.exitCode -ne 0) { exit $execution.exitCode }\n}\nfunction Show-Status {
+function Invoke-Run {
+    $config = Get-CicdConfig -Path $script:ConfigPath
+    $execution = Invoke-CicdPipeline -ProjectRoot $script:ProjectRoot -Config $config -Approve:$Approve -TimeoutSeconds $TimeoutSeconds
+    if (-not $execution.approved) {
+        Write-CicdLog -Level WARN -Message "Modo de simulação: nenhuma etapa foi executada. Use -Approve após revisar o plano."
+        foreach ($result in $execution.results) { Write-Host ("  [{0}] {1}" -f $result.status, $result.name) }
+        return
+    }
+    foreach ($result in $execution.results) {
+        Write-Host ("  [{0}] {1} — {2}" -f $result.status, $result.name, $result.summary)
+    }
+    Write-Host "Relatório: $($execution.reportPath)"
+    if ($execution.exitCode -ne 0) { exit $execution.exitCode }
+}
+function Show-Status {
     Write-Host "Universal CI/CD - status local"
     Write-Host "Raiz: $script:ProjectRoot"
     Write-Host "Versão: $script:Version"
@@ -102,7 +117,8 @@ try {
         "init" { Initialize-Project }
         "detect" { Invoke-Detection }
         "validate-config" { Invoke-ConfigValidation }
-        "plan" { Invoke-Plan }\n        "run" { Invoke-Run }
+        "plan" { Invoke-Plan }
+        "run" { Invoke-Run }
         "status" { Show-Status }
         default { Show-Help }
     }
