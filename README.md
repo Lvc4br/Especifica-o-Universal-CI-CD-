@@ -58,3 +58,8 @@ Modelos iniciais:
 - Jenkins: `Jenkinsfile`
 
 Os modelos pressupõem PowerShell 7 e executam o pipeline com aprovação no próprio runner. Ajuste permissões, segredos, ambientes e regras de aprovação conforme a política da organização antes de usar em produção. Consulte [Docs/INTEGRATIONS.md](Docs/INTEGRATIONS.md).
+
+
+## Distribuição e beta
+
+O projeto está em desenvolvimento e ainda não deve ser usado em produção. Consulte [DISTRIBUTION.md](DISTRIBUTION.md) para requisitos, instalação de avaliação, segurança, feedback e critérios para uma futura beta. Releases empacotadas são artefatos de avaliação, não uma declaração de estabilidade.
