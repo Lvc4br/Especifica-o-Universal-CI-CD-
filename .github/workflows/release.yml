@@ -17,7 +17,7 @@ jobs:
         run: |
           $stage = Join-Path $env:RUNNER_TEMP "universal-cicd"
           New-Item -ItemType Directory -Path $stage -Force | Out-Null
-          $items = @("cicd.ps1", "Core", "Modules", "Schemas", "Docs", "README.md", "CHANGELOG.md", "CONTRIBUTING.md")
+          $items = @("cicd.ps1", "Core", "Modules", "Schemas", "Docs", "README.md", "CHANGELOG.md", "CONTRIBUTING.md", "LICENSE", "SECURITY.md", "DISTRIBUTION.md")
           foreach ($item in $items) {
             $source = Join-Path $env:GITHUB_WORKSPACE $item
             if (Test-Path -LiteralPath $source) {
