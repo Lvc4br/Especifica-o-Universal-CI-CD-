@@ -62,3 +62,14 @@ Uma linguagem só será considerada validada após execução real de fixture re
 - A campanha formal de testes abrangentes será executada após o congelamento das funcionalidades.
 - O workflow principal está temporariamente em execução manual (`workflow_dispatch`) para evitar rodar a matriz completa a cada commit durante a implementação.
 - Validações pontuais indispensáveis para corrigir regressões podem ser feitas durante o desenvolvimento, mas não substituem a campanha final.
+
+
+## Distribuição para testadores beta
+- [x] Documentação de distribuição, requisitos, instalação de avaliação e orientações de segurança.
+- [x] Modelos padronizados de issue para bugs e sugestões.
+- [x] Política inicial de reporte responsável de vulnerabilidades.
+- [x] Workflow de empacotamento de release corrigido.
+- [ ] Escolher e adicionar licença explícita ao repositório.
+- [ ] Validar instalação limpa em Windows e Linux.
+- [ ] Executar campanha final de testes e revisão de segurança antes de convidar testadores.
+- [ ] Publicar primeira beta com notas de versão, matriz de compatibilidade e limitações conhecidas.
