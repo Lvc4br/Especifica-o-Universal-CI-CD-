@@ -1,0 +1,24 @@
+name: Sugestão de melhoria
+description: Sugira uma funcionalidade ou melhoria para o Universal CI/CD.
+title: "[IDEIA] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Qual problema você quer resolver?
+      description: Explique o cenário e a dificuldade atual.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Solução sugerida
+      description: Descreva como gostaria que o Universal CI/CD se comportasse.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternativas consideradas
+      description: Opcional.
