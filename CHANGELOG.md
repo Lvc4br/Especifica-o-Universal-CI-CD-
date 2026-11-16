@@ -1,6 +1,8 @@
 # Changelog
 
 ## [0.5.0-dev] - 2026-11-16
+- Adicionada licença MIT com aviso de copyright.
+- Atualizadas as instruções de distribuição para refletir os termos da licença.
 - Corrigida a estrutura do executor e removida duplicação/inconsistência no módulo de empacotamento de artefatos.
 - Reforçadas exclusões do ZIP de código-fonte para diretórios de dependências, caches, credenciais comuns e links simbólicos.
 - Corrigido o workflow de release para gerar e anexar o pacote ZIP sem linhas YAML escapadas incorretamente.
