@@ -69,7 +69,7 @@ Uma linguagem só será considerada validada após execução real de fixture re
 - [x] Modelos padronizados de issue para bugs e sugestões.
 - [x] Política inicial de reporte responsável de vulnerabilidades.
 - [x] Workflow de empacotamento de release corrigido.
-- [ ] Escolher e adicionar licença explícita ao repositório.
+- [x] Escolher e adicionar licença MIT explícita ao repositório.
 - [ ] Validar instalação limpa em Windows e Linux.
 - [ ] Executar campanha final de testes e revisão de segurança antes de convidar testadores.
 - [ ] Publicar primeira beta com notas de versão, matriz de compatibilidade e limitações conhecidas.
