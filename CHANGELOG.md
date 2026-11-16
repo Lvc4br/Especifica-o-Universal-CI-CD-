@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.0-dev] - 2026-11-16
+- Corrigida a estrutura do executor e removida duplicação/inconsistência no módulo de empacotamento de artefatos.
+- Reforçadas exclusões do ZIP de código-fonte para diretórios de dependências, caches, credenciais comuns e links simbólicos.
+- Corrigido o workflow de release para gerar e anexar o pacote ZIP sem linhas YAML escapadas incorretamente.
+- Adicionado guia de distribuição beta, requisitos de avaliação, segurança e critérios de saída da beta.
+- Adicionados modelos de issue para relatos de bugs e sugestões.
+- Adicionada política de reporte responsável de vulnerabilidades.
+
 ## [0.5.0-dev] - 2026-11-14
 - Expandido o planejamento e executor para Go (vet/test/build).
 - Adicionado Rust (cargo fmt check/test/build).
@@ -22,3 +30,4 @@
 - Adicionadas fixtures com testes e builds reais para Python e JavaScript.
 - CI agora executa pipelines completos dos dois ecossistemas e valida os resultados no relatório JSON.
 - Smoke tests cobrem a detecção de scripts npm ausentes e o planejamento do build Python.
+
