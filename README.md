@@ -63,3 +63,8 @@ Os modelos pressupõem PowerShell 7 e executam o pipeline com aprovação no pr�
 ## Distribuição e beta
 
 O projeto está em desenvolvimento e ainda não deve ser usado em produção. Consulte [DISTRIBUTION.md](DISTRIBUTION.md) para requisitos, instalação de avaliação, segurança, feedback e critérios para uma futura beta. Releases empacotadas são artefatos de avaliação, não uma declaração de estabilidade.
+
+
+## Licença
+
+Este projeto é distribuído sob a licença [MIT](LICENSE). Consulte o arquivo `LICENSE` para os termos completos.
