@@ -1,0 +1,55 @@
+name: Relato de bug
+description: Reporte um comportamento incorreto do Universal CI/CD.
+title: "[BUG] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Não inclua senhas, tokens, chaves, dados pessoais ou arquivos de configuração com segredos.
+  - type: input
+    id: version
+    attributes:
+      label: Versão
+      placeholder: "0.5.0-dev"
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: Sistema operacional e versão
+      placeholder: "Windows 11 / Ubuntu 24.04"
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Ambiente e ferramentas
+      description: Informe linguagem, versão do PowerShell e versões das ferramentas utilizadas.
+      placeholder: "PowerShell 7.4, Python 3.12, pytest ..."
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Como reproduzir
+      description: Inclua os comandos executados, removendo caminhos privados e dados sensíveis.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Resultado esperado
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Resultado observado
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs ou relatório sanitizado
+      description: Remova tokens, credenciais, dados pessoais e informações privadas.
