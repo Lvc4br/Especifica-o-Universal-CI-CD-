@@ -10,7 +10,7 @@ Este documento define como compartilhar uma compilação experimental do Univers
 - Ainda não é uma versão estável nem recomendada para pipelines de produção.
 - A compatibilidade varia entre linguagens e ferramentas. Consulte `Docs/ADAPTERS.md`.
 - O executor não oferece isolamento (sandbox).
-- O projeto ainda não contém um arquivo de licença. Antes de uma distribuição pública, o mantenedor deve escolher e adicionar uma licença explícita. Não presuma que a publicação no GitHub concede automaticamente permissão ampla de redistribuição ou uso comercial.
+- Licença: MIT. A licença permite uso, cópia, modificação, distribuição, sublicenciamento e venda, desde que o aviso de copyright e o texto da licença acompanhem cópias ou partes substanciais. O software é fornecido sem garantia; consulte `LICENSE`.
 
 ## Requisitos
 
@@ -59,6 +59,6 @@ Abra uma issue no repositório. Para vulnerabilidades, não publique detalhes ex
 - Bugs críticos e altos corrigidos ou mitigados.
 - Matriz de compatibilidade publicada com evidências.
 - Revisão de segurança e empacotamento concluídos.
-- Licença escolhida e incluída.
+- Licença MIT incluída e conferida no pacote distribuído.
 - Instruções de instalação e atualização validadas.
 - Release notes e limitações conhecidas publicadas.
