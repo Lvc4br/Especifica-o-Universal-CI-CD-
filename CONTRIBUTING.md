@@ -21,3 +21,9 @@
 ## Padrão de commits
 
 Preferir mensagens curtas no estilo Conventional Commits, por exemplo: feat, fix, docs, test, refactor e chore.
+
+## Regra obrigatória de branches
+
+**Não faça alterações diretamente na branch `main`.** Toda contribuição, inclusive documentação, configuração e workflows, deve ser feita em uma branch própria e integrada somente por Pull Request revisado e aprovado. Essa regra vale para todos os colaboradores, inclusive Arthur (@Chiizo-quent), e para agentes automatizados.
+
+Consulte [`AGENTS.md`](AGENTS.md) para o procedimento obrigatório e os comandos Git. O modelo de Pull Request em `.github/PULL_REQUEST_TEMPLATE.md` deve ser preenchido em toda contribuição.
