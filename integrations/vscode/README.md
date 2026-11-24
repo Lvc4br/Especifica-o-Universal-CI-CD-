@@ -19,7 +19,7 @@ A extensão conecta o VS Code ao motor PowerShell existente. O motor permanece r
 ## Interface
 A Tree View nativa organiza os comandos em Workspace, Análise, Execução e Relatórios. O comando **Universal CI/CD: Abrir dashboard** abre o painel visual com estado do workspace, detecção do motor, atalhos operacionais e áreas de inteligência. O item Motor também informa se a extensão encontrou o script `cicd.ps1`. A saída detalhada fica no canal **Universal CI/CD** do painel Output.
 
-O dashboard é uma preview local. Após **Gerar plano**, ele lê `.cicd/plans/latest-plan.json` do workspace e apresenta as etapas, tecnologias, status e motivos registrados pelo motor PowerShell. A leitura é limitada a 1 MB, valida o schema `1.0`, normaliza os campos e rejeita caminhos que escapem do workspace. Os cartões de inteligência e políticas descrevem capacidades existentes no Core, mas não representam serviços remotos conectados. Indicadores de GitHub, runners distribuídos e métricas em tempo real não são simulados.
+O dashboard é uma preview local. Ele lê `.cicd/plans/latest-plan.json` do workspace e apresenta as etapas, tecnologias, status e motivos registrados pelo motor PowerShell. A visualização também se atualiza quando esse arquivo é criado, alterado ou removido por um comando externo, inclusive pela CLI, enquanto o painel está aberto. A leitura é limitada a 1 MB, valida o schema `1.0`, normaliza os campos e rejeita caminhos que escapem do workspace. Os cartões de inteligência e políticas descrevem capacidades existentes no Core, mas não representam serviços remotos conectados. Indicadores de GitHub, runners distribuídos e métricas em tempo real não são simulados.
 
 Detalhes do fluxo de dados, validação, fronteiras de confiança e limitações: [VS Code Dashboard — Local Plan Inspector](../../Docs/VSCODE_DASHBOARD_PLAN_INSPECTOR.md).
 
@@ -52,4 +52,4 @@ Esta versão combina a Tree View nativa do VS Code com um painel Webview respons
 
 A validação e o empacotamento da extensão são executados pelo workflow **VS Code Extension CI** em Pull Requests que alterem a extensão. O artefato VSIX fica disponível na seção Artifacts da execução do GitHub Actions por 14 dias. Para instalar um pacote baixado, use **Extensions: Install from VSIX...** na Command Palette.
 
-O pacote da extensão contém a integração VS Code; o motor PowerShell continua sendo distribuído/configurado separadamente nesta preview. A versão 0.5.0 ainda não é uma publicação no Marketplace.
+O pacote da extensão contém a integração VS Code; o motor PowerShell continua sendo distribuído/configurado separadamente nesta preview. A versão 0.6.0 ainda não é uma publicação no Marketplace.
