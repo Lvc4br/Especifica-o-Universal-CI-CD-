@@ -41,3 +41,8 @@ test("dashboard watches the local plan file and disposes watcher resources", () 
   assert.match(source, /planWatcher\.onDidDelete\(refresh\)/);
   assert.match(source, /planWatcher\.dispose\(\)/);
 });
+
+test("dashboard exposes the read-only UPS inspector through its allowlist", () => {
+  assert.match(source, /"universalCicd\\.inspectUps"/);
+  assert.match(source, /INSPECIONAR UPS/);
+});
