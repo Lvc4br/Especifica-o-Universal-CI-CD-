@@ -3,6 +3,9 @@
 ## Unreleased
 
 ### Added
+- Comando VS Code UPS Inspector: seleciona um documento UPS v1, valida pelos contratos compartilhados e apresenta DAG, ondas, caminho crítico estrutural e diagnósticos em modo somente leitura.
+- Limites defensivos do inspector: arquivo até 1 MB, até 500 jobs e relatório até 100.000 caracteres; nenhuma etapa é executada.
+- Extensão VS Code 0.7.0 passa a consumir `@universal-cicd/contracts`; CI compila os contratos antes do typecheck e inclui a dependência interna no VSIX.
 - Dashboard VS Code atualiza o inspector automaticamente quando `.cicd/plans/latest-plan.json` é criado, alterado ou removido, inclusive por processos externos/CLI.
 - Dashboard VS Code lê o último plano PowerShell salvo em `.cicd/plans/latest-plan.json` e apresenta tecnologias, etapas, status e motivos.
 - Normalização defensiva do snapshot: schema `1.0`, limite de tamanho/quantidade de etapas, strings limitadas e estados desconhecidos tratados sem quebrar a interface.
