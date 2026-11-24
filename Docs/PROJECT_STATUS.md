@@ -27,9 +27,20 @@ Todas as PRs abaixo permanecem draft/abertas e não foram mescladas; preservar a
 | #18 | Dashboard visual VS Code 0.4.0 | #17 | Draft; Extension CI passou e VSIX publicado como artefato |
 | #19 | Inspector do plano local no dashboard 0.5.0 | #18 | Draft; Extension CI e Monorepo CI passaram |
 | #21 | Atualização automática do inspector quando o plano local muda; dashboard 0.6.0 | #19 | Draft; Monorepo CI e VS Code CI passaram |
-| #22 | Comando VS Code UPS Inspector somente leitura; extensão 0.7.0 | #21 | Draft; Monorepo CI e VS Code Extension CI passaram |
+| #22 | VS Code UPS Inspector com DAG visual interativo; extensão 0.8.0 | #21 | Draft; nova validação CI em andamento |
 
-## Marco em desenvolvimento — VS Code 0.7.0 (PR #22)
+## Marco em desenvolvimento — VS Code 0.8.0 (PR #22)
+
+- Comando UPS Inspector seleciona explicitamente um JSON UPS v1.
+- Reutiliza validação, geração plan-only e análise DAG dos contratos compartilhados.
+- Abre relatório textual e DAG visual lado a lado.
+- DAG mostra jobs, dependências, ondas, paralelismo estrutural, caminho crítico e diagnósticos.
+- Seleção de job mostra dependências, capabilities e steps; navegação por teclado.
+- Webview com CSP restritiva, sem assets remotos, sem bridge de comandos e sem `innerHTML`.
+- Limites herdados: arquivo de 1 MB, 500 jobs e relatório de 100.000 caracteres.
+- Não executa steps, não contata runners e não autoriza execução.
+
+## Marco anterior — VS Code 0.7.0 (PR #22)
 
 - Comando seleciona explicitamente um arquivo JSON UPS v1.
 - Validação, geração de plano plan-only e análise DAG reutilizam `@universal-cicd/contracts`.
@@ -67,7 +78,8 @@ Todas as PRs abaixo permanecem draft/abertas e não foram mescladas; preservar a
 - O protocolo de aprovação da PR #17 é design-only; não implementa identidade, tokens ou autorização.
 - O dashboard 0.6.0 não simula GitHub, runners remotos, telemetria ou execuções em tempo real.
 - PR #21: Monorepo CI e VS Code Extension CI passaram após correção da expectativa de versão no teste do manifesto.
-- PR #22: Monorepo CI passou no run `45467318370`; VS Code Extension CI passou no run `45467317904`.
+- PR #22 / versão 0.7.0: Monorepo CI passou no run `45467318370`; VS Code Extension CI passou no run `45467317904`.
+- PR #22 / versão 0.8.0: implementação do DAG visual adicionada; aguardando nova validação CI.
 - PR #22: VSIX `universal-cicd-vscode-0.7.0` empacotado e publicado como artefato ID `14956240032` (expira em 8 de dezembro de 2026).
 - Nenhuma PR desta cadeia foi mesclada em `main`.
 
@@ -79,4 +91,4 @@ Todas as PRs abaixo permanecem draft/abertas e não foram mescladas; preservar a
 
 ## Conclusão
 
-O projeto avançou até um dashboard VS Code capaz de inspecionar o plano local real, com validação CI e artefato instalável. Continua sendo uma prévia em desenvolvimento por PRs empilhadas; não é produto pronto para produção. Revisão, integração ordenada, testes de segurança e validação com usuários continuam necessários.
+O projeto avançou até um dashboard VS Code capaz de inspecionar planos locais e abrir um DAG visual UPS v1; a versão 0.8.0 aguarda validação CI. Continua sendo uma prévia em desenvolvimento por PRs empilhadas; não é produto pronto para produção. Revisão, integração ordenada, testes de segurança e validação com usuários continuam necessários.
