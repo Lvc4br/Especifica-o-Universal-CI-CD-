@@ -42,8 +42,9 @@ export function validateUpsPipeline(value:unknown):UpsValidationResult {
   if(stringArray(jv.needs)&&new Set(jv.needs).size!==jv.needs.length)issue(issues,"UPS_DUPLICATE_DEPENDENCY",p+".needs","Dependency IDs must be unique.");
   if(stringArray(jv.runsOn)&&new Set(jv.runsOn).size!==jv.runsOn.length)issue(issues,"UPS_DUPLICATE_CAPABILITY",p+".runsOn","Required capabilities must be unique.");
   if(!Array.isArray(jv.steps)||!jv.steps.length){issue(issues,"UPS_STEPS",p+".steps","Job requires at least one step.");continue;}
+  if(jv.steps.length>100)issue(issues,"UPS_STEP_LIMIT",p+".steps","A job may contain at most 100 steps.");
   const stepIds=new Set<string>();
-  jv.steps.forEach((sv,i)=>{
+  jv.steps.slice(0,100).forEach((sv,i)=>{
    const sp=p+".steps["+i+"]";
    if(!object(sv)){issue(issues,"UPS_STEP",sp,"Step must be an object.");return;}
    for(const k of Object.keys(sv))if(!stepKeys.has(k))issue(issues,"UPS_UNKNOWN_FIELD",sp+"."+k,"Unknown step field.");
