@@ -3,7 +3,7 @@
 ## Unreleased
 
 ### Added
-- VS Code 0.8.0: painel gráfico interativo para DAG UPS v1, com ondas, arestas de dependência, caminho crítico estrutural, seleção de jobs e diagnósticos.
+- VS Code 0.8.0: painel gráfico interativo para DAG UPS v1, com ondas, arestas de dependência, caminho crítico estrutural, seleção de jobs e diagnósticos; atalho integrado à seção Inteligência de pipeline do dashboard.
 - Visualização alimentada exclusivamente pelo UPS Validator, Execution Plan Generator e Pipeline Intelligence compartilhados; sem execução, runners ou telemetria simulada.
 - Testes de segurança para CSP restritiva, ausência de assets remotos, renderização por text nodes e navegação por teclado.
 - Comando VS Code UPS Inspector: seleciona um documento UPS v1, valida pelos contratos compartilhados e apresenta DAG, ondas, caminho crítico estrutural e diagnósticos em modo somente leitura.
