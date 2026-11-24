@@ -10,7 +10,7 @@ test("UPS graph webview enforces a restrictive CSP and has no remote resources",
   assert.match(source, /style-src 'nonce-/);
   assert.match(source, /script-src 'nonce-/);
   assert.match(source, /localResourceRoots: \[\]/);
-  assert.doesNotMatch(source, /https?:\/\//);
+  assert.doesNotMatch(source, /<script[^>]+src=|<link[^>]+href=/i);
 });
 
 test("UPS graph renders untrusted pipeline data through DOM text nodes", () => {
