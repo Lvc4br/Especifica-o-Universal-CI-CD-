@@ -2,6 +2,7 @@
 Transforms a validated UPS v1 document into a deterministic plan. This is **plan-only**: it does not launch processes, resolve secrets, provision runners, grant permissions, or claim sandboxing.
 
 ## Guarantees
+- UPS v1 schema and runtime validator enforce valid job IDs, unique dependency/capability entries, and a maximum of 500 jobs.
 - Validates first; invalid input returns issues and no plan.
 - Topological job ordering, lexical tie-breaks for reproducibility.
 - Parallel execution waves derived from dependency relationships.
