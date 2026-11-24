@@ -1,0 +1,7 @@
+const test=require("node:test");const assert=require("node:assert/strict");const {generateUpsExecutionPlan}=require("../dist/ups-execution-plan.js");
+const pipeline={version:"1",name:"demo",jobs:{z:{runsOn:["linux","node"],steps:[{id:"test",run:{executable:"npm",args:["test"]}}]},b:{needs:["z"],steps:[{id:"build",run:{executable:"npm",args:["run","build"]}}]},a:{steps:[{id:"lint",run:{executable:"npm",args:["run","lint"]}}]}}};
+test("ordered jobs and dependency waves",()=>{const r=generateUpsExecutionPlan(pipeline);assert.equal(r.valid,true);assert.deepEqual(r.plan.jobs.map(j=>j.id),["a","z","b"]);assert.deepEqual(r.plan.parallelGroups,[["a","z"],["b"]]);assert.equal(r.plan.jobs[1].steps[0].executable,"npm");assert.deepEqual(r.plan.jobs[1].steps[0].args,["test"]);assert.equal(r.plan.executionMode,"plan-only");});
+test("deterministic",()=>assert.deepEqual(generateUpsExecutionPlan(pipeline),generateUpsExecutionPlan(pipeline)));
+test("capabilities summary",()=>assert.deepEqual(generateUpsExecutionPlan(pipeline).plan.summary.requiredCapabilities,["linux","node"]));
+test("invalid pipeline returns no plan",()=>{const r=generateUpsExecutionPlan({...pipeline,version:"2"});assert.equal(r.valid,false);assert.equal(r.plan,undefined);});
+test("single job wave",()=>assert.deepEqual(generateUpsExecutionPlan({version:"1",name:"x",jobs:{one:{steps:[{id:"s",run:{executable:"echo",args:[]}}]}}}).plan.parallelGroups,[["one"]]));
