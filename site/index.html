@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b1020">
+<meta name="description" content="Universal CI/CD — prévia pública da plataforma de engenharia de pipelines.">
+<title>Universal CI/CD — Preview</title>
+<style>
+:root{color-scheme:dark;--bg:#090f1e;--panel:#101a2d;--panel2:#14213a;--line:#263653;--muted:#93a4bf;--text:#eef4ff;--cyan:#5ad8e8;--violet:#9b8cff;--green:#65d6a6;--amber:#f2bf70;--red:#ff858e}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 70% -10%,#263966 0,transparent 40%),var(--bg);color:var(--text);font:14px/1.6 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}button,a{font:inherit}a{color:inherit;text-decoration:none}.app{min-height:100vh;display:grid;grid-template-columns:250px minmax(0,1fr)}aside{border-right:1px solid var(--line);background:#0c1425;padding:24px 16px;display:flex;flex-direction:column;gap:26px}.brand{display:flex;align-items:center;gap:12px;padding:0 8px}.logo{width:40px;height:40px;border-radius:13px;background:linear-gradient(135deg,var(--cyan),var(--violet));display:grid;place-items:center;color:#07101e;font-weight:950;font-size:20px;box-shadow:0 8px 28px #4ec9e833}.brand strong{display:block;font-size:13px;letter-spacing:.6px}.brand small{color:var(--muted);font-size:10px}.nav-label{padding:0 10px;color:#6f82a2;font-size:9px;letter-spacing:1.5px;font-weight:800;text-transform:uppercase}.nav{display:grid;gap:6px}.nav button{border:1px solid transparent;background:transparent;color:#a8b6cc;text-align:left;padding:10px 12px;border-radius:9px;cursor:pointer;font-size:12px;display:flex;align-items:center;gap:11px}.nav button:hover,.nav button.active{background:#192640;border-color:#2a3a59;color:white}.nav button.active{box-shadow:inset 2px 0 var(--cyan)}.nav-icon{width:18px;text-align:center;color:var(--cyan)}.side-note{margin-top:auto;border:1px solid var(--line);background:#111c30;padding:13px;border-radius:12px;font-size:10px;color:var(--muted)}.side-note strong{display:block;color:var(--text);font-size:11px;margin-bottom:5px}.side-footer{color:#647591;font-size:10px;padding:0 8px}
+main{min-width:0;padding:28px clamp(18px,4vw,54px) 40px;max-width:1600px;width:100%;margin:0 auto}.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:30px}.crumb{font-size:11px;color:var(--muted)}.crumb b{color:var(--text)}.top-actions{display:flex;gap:8px;align-items:center}.pill{border:1px solid var(--line);border-radius:999px;padding:6px 10px;color:var(--muted);font-size:10px;white-space:nowrap}.pill.live{color:var(--green);border-color:#326c5a;background:#10281f}.page{display:none;animation:appear .2s ease}.page.active{display:block}@keyframes appear{from{opacity:.5;transform:translateY(4px)}to{opacity:1;transform:none}}.eyebrow{font-size:10px;color:var(--cyan);letter-spacing:1.8px;font-weight:850;text-transform:uppercase}.heading{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin:0 0 20px}.heading h1{font-size:clamp(25px,4vw,38px);line-height:1.12;letter-spacing:-1px;margin:8px 0}.heading p{color:var(--muted);margin:0;max-width:690px;font-size:12px}.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:#192640;color:var(--text);padding:9px 13px;border-radius:9px;font-size:11px;font-weight:700;cursor:pointer}.btn.primary{background:linear-gradient(100deg,var(--cyan),#9690ff);color:#07101e;border:0}.btn:hover{filter:brightness(1.12)}.hero{display:grid;grid-template-columns:1.55fr .85fr;gap:14px;margin-bottom:14px}.panel{border:1px solid var(--line);border-radius:16px;background:linear-gradient(145deg,#14213aee,#10192bee);padding:20px;box-shadow:0 12px 38px #0002}.hero-main{padding:28px;position:relative;overflow:hidden}.hero-main:after{content:"";position:absolute;width:240px;height:240px;border-radius:50%;right:-100px;top:-120px;background:#6d8aff18;filter:blur(3px)}.hero-main h2{font-size:clamp(24px,3vw,34px);line-height:1.14;letter-spacing:-.9px;margin:10px 0}.hero-main p{color:var(--muted);max-width:570px;font-size:12px;margin:0 0 18px}.hero-side{display:flex;flex-direction:column;justify-content:space-between;gap:16px}.state{display:flex;align-items:center;gap:8px;font-weight:750;font-size:12px}.dot{width:8px;height:8px;border-radius:50%;background:var(--amber);box-shadow:0 0 10px #f2bf7077}.state-sub{color:var(--muted);font-size:10px;margin:7px 0}.workspace{border-top:1px solid var(--line);padding-top:14px}.workspace small{color:var(--muted);font-size:9px;letter-spacing:1px}.workspace strong{display:block;margin-top:4px;font-size:12px}.notice{border:1px solid #665332;background:#292318;color:#ead6ad;border-radius:11px;padding:12px;font-size:10px;margin:14px 0}.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0 24px}.metric{padding:15px}.metric span{display:block;color:var(--muted);font-size:10px}.metric strong{display:block;font-size:21px;margin:5px 0 1px}.metric small{color:#7486a4;font-size:9px}.section-title{display:flex;justify-content:space-between;align-items:center;margin:24px 0 11px}.section-title h2{font-size:14px;margin:0}.section-title span{font-size:10px;color:var(--muted)}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.feature{padding:16px}.feature-icon{width:32px;height:32px;border-radius:10px;background:#22334f;color:var(--cyan);display:grid;place-items:center;margin-bottom:12px}.feature h3{font-size:12px;margin:0 0 5px}.feature p{font-size:10px;color:var(--muted);margin:0}.tag{display:inline-block;margin-top:12px;border:1px solid var(--line);border-radius:99px;padding:3px 7px;color:var(--muted);font-size:9px}.tag.ready{color:var(--green);border-color:#326c5a}.two-col{display:grid;grid-template-columns:1.1fr .9fr;gap:12px}.pipeline{display:flex;align-items:center;gap:8px;overflow:auto;padding:8px 0 14px}.node{min-width:110px;padding:12px 10px;border:1px solid #35516e;background:#142941;border-radius:10px;text-align:center}.node strong{display:block;font-size:10px}.node small{display:block;color:var(--muted);font-size:9px;margin-top:4px}.arrow{color:var(--cyan);font-size:16px}.muted{color:var(--muted);font-size:10px}.table{width:100%;border-collapse:collapse;font-size:10px}.table th{text-align:left;color:#8294b0;font-weight:600;padding:9px;border-bottom:1px solid var(--line)}.table td{padding:10px 9px;border-bottom:1px solid #202e47}.status{border-radius:99px;padding:3px 7px;font-size:9px;border:1px solid #4b5a73;color:#c0cce0}.status.demo{border-color:#665332;color:var(--amber)}.architecture{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;align-items:stretch}.arch-box{border:1px solid var(--line);border-radius:13px;padding:16px;background:#111d31}.arch-box h3{font-size:12px;margin:0 0 8px}.arch-box p{font-size:10px;color:var(--muted);margin:0}.arch-box .arch-label{font-size:9px;color:var(--cyan);letter-spacing:1px;margin-bottom:8px}.roadmap{display:grid;gap:10px}.roadmap-item{display:grid;grid-template-columns:105px 1fr;gap:14px;border:1px solid var(--line);background:#111c30;border-radius:12px;padding:14px}.roadmap-item b{font-size:11px}.roadmap-item p{margin:4px 0 0;color:var(--muted);font-size:10px}.roadmap-item .phase{font-size:9px;color:var(--cyan);letter-spacing:.8px}.footer{margin-top:28px;border-top:1px solid var(--line);padding-top:14px;display:flex;justify-content:space-between;gap:12px;color:#7183a0;font-size:9px}.mobile-brand{display:none}
+@media(max-width:900px){.app{grid-template-columns:210px minmax(0,1fr)}.cards{grid-template-columns:repeat(2,1fr)}.hero{grid-template-columns:1fr}.hero-side{min-height:150px}.architecture{grid-template-columns:1fr 1fr}}
+@media(max-width:650px){.app{display:block}aside{position:sticky;top:0;z-index:5;padding:10px 12px;border-right:0;border-bottom:1px solid var(--line);gap:10px}.brand{padding:0 3px}.logo{width:32px;height:32px;border-radius:10px}.brand strong{font-size:11px}.brand small{font-size:9px}.side-note,.side-footer,.nav-label{display:none}.nav{display:flex;overflow:auto;gap:5px}.nav button{white-space:nowrap;padding:7px 9px;font-size:10px}.nav-icon{width:auto}main{padding:18px 14px 28px}.topbar{margin-bottom:20px}.heading{display:block}.heading .btn{margin-top:12px}.metrics{grid-template-columns:repeat(2,1fr)}.cards{grid-template-columns:1fr 1fr}.two-col{grid-template-columns:1fr}.architecture{grid-template-columns:1fr}.roadmap-item{grid-template-columns:78px 1fr}.footer{flex-direction:column}}
+@media(max-width:390px){.cards{grid-template-columns:1fr}.pill{font-size:9px;padding:5px 7px}.top-actions .pill:first-child{display:none}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside>
+ <div class="brand"><div class="logo">U</div><div><strong>UNIVERSAL CI/CD</strong><small>Developer workflow intelligence</small></div></div>
+ <div><div class="nav-label">Workspace</div><nav class="nav" aria-label="Navegação principal">
+  <button class="active" data-page="overview"><span class="nav-icon">⌂</span>Visão geral</button>
+  <button data-page="pipeline"><span class="nav-icon">⌘</span>Pipeline</button>
+  <button data-page="architecture"><span class="nav-icon">◇</span>Arquitetura</button>
+  <button data-page="roadmap"><span class="nav-icon">↗</span>Roadmap</button>
+ </nav></div>
+ <div class="side-note"><strong>Prévia pública temporária</strong>Esta página demonstra a direção visual do produto. Ela não executa builds nem acessa seu workspace.</div>
+ <div class="side-footer">Luca Toniolo · Projeto em desenvolvimento</div>
+</aside>
+<main>
+ <div class="topbar"><div class="crumb">Universal CI/CD <span> / </span><b id="crumb-page">Visão geral</b></div><div class="top-actions"><span class="pill">BUILD 0.5.0</span><span class="pill live">● PREVIEW</span></div></div>
+
+ <section class="page active" id="page-overview">
+  <div class="heading"><div><div class="eyebrow">Seu centro de engenharia</div><h1>Do código ao pipeline.<br>Com clareza em cada etapa.</h1><p>Uma plataforma modular para analisar projetos, planejar pipelines e conectar ferramentas de desenvolvimento com transparência, segurança e controle humano.</p></div></div>
+  <div class="hero">
+   <div class="panel hero-main"><div class="eyebrow">Universal workflow orchestration</div><h2>Uma visão unificada<br>do seu fluxo de entrega.</h2><p>O Universal CI/CD combina um motor local, contratos compartilhados e integrações para evoluir de análise e planejamento até uma orquestração interoperável.</p><button class="btn primary" data-go="pipeline">Explorar o pipeline <span>→</span></button></div>
+   <div class="panel hero-side"><div><div class="eyebrow">Estado desta demonstração</div><div class="state"><i class="dot"></i>Modo demonstrativo</div><div class="state-sub">Nenhum workspace ou runner está conectado a esta página.</div></div><div class="workspace"><small>PRODUTO</small><strong>Universal CI/CD · 0.5.0-dev</strong><div class="muted">Local-first · Human-in-the-loop</div></div></div>
+  </div>
+  <div class="notice"><b>Importante:</b> os elementos visuais desta prévia são ilustrativos. Os números e estados abaixo não representam telemetria, execuções ou serviços ativos.</div>
+  <div class="section-title"><h2>Princípios do produto</h2><span>Fundamentos de arquitetura</span></div>
+  <div class="metrics">
+   <div class="panel metric"><span>Execução</span><strong>Local-first</strong><small>Motor PowerShell como fonte da verdade</small></div>
+   <div class="panel metric"><span>Decisões</span><strong>Humanas</strong><small>Aprovação explícita antes da execução</small></div>
+   <div class="panel metric"><span>Inteligência</span><strong>Explicável</strong><small>Regras determinísticas e rastreáveis</small></div>
+   <div class="panel metric"><span>IA</span><strong>Opcional</strong><small>Nunca aprova ou concede permissões</small></div>
+  </div>
+  <div class="section-title"><h2>Áreas do produto</h2><span>Capacidades em diferentes estágios</span></div>
+  <div class="cards">
+   <article class="panel feature"><div class="feature-icon">⌕</div><h3>Descoberta & análise</h3><p>Identificação de tecnologias, ferramentas e características do projeto.</p><span class="tag ready">Motor existente</span></article>
+   <article class="panel feature"><div class="feature-icon">✓</div><h3>Planejamento</h3><p>Geração de planos revisáveis antes de qualquer execução.</p><span class="tag ready">Motor existente</span></article>
+   <article class="panel feature"><div class="feature-icon">⌘</div><h3>Pipeline Intelligence</h3><p>Análise de DAG, dependências, ondas e caminho crítico estrutural.</p><span class="tag">Contratos implementados</span></article>
+   <article class="panel feature"><div class="feature-icon">⬡</div><h3>Policy & Trust</h3><p>Avaliação de regras, bloqueios e necessidade de revisão humana.</p><span class="tag">Assessment-only</span></article>
+   <article class="panel feature"><div class="feature-icon">⌘</div><h3>VS Code</h3><p>Comandos locais, Explorer e dashboard de inspeção do plano.</p><span class="tag ready">Preview 0.5.0</span></article>
+   <article class="panel feature"><div class="feature-icon">◈</div><h3>GitHub Integration</h3><p>Fundação observadora e contratos para o ciclo de vida de CI.</p><span class="tag">Em desenvolvimento</span></article>
+  </div>
+ </section>
+
+ <section class="page" id="page-pipeline">
+  <div class="heading"><div><div class="eyebrow">Pipeline explorer</div><h1>Entenda o fluxo.<br>Antes de executá-lo.</h1><p>Uma representação visual de como um pipeline pode ser organizado. Este exemplo é conceitual e não está conectado ao motor nem representa uma execução real.</p></div><span class="pill">EXEMPLO ILUSTRATIVO</span></div>
+  <div class="panel"><div class="section-title" style="margin-top:0"><h2>Fluxo conceitual de CI</h2><span>Exemplo, não telemetria</span></div>
+   <div class="pipeline"><div class="node"><strong>Discover</strong><small>Detectar projeto</small></div><span class="arrow">→</span><div class="node"><strong>Validate</strong><small>Validar configuração</small></div><span class="arrow">→</span><div class="node"><strong>Plan</strong><small>Gerar plano</small></div><span class="arrow">→</span><div class="node"><strong>Review</strong><small>Revisão humana</small></div><span class="arrow">→</span><div class="node"><strong>Execute</strong><small>Execução protegida</small></div></div>
+   <p class="muted">A execução permanece condicionada aos gates de segurança, às políticas e à aprovação explícita. Esta página não dispara nenhuma dessas ações.</p>
+  </div>
+  <div class="two-col" style="margin-top:12px">
+   <div class="panel"><div class="section-title" style="margin-top:0"><h2>Estados possíveis</h2><span>Sem dados de execução</span></div><table class="table"><thead><tr><th>Estado</th><th>Significado</th></tr></thead><tbody><tr><td><span class="status">PLANNED</span></td><td>Etapa incluída no plano</td></tr><tr><td><span class="status">BLOCKED</span></td><td>Etapa bloqueada por uma condição</td></tr><tr><td><span class="status">REVIEW</span></td><td>Revisão humana necessária</td></tr><tr><td><span class="status">UNKNOWN</span></td><td>Estado não reconhecido</td></tr></tbody></table></div>
+   <div class="panel"><div class="section-title" style="margin-top:0"><h2>Limites atuais</h2></div><p class="muted">A prévia web não acessa arquivos locais, não conhece o estado do seu repositório em tempo real, não agenda runners, não recebe secrets e não inicia workflows GitHub. Para inspecionar um plano real, use a extensão VS Code 0.5.0 com o motor PowerShell configurado.</p></div>
+  </div>
+ </section>
+
+ <section class="page" id="page-architecture">
+  <div class="heading"><div><div class="eyebrow">System architecture</div><h1>Modular por desenho.<br>Seguro por princípio.</h1><p>O projeto separa o motor de execução, os contratos compartilhados e as integrações. Cada camada tem responsabilidades e fronteiras explícitas.</p></div></div>
+  <div class="architecture">
+   <article class="arch-box"><div class="arch-label">01 · CORE</div><h3>PowerShell Engine</h3><p>Descoberta, validação, planejamento, executor aprovado, timeout, saída limitada e relatórios locais. Fonte da verdade operacional.</p></article>
+   <article class="arch-box"><div class="arch-label">02 · CONTRACTS</div><h3>Shared Intelligence</h3><p>UPS, geração de planos, resolução de capabilities, análise de DAG e avaliação declarativa de políticas.</p></article>
+   <article class="arch-box"><div class="arch-label">03 · INTERFACES</div><h3>VS Code & GitHub</h3><p>Extensão VS Code, dashboard local, GitHub App observador e futura evolução de Check Runs.</p></article>
+  </div>
+  <div class="panel" style="margin-top:12px"><div class="section-title" style="margin-top:0"><h2>Fluxo de confiança</h2><span>Visão simplificada</span></div><div class="pipeline"><div class="node"><strong>Source</strong><small>Workspace / commit</small></div><span class="arrow">→</span><div class="node"><strong>Plan</strong><small>Sem execução</small></div><span class="arrow">→</span><div class="node"><strong>Policy</strong><small>Assessment</small></div><span class="arrow">→</span><div class="node"><strong>Approval</strong><small>Humano</small></div><span class="arrow">→</span><div class="node"><strong>Executor</strong><small>Gate futuro</small></div></div><p class="muted">O protocolo de autorização está documentado como desenho. Identidade, emissão de tokens e autorização executável ainda não estão implementadas.</p></div>
+  <div class="notice"><b>Segurança:</b> o executor local não é sandbox. Execução remota e runners distribuídos permanecem desativados enquanto isolamento, identidade, gestão de credenciais e controles para código não confiável não estiverem implementados e validados.</div>
+ </section>
+
+ <section class="page" id="page-roadmap">
+  <div class="heading"><div><div class="eyebrow">Product roadmap</div><h1>Construir com evidências.<br>Evoluir com responsabilidade.</h1><p>O roadmap é organizado por gates técnicos. A próxima etapa depende da validação da anterior, não apenas de adicionar funcionalidades.</p></div></div>
+  <div class="roadmap">
+   <article class="roadmap-item"><div><div class="phase">FOUNDATION</div><b>Base do monorepo</b></div><div><span class="status">Em evolução</span><p>Motor PowerShell, contratos compartilhados, integração VS Code e fundação GitHub.</p></div></article>
+   <article class="roadmap-item"><div><div class="phase">PORTABILITY</div><b>UPS v1</b></div><div><span class="status">Draft</span><p>Especificação portátil, validação, geração de planos e fixtures.</p></div></article>
+   <article class="roadmap-item"><div><div class="phase">INTELLIGENCE</div><b>Pipeline & capabilities</b></div><div><span class="status">Implementado em contratos</span><p>Análise determinística de DAG, resolução de capabilities e resultados explicáveis.</p></div></article>
+   <article class="roadmap-item"><div><div class="phase">TRUST</div><b>Policy & approval</b></div><div><span class="status">Assessment / design</span><p>Políticas declarativas e protocolo de aprovação; enforcement e identidade ainda pendentes.</p></div></article>
+   <article class="roadmap-item"><div><div class="phase">EXECUTION</div><b>Local & distributed</b></div><div><span class="status">Futuro</span><p>Hardening do executor, lifecycle de runners, isolamento, filas e recuperação.</p></div></article>
+   <article class="roadmap-item"><div><div class="phase">RELEASE</div><b>Beta & comunidade</b></div><div><span class="status">Futuro</span><p>Validação com usuários, documentação, suporte, métricas e estratégia comercial.</p></div></article>
+  </div>
+ </section>
+ <footer class="footer"><span>UNIVERSAL CI/CD · Prévia pública temporária</span><span>Projeto em desenvolvimento · Não utilizar em produção</span></footer>
+</main>
+</div>
+<script>
+const buttons=[...document.querySelectorAll("[data-page]")];
+const pages=[...document.querySelectorAll(".page")];
+const labels={overview:"Visão geral",pipeline:"Pipeline",architecture:"Arquitetura",roadmap:"Roadmap"};
+function showPage(name){if(!labels[name])return;pages.forEach(p=>p.classList.toggle("active",p.id==="page-"+name));buttons.forEach(b=>b.classList.toggle("active",b.dataset.page===name));document.getElementById("crumb-page").textContent=labels[name];window.scrollTo({top:0,behavior:"smooth"});history.replaceState(null,"","#"+name);}
+buttons.forEach(b=>b.addEventListener("click",()=>showPage(b.dataset.page)));
+document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>showPage(b.dataset.go)));
+const initial=location.hash.slice(1);if(labels[initial])showPage(initial);
+</script>
+</body>
+</html>
