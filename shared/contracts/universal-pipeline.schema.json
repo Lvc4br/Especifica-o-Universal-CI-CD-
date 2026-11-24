@@ -77,7 +77,8 @@
           "minItems": 1,
           "items": {
             "$ref": "#/$defs/step"
-          }
+          },
+          "maxItems": 100
         }
       }
     },
