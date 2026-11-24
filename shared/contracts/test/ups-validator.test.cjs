@@ -1,0 +1,10 @@
+const test=require("node:test");const assert=require("node:assert/strict");const {validateUpsPipeline}=require("../dist/ups-validator.js");
+const good={version:"1",name:"demo",jobs:{a:{steps:[{id:"run",run:{executable:"node",args:["--version"]}}]},b:{needs:["a"],steps:[{id:"test",run:{executable:"npm",args:["test"]}}]}}};
+test("accepts valid pipeline",()=>assert.equal(validateUpsPipeline(good).valid,true));
+test("rejects unsupported version",()=>assert.ok(validateUpsPipeline({...good,version:"2"}).issues.some(x=>x.code==="UPS_VERSION")));
+test("rejects unknown fields",()=>assert.ok(validateUpsPipeline({...good,foo:true}).issues.some(x=>x.code==="UPS_UNKNOWN_FIELD")));
+test("rejects unknown dependency",()=>assert.ok(validateUpsPipeline({...good,jobs:{a:{needs:["missing"],steps:good.jobs.a.steps}}}).issues.some(x=>x.code==="UPS_UNKNOWN_DEPENDENCY")));
+test("detects dependency cycle",()=>assert.ok(validateUpsPipeline({...good,jobs:{a:{needs:["b"],steps:good.jobs.a.steps},b:{needs:["a"],steps:good.jobs.b.steps}}}).issues.some(x=>x.code==="UPS_CYCLE")));
+test("rejects unsafe malformed args",()=>assert.ok(validateUpsPipeline({...good,jobs:{a:{steps:[{id:"x",run:{executable:"node",args:"--version"}}]}}}).issues.some(x=>x.code==="UPS_ARGS")));
+test("rejects duplicate step IDs",()=>assert.ok(validateUpsPipeline({...good,jobs:{a:{steps:[{id:"x",run:{executable:"node",args:[]}},{id:"x",run:{executable:"node",args:[]}}]}}}).issues.some(x=>x.code==="UPS_DUPLICATE_STEP")));
+test("rejects empty jobs",()=>assert.equal(validateUpsPipeline({version:"1",name:"empty",jobs:{}}).valid,false));
