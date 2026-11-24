@@ -3,6 +3,7 @@ import { dirname } from "node:path";
 
 export type EngineCommand =
   | "version"
+  | "init"
   | "status"
   | "detect"
   | "validate-config"
@@ -19,6 +20,7 @@ export interface EngineRunOptions {
   command: EngineCommand;
   projectPath: string;
   timeoutMs: number;
+  timeoutSeconds?: number;
   approve?: boolean;
   onOutput?: (stream: "stdout" | "stderr", chunk: string) => void;
   shouldCancel?: () => boolean;
@@ -45,7 +47,8 @@ export function buildEngineArgs(
   scriptPath: string,
   command: EngineCommand,
   projectPath: string,
-  approve = false
+  approve = false,
+  timeoutSeconds = 600
 ): string[] {
   const args = [
     "-NoLogo",
@@ -59,7 +62,7 @@ export function buildEngineArgs(
   ];
 
   if (command === "run" || command === "run-workspaces") {
-    args.push("-TimeoutSeconds", "600");
+    args.push("-TimeoutSeconds", String(Math.min(86400, Math.max(1, Math.floor(timeoutSeconds)))));
     if (approve) args.push("-Approve");
   }
 
@@ -86,7 +89,8 @@ export function runEngineCommand(options: EngineRunOptions): Promise<EngineRunRe
         options.scriptPath,
         options.command,
         options.projectPath,
-        options.approve ?? false
+        options.approve ?? false,
+        options.timeoutSeconds ?? 600
       ),
       {
         cwd: dirname(options.scriptPath),
