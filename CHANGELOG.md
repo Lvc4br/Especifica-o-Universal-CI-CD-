@@ -43,3 +43,7 @@
 - Added deterministic UPS v1 planning, dependency waves, capability summary and explanatory rationale.
 - Plan-only; no process execution.
 - Added planner tests.
+
+## Unreleased — Capability Resolution Engine
+- Added deterministic, analysis-only runner capability matching, inventory validation, and unresolved-job reasons.
+- Added capability resolver tests and safety boundary documentation. No runner execution or authorization.
