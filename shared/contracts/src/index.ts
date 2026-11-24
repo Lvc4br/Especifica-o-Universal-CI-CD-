@@ -44,3 +44,6 @@ export type { UpsValidationIssue, UpsValidationResult } from "./ups-validator";
 
 export { generateUpsExecutionPlan } from "./ups-execution-plan";
 export type { UpsExecutionPlan, UpsPlanResult, UpsPlannedJob, UpsPlannedStep } from "./ups-execution-plan";
+
+export { resolvePlanCapabilities } from "./capability-resolution";
+export type { CapabilityRunner, CapabilityResolution, CapabilityResolutionResult, JobResolution, RunnerStatus } from "./capability-resolution";
