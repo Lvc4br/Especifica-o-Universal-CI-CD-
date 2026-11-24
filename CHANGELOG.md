@@ -5,7 +5,8 @@
 ### Added
 - Tree View nativa no Explorer com atalhos organizados por workspace, análise, execução e relatórios.
 - Indicador de localização do motor PowerShell e atalhos para inicializar e descobrir projetos.
-- Guia de instalação, configuração, comandos e segurança da extensão VS Code.
+- Guia de instalação, configuração, comandos, testes e segurança da extensão VS Code.
+- Estrutura de responsabilidades de Luca (mantenedor e base técnica), Higor (gerenciamento e validação) e Arthur (design e layout nas fases futuras).
 - Adaptador PowerShell com allowlist de comandos, argumentos separados, timeout configurável, cancelamento e captura limitada de saída.
 - Execução local de pipelines protegida por geração de plano e aprovação modal explícita.
 
