@@ -47,3 +47,6 @@ export type { UpsExecutionPlan, UpsPlanResult, UpsPlannedJob, UpsPlannedStep } f
 
 export { resolvePlanCapabilities } from "./capability-resolution";
 export type { CapabilityRunner, CapabilityResolution, CapabilityResolutionResult, JobResolution, RunnerStatus } from "./capability-resolution";
+
+export { analyzePipelineIntelligence } from "./pipeline-intelligence";
+export type { PipelineIntelligence, PipelineIntelligenceDiagnostic, PipelineIntelligenceResult } from "./pipeline-intelligence";

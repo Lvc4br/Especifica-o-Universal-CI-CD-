@@ -3,6 +3,14 @@
 ## Unreleased
 
 ### Added
+- Deterministic, analysis-only Pipeline Intelligence Engine for UPS v1 dependency graphs.
+- Stable topological ordering, structural critical path, parallel waves, independent/terminal jobs, fan-out and actionable diagnostics.
+- Tests for DAGs, cycles, missing/duplicate dependencies, malformed inputs, deterministic output and input immutability.
+
+### Security
+- Static graph analysis only; no command execution, runner communication/reservation, authorization, secrets or AI calls.
+
+### Added
 - Draft Universal Pipeline Specification v1: JSON Schema, example pipeline, portability and safety invariants.
 - Initial ecosystem fixture validation matrix with honest planned status and acceptance criteria.
 - Tree View nativa no Explorer com atalhos organizados por workspace, análise, execução e relatórios.
