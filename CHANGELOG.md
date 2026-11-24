@@ -3,29 +3,14 @@
 ## Unreleased
 
 ### Added
-- VS Code engine adapter with a typed command allowlist and argument-vector construction.
-- VS Code commands for engine version, project initialization, status, detection, configuration validation, planning, workspace discovery, history and report export.
-- Explicitly approved pipeline and workspace execution, gated by a successful plan and modal confirmation.
-- Bounded process output capture, configurable timeout and cancellation handling for local engine processes.
-- Unit tests covering argument construction, approval boundaries and timeout forwarding.
+- Tree View nativa no Explorer com atalhos organizados por workspace, análise, execução e relatórios.
+- Indicador de localização do motor PowerShell e atalhos para inicializar e descobrir projetos.
+- Guia de instalação, configuração, comandos e segurança da extensão VS Code.
+- Adaptador PowerShell com allowlist de comandos, argumentos separados, timeout configurável, cancelamento e captura limitada de saída.
+- Execução local de pipelines protegida por geração de plano e aprovação modal explícita.
 
 ### Security
-- PowerShell is launched with `shell: false`; user-controlled project paths are passed as individual arguments.
-- Pipeline execution commands request a modal confirmation only after a successful plan.
-- No remote execution, GitHub workflow dispatch, or AI provider is enabled by this change.
-
-### Added
-- Criada a fundação monorepo para a extensão VS Code e o GitHub App.
-- Adicionados contratos TypeScript compartilhados para etapas, execuções e saúde das integrações.
-- Adicionado comando da extensão VS Code para consultar o status do motor PowerShell existente.
-- Adicionados handlers observadores do Probot para eventos de Pull Request e instalação.
-- Documentadas arquitetura de produto, estratégia Freemium e fases técnicas de implementação.
-
-### Security
-- Os handlers iniciais do GitHub App são somente observadores; não executam workflows, criam checks ou fazem deploy.
-- A extensão consulta apenas o status do motor nesta etapa.
-- Execução de código de Pull Requests deve ocorrer somente em runners isolados, nunca no processo web do App.
-
+- Nenhuma execução remota, dispatch de workflow GitHub ou integração de IA é habilitada nesta etapa.
 
 ## [0.5.0-dev] - 2026-11-16
 - Adicionada licença MIT com aviso de copyright.
@@ -45,16 +30,8 @@
 - Adicionada etapa build para JavaScript/TypeScript via script npm.
 - Relatórios identificam versão 0.5.0-dev.
 - CLI aceita -ProjectPath e mantém configuração, planos e relatórios dentro do projeto-alvo.
-- Adicionadas fixtures reais de Go, Rust, .NET e Maven e job de integração que executa check/test/build e valida os relatórios.
-- Smoke tests ampliados para verificar detecção/planejamento e allowlists desses ecossistemas.
+- Adicionadas fixtures reais de Go, Rust, .NET e Maven e job de integração que executa check/test/build e valida os relatórios JSON.
 
 ## [0.4.0-dev] - 2026-11-14
 - Runner de processos com argumentos separados, timeout e captura stdout/stderr.
 - Executor allowlisted, aprovação explícita e relatórios JSON.
-
-## 0.5.0-dev — integração Python e JavaScript
-- Adicionado build de pacotes Python por `python -m build`, condicionado à presença de `[build-system]` em `pyproject.toml`.
-- Removido o comportamento permissivo `npm --if-present`; scripts npm inexistentes são `NOT_APPLICABLE`.
-- Adicionadas fixtures com testes e builds reais para Python e JavaScript.
-- CI agora executa pipelines completos dos dois ecossistemas e valida os resultados no relatório JSON.
-- Smoke tests cobrem a detecção de scripts npm ausentes e o planejamento do build Python.
