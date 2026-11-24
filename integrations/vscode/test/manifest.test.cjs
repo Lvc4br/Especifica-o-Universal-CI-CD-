@@ -22,7 +22,8 @@ test("registers every command used by the dashboard", () => {
     "universalCicd.runWorkspaces",
     "universalCicd.history",
     "universalCicd.exportReport",
-    "universalCicd.openOutput"
+    "universalCicd.openOutput",
+    "universalCicd.inspectUps"
   ];
 
   for (const command of required) {
