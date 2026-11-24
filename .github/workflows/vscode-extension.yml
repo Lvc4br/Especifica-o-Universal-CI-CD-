@@ -54,12 +54,12 @@ jobs:
 
       - name: Package VS Code extension
         working-directory: integrations/vscode
-        run: npx --yes @vscode/vsce package --no-dependencies --out universal-cicd-0.8.0.vsix
+        run: npx --yes @vscode/vsce package --no-dependencies --out universal-cicd-0.9.0.vsix
 
       - name: Upload VSIX artifact
         uses: actions/upload-artifact@v4
         with:
-          name: universal-cicd-vscode-0.8.0
-          path: integrations/vscode/universal-cicd-0.8.0.vsix
+          name: universal-cicd-vscode-0.9.0
+          path: integrations/vscode/universal-cicd-0.9.0.vsix
           if-no-files-found: error
           retention-days: 14
