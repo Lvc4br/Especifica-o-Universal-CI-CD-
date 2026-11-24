@@ -3,6 +3,9 @@
 ## Unreleased
 
 ### Added
+- VS Code 0.8.0: painel gráfico interativo para DAG UPS v1, com ondas, arestas de dependência, caminho crítico estrutural, seleção de jobs e diagnósticos.
+- Visualização alimentada exclusivamente pelo UPS Validator, Execution Plan Generator e Pipeline Intelligence compartilhados; sem execução, runners ou telemetria simulada.
+- Testes de segurança para CSP restritiva, ausência de assets remotos, renderização por text nodes e navegação por teclado.
 - Comando VS Code UPS Inspector: seleciona um documento UPS v1, valida pelos contratos compartilhados e apresenta DAG, ondas, caminho crítico estrutural e diagnósticos em modo somente leitura.
 - Limites defensivos do inspector: arquivo até 1 MB, até 500 jobs e relatório até 100.000 caracteres; nenhuma etapa é executada.
 - Extensão VS Code 0.7.0 passa a consumir `@universal-cicd/contracts`; CI compila os contratos antes do typecheck e inclui a dependência interna no VSIX.
