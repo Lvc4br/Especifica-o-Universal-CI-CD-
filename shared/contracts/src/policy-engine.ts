@@ -20,22 +20,27 @@ function nonEmpty(v:unknown):v is string{return typeof v==="string"&&v.trim().le
 function normalized(v:string):string{return v.trim().toLowerCase();}
 
 /** Evaluates declarative policy against a plan. This is not an execution authorization. */
-export function evaluatePipelinePolicy(plan:UpsExecutionPlan, policy:PipelinePolicySet):PolicyEvaluationResult {
- if(!isRecord(plan)||plan.schemaVersion!=="1"||plan.generatedFrom!=="UPS v1"||plan.executionMode!=="plan-only"||plan.valid!==true||!nonEmpty(plan.pipelineName)||!Array.isArray(plan.jobs)||plan.jobs.length===0)
+export function evaluatePipelinePolicy(planInput:unknown, policyInput:unknown):PolicyEvaluationResult {
+ if(!isRecord(planInput)||planInput.schemaVersion!=="1"||planInput.generatedFrom!=="UPS v1"||planInput.executionMode!=="plan-only"||planInput.valid!==true||!nonEmpty(planInput.pipelineName)||!Array.isArray(planInput.jobs)||planInput.jobs.length===0)
   return {valid:false,issues:["Input must be a non-empty, structurally identified UPS v1 plan-only object."]};
- if(!isRecord(policy)||policy.schemaVersion!=="1"||!nonEmpty(policy.policyId)||!Array.isArray(policy.rules))
+ if(!isRecord(policyInput)||policyInput.schemaVersion!=="1"||!nonEmpty(policyInput.policyId)||!Array.isArray(policyInput.rules))
   return {valid:false,issues:["Policy must have schemaVersion 1, a non-empty policyId and a rules array."]};
  const issues:string[]=[];const ruleIds=new Set<string>();
- for(const [i,rule] of policy.rules.entries()){
-  if(!isRecord(rule)||!nonEmpty(rule.id)||!["block","require-review","warn"].includes(String(rule.effect))){issues.push("Policy rule at index "+i+" has invalid ID or effect.");continue;}
-  if(ruleIds.has(rule.id))issues.push("Duplicate policy rule ID: "+rule.id);ruleIds.add(rule.id);
-  if(rule.type==="max-jobs"){if(!Number.isInteger(rule.limit)||rule.limit<1)issues.push("Rule "+rule.id+" requires a positive integer limit.");}
-  else if(rule.type==="forbidden-executables"||rule.type==="required-capabilities"){
-   const values=rule.type==="forbidden-executables"?rule.executables:rule.capabilities;
-   if(!Array.isArray(values)||values.length===0||!values.every(nonEmpty))issues.push("Rule "+rule.id+" requires a non-empty string list.");
-  } else issues.push("Rule "+rule.id+" has an unsupported type.");
+ for(const [i,raw] of (policyInput.rules as unknown[]).entries()){
+  if(!isRecord(raw)){issues.push("Policy rule at index "+i+" must be an object.");continue;}
+  const id=raw.id;
+  if(!nonEmpty(id)||!["block","require-review","warn"].includes(String(raw.effect))){issues.push("Policy rule at index "+i+" has invalid ID or effect.");continue;}
+  if(ruleIds.has(id))issues.push("Duplicate policy rule ID: "+id);
+  ruleIds.add(id);
+  if(raw.type==="max-jobs"){if(!Number.isInteger(raw.limit)||Number(raw.limit)<1)issues.push("Rule "+id+" requires a positive integer limit.");}
+  else if(raw.type==="forbidden-executables"||raw.type==="required-capabilities"){
+   const values=raw.type==="forbidden-executables"?raw.executables:raw.capabilities;
+   if(!Array.isArray(values)||values.length===0||!values.every(nonEmpty))issues.push("Rule "+id+" requires a non-empty string list.");
+  } else issues.push("Rule "+id+" has an unsupported type.");
  }
  if(issues.length)return {valid:false,issues};
+ const plan=planInput as unknown as UpsExecutionPlan;
+ const policy=policyInput as unknown as PipelinePolicySet;
  const findings:PolicyFinding[]=[];
  for(const rule of policy.rules){
   if(rule.type==="max-jobs"&&plan.jobs.length>rule.limit)findings.push({ruleId:rule.id,ruleType:rule.type,effect:rule.effect,jobIds:plan.jobs.map(j=>j.id),message:"Pipeline contains "+plan.jobs.length+" jobs; policy limit is "+rule.limit+"."});
