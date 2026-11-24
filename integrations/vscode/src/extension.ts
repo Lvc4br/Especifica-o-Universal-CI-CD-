@@ -2,9 +2,11 @@ import * as vscode from "vscode";
 import { existsSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { EngineCommand, runEngineCommand } from "./engineClient";
+import { DashboardProvider } from "./dashboard";
 
 const output = vscode.window.createOutputChannel("Universal CI/CD");
 const MAX_DISPLAY_CHARS = 1_000_000;
+let dashboard: DashboardProvider | undefined;
 
 interface EngineLocation {
   scriptPath: string;
@@ -41,6 +43,7 @@ async function execute(command: EngineCommand, approved = false): Promise<boolea
     void vscode.window.showErrorMessage(
       "Não encontrei cicd.ps1. Configure universalCicd.enginePath com a pasta do motor PowerShell."
     );
+    dashboard?.refresh();
     return false;
   }
 
@@ -116,13 +119,14 @@ async function execute(command: EngineCommand, approved = false): Promise<boolea
         output.appendLine(`\nErro: ${message}`);
         void vscode.window.showErrorMessage(message);
         return false;
+      } finally {
+        dashboard?.refresh();
       }
     }
   );
 }
 
 async function executeWithApproval(command: "run" | "run-workspaces"): Promise<void> {
-  // Generate and display the current plan before requesting permission to execute it.
   const planSucceeded = await execute("plan");
   if (!planSucceeded) return;
 
@@ -142,6 +146,22 @@ export function activate(context: vscode.ExtensionContext): void {
   output.appendLine("Universal CI/CD extension activated.");
   context.subscriptions.push(output);
 
+  dashboard = new DashboardProvider();
+  context.subscriptions.push(dashboard);
+  context.subscriptions.push(
+    vscode.window.createTreeView("universalCicd.dashboard", {
+      treeDataProvider: dashboard,
+      showCollapseAll: true
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.workspace.onDidChangeWorkspaceFolders(() => dashboard?.refresh()),
+    vscode.workspace.onDidChangeConfiguration(event => {
+      if (event.affectsConfiguration("universalCicd.enginePath")) dashboard?.refresh();
+    })
+  );
+
   const commands: Array<[string, () => unknown]> = [
     ["universalCicd.version", () => execute("version")],
     ["universalCicd.initializeProject", () => execute("init")],
@@ -153,7 +173,9 @@ export function activate(context: vscode.ExtensionContext): void {
     ["universalCicd.history", () => execute("history")],
     ["universalCicd.exportReport", () => execute("export-report")],
     ["universalCicd.run", () => executeWithApproval("run")],
-    ["universalCicd.runWorkspaces", () => executeWithApproval("run-workspaces")]
+    ["universalCicd.runWorkspaces", () => executeWithApproval("run-workspaces")],
+    ["universalCicd.refreshDashboard", () => dashboard?.refresh()],
+    ["universalCicd.openOutput", () => output.show(true)]
   ];
 
   for (const [id, callback] of commands) {
@@ -162,5 +184,6 @@ export function activate(context: vscode.ExtensionContext): void {
 }
 
 export function deactivate(): void {
+  dashboard?.dispose();
   output.dispose();
 }
