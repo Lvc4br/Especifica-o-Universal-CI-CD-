@@ -38,8 +38,8 @@ Todas as PRs abaixo permanecem draft/abertas e não foram mescladas; preservar a
 ## Validação CI confirmada
 
 - PR #18: VS Code Extension CI concluído com sucesso; VSIX 0.4.0 disponível no run `45435093899`.
-- PR #19: VS Code Extension CI concluído com sucesso; VSIX 0.5.0 disponível no run `45436488960`, artefato ID `14941686663`.
-- PR #19: Monorepo CI concluído com sucesso no run `45436489024`, incluindo typecheck de todos os workspaces, testes de contratos, adaptador VS Code, GitHub App e build.
+- PR #19: VS Code Extension CI concluído com sucesso no run `45436884442`; VSIX 0.5.0 disponível como artefato ID `14940124804`.
+- PR #19: Monorepo CI concluído com sucesso no run `45436884497`, incluindo typecheck de todos os workspaces, testes de contratos, adaptador VS Code, GitHub App e build.
 
 ## Segurança e limites atuais
 
