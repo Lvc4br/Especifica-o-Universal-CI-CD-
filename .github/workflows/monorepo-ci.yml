@@ -35,7 +35,7 @@ jobs:
         run: npm run test --workspace=@universal-cicd/contracts
 
       - name: Test VS Code engine adapter
-        run: npm run test --workspace=@universal-cicd/vscode
+        run: npm run test --workspace=universal-cicd-vscode
 
       - name: Test GitHub App
         run: npm run test --workspace=@universal-cicd/github-app
