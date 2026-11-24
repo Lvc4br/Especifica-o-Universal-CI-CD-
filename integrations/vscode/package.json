@@ -134,5 +134,8 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/Lvc4br/Especifica-o-Universal-CI-CD-.git"
+  },
+  "dependencies": {
+    "@universal-cicd/contracts": "0.1.0"
   }
 }
