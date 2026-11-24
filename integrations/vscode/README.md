@@ -17,7 +17,9 @@ A extensão conecta o VS Code ao motor PowerShell existente. O motor permanece r
 6. Só use os comandos de execução depois de revisar o plano e confirmar a aprovação modal.
 
 ## Interface
-A Tree View nativa organiza os comandos em Workspace, Análise, Execução e Relatórios. O item Motor informa se a extensão encontrou o script `cicd.ps1`. A saída detalhada fica no canal **Universal CI/CD** do painel Output.
+A Tree View nativa organiza os comandos em Workspace, Análise, Execução e Relatórios. O comando **Universal CI/CD: Abrir dashboard** abre o painel visual com estado do workspace, detecção do motor, atalhos operacionais e áreas de inteligência. O item Motor também informa se a extensão encontrou o script `cicd.ps1`. A saída detalhada fica no canal **Universal CI/CD** do painel Output.
+
+O dashboard é uma preview local. Os cartões de inteligência e políticas descrevem capacidades já existentes no Core, mas não representam serviços remotos conectados. Indicadores de GitHub, runners distribuídos e métricas em tempo real não são simulados.
 
 ## Segurança
 - O processo é iniciado com argumentos separados e `shell: false`.
