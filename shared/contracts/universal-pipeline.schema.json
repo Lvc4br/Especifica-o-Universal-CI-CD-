@@ -16,7 +16,7 @@
     "name": {
       "type": "string",
       "minLength": 1,
-      "pattern": ".*\\\\S.*"
+      "pattern": ".*\\S.*"
     },
     "description": {
       "type": "string"
@@ -107,7 +107,7 @@
             "executable": {
               "type": "string",
               "minLength": 1,
-              "pattern": ".*\\\\S.*"
+              "pattern": ".*\\S.*"
             },
             "args": {
               "type": "array",
