@@ -60,9 +60,19 @@ export function openDashboardPanel(
   const configListener = vscode.workspace.onDidChangeConfiguration(event => {
     if (event.affectsConfiguration("universalCicd.enginePath")) refresh();
   });
+  // Keep the inspector synchronized when the PowerShell CLI or another local
+  // process updates the plan file outside a dashboard command.
+  const planWatcher = vscode.workspace.createFileSystemWatcher("**/.cicd/plans/latest-plan.json");
+  const planCreateListener = planWatcher.onDidCreate(refresh);
+  const planChangeListener = planWatcher.onDidChange(refresh);
+  const planDeleteListener = planWatcher.onDidDelete(refresh);
   panel.onDidDispose(() => {
     workspaceListener.dispose();
     configListener.dispose();
+    planCreateListener.dispose();
+    planChangeListener.dispose();
+    planDeleteListener.dispose();
+    planWatcher.dispose();
   });
 
   return panel;
