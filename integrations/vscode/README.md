@@ -23,6 +23,15 @@ O dashboard é uma preview local. Ele lê `.cicd/plans/latest-plan.json` do work
 
 Detalhes do fluxo de dados, validação, fronteiras de confiança e limitações: [VS Code Dashboard — Local Plan Inspector](../../Docs/VSCODE_DASHBOARD_PLAN_INSPECTOR.md).
 
+## Inspecionar uma especificação UPS v1
+
+1. Abra a Command Palette (`Ctrl+Shift+P`).
+2. Execute **Universal CI/CD: Inspecionar pipeline UPS (somente leitura)**.
+3. Selecione um arquivo JSON UPS v1.
+4. Consulte o canal **Universal CI/CD** no painel Output para ver validação, ondas de dependência, ordem topológica, caminho crítico estrutural e diagnósticos.
+
+O inspector usa os contratos compartilhados UPS v1, aceita arquivos de até 1 MB e até 500 jobs, e limita o relatório a 100.000 caracteres. Ele não executa steps, não contata runners e não concede aprovação ou autorização. O caminho crítico é contado em jobs, não em duração.
+
 ## Segurança
 - O processo é iniciado com argumentos separados e `shell: false`.
 - A extensão não executa código remoto nem faz dispatch de workflows GitHub.
@@ -40,7 +49,7 @@ npm test
 npm run build
 ```
 
-Esta versão combina a Tree View nativa do VS Code com um painel Webview responsivo. O painel exibe o plano local mais recente; a visualização de DAGs UPS v1 e dependências entre jobs permanece como etapa futura.
+Esta versão combina a Tree View nativa do VS Code com um painel Webview responsivo. O painel exibe o plano local mais recente; a visualização gráfica interativa de DAGs UPS v1 permanece como etapa futura; o comando de inspeção textual já apresenta a análise.
 
 ## Abrir o dashboard visual
 
@@ -52,4 +61,4 @@ Esta versão combina a Tree View nativa do VS Code com um painel Webview respons
 
 A validação e o empacotamento da extensão são executados pelo workflow **VS Code Extension CI** em Pull Requests que alterem a extensão. O artefato VSIX fica disponível na seção Artifacts da execução do GitHub Actions por 14 dias. Para instalar um pacote baixado, use **Extensions: Install from VSIX...** na Command Palette.
 
-O pacote da extensão contém a integração VS Code; o motor PowerShell continua sendo distribuído/configurado separadamente nesta preview. A versão 0.6.0 ainda não é uma publicação no Marketplace.
+O pacote da extensão contém a integração VS Code; o motor PowerShell continua sendo distribuído/configurado separadamente nesta preview. A versão 0.7.0 ainda não é uma publicação no Marketplace.
