@@ -7,6 +7,7 @@ import { openDashboardPanel } from "./webviewDashboard";
 import { normalizePlanSnapshot } from "./planSnapshot";
 import { analyzePipelineIntelligence, generateUpsExecutionPlan, validateUpsPipeline } from "@universal-cicd/contracts";
 import { formatUpsAnalysis } from "./upsInspector";
+import { openUpsGraphPanel } from "./upsGraph";
 
 const output = vscode.window.createOutputChannel("Universal CI/CD");
 const MAX_DISPLAY_CHARS = 1_000_000;
@@ -51,7 +52,7 @@ function resolveEngine(): EngineLocation | undefined {
   return undefined;
 }
 
-async function inspectUpsFile(): Promise<void> {
+async function inspectUpsFile(context: vscode.ExtensionContext): Promise<void> {
   const selected = await vscode.window.showOpenDialog({
     canSelectMany: false,
     openLabel: "Inspecionar UPS (somente leitura)",
@@ -107,8 +108,21 @@ async function inspectUpsFile(): Promise<void> {
       return;
     }
 
-    output.appendLine("");
     const report = formatUpsAnalysis(planned.plan, intelligence.analysis);
+    const jobById = new Map(planned.plan.jobs.map(job => [job.id, job]));
+    openUpsGraphPanel(context, {
+      pipelineName: planned.plan.pipelineName,
+      jobs: planned.plan.jobs.map(job => ({
+        id: job.id,
+        name: job.name?.trim() || job.id,
+        dependencies: [...job.dependencies],
+        requiredCapabilities: [...job.requiredCapabilities],
+        stepCount: job.steps.length
+      })),
+      analysis: intelligence.analysis
+    });
+    output.appendLine("");
+
     output.append(report.slice(0, 100_000));
     if (report.length > 100_000) output.appendLine("\nRelatório truncado no limite de 100.000 caracteres.");
     void vscode.window.showInformationMessage("UPS Inspector: análise somente leitura concluída.");
@@ -251,7 +265,7 @@ export function activate(context: vscode.ExtensionContext): void {
   );
 
   const commands: Array<[string, () => unknown]> = [
-    ["universalCicd.inspectUps", () => inspectUpsFile()],
+    ["universalCicd.inspectUps", () => inspectUpsFile(context)],
     ["universalCicd.openDashboard", () => {
       const panel = openDashboardPanel(context, () => {
         const workspace = vscode.workspace.workspaceFolders?.[0];
