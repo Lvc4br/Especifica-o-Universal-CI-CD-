@@ -26,8 +26,16 @@ Todas as PRs abaixo permanecem draft/abertas e não foram mescladas; preservar a
 | #17 | Protocolo de autorização/aprovação (design-only) | #16 | Draft |
 | #18 | Dashboard visual VS Code 0.4.0 | #17 | Draft; Extension CI passou e VSIX publicado como artefato |
 | #19 | Inspector do plano local no dashboard 0.5.0 | #18 | Draft; Extension CI e Monorepo CI passaram |
+| #21 | Atualização automática do inspector quando o plano local muda; dashboard 0.6.0 | #19 | Em validação CI |
 
-## Marco mais recente — VS Code 0.5.0
+## Marco mais recente — VS Code 0.6.0 (PR #21)
+
+- O dashboard observa criação, alteração e remoção de `.cicd/plans/latest-plan.json`.
+- Planos gerados externamente pela CLI atualizam o painel aberto sem refresh manual.
+- Watcher e listeners são descartados quando o painel é fechado.
+- A atualização continua somente leitura; não executa nem altera o plano.
+
+## Marco anterior — VS Code 0.5.0
 
 - O dashboard lê o plano real salvo em `.cicd/plans/latest-plan.json`.
 - Exibe etapas, tecnologias, status e motivos, sem inventar dependências.
@@ -48,7 +56,7 @@ Todas as PRs abaixo permanecem draft/abertas e não foram mescladas; preservar a
 - PostgreSQL é fundação no PR, não infraestrutura provisionada/conectada.
 - O executor local não é sandbox.
 - O protocolo de aprovação da PR #17 é design-only; não implementa identidade, tokens ou autorização.
-- O dashboard 0.5.0 não simula GitHub, runners remotos, telemetria ou execuções em tempo real.
+- O dashboard 0.6.0 não simula GitHub, runners remotos, telemetria ou execuções em tempo real.
 - Nenhuma PR desta cadeia foi mesclada em `main`.
 
 ## Equipe
