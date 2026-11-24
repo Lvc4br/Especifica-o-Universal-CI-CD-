@@ -74,6 +74,12 @@ async function inspectUpsFile(): Promise<void> {
     }
 
     const document = JSON.parse(Buffer.from(bytes).toString("utf8")) as unknown;
+    const jobs = (document as { jobs?: unknown } | null)?.jobs;
+    if (!jobs || typeof jobs !== "object" || Array.isArray(jobs) || Object.keys(jobs).length > 500) {
+      output.appendLine("ERRO: o documento deve conter um mapa jobs com no máximo 500 jobs.");
+      void vscode.window.showErrorMessage("UPS Inspector: limite de 500 jobs ou estrutura inválida.");
+      return;
+    }
     const validation = validateUpsPipeline(document);
     if (!validation.valid) {
       output.appendLine("VALIDAÇÃO UPS: REPROVADA");
@@ -102,7 +108,9 @@ async function inspectUpsFile(): Promise<void> {
     }
 
     output.appendLine("");
-    output.append(formatUpsAnalysis(planned.plan, intelligence.analysis));
+    const report = formatUpsAnalysis(planned.plan, intelligence.analysis);
+    output.append(report.slice(0, 100_000));
+    if (report.length > 100_000) output.appendLine("\\nRelatório truncado no limite de 100.000 caracteres.");
     void vscode.window.showInformationMessage("UPS Inspector: análise somente leitura concluída.");
   } catch (error) {
     const message = error instanceof Error ? error.message : "Não foi possível ler o documento.";
