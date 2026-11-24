@@ -1,12 +1,9 @@
-import type { PipelineStageState } from "./index";
-
 export interface UpsValidationIssue {
   code: string;
   path: string;
   message: string;
 }
 export interface UpsValidationResult { valid: boolean; issues: UpsValidationIssue[]; }
-type Pipeline = { version?: unknown; name?: unknown; jobs?: unknown };
 
 const ID = /^[A-Za-z0-9_-]+$/;
 const topKeys = new Set(["version","name","description","trigger","jobs"]);
