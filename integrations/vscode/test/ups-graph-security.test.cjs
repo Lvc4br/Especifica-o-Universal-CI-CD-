@@ -26,3 +26,7 @@ test("UPS graph distinguishes structural critical path and diagnostics", () => {
   assert.match(source, /Recomendação:/);
   assert.match(source, /não duração/);
 });
+
+test("UPS graph message listener is disposed when its panel closes", () => {
+  assert.match(source, /panel\.onDidDispose\(\(\) => messageListener\.dispose\(\)\)/);
+});
