@@ -1,27 +1,12 @@
-# Local CI/CD state and reports
-.cicd/
-
-# PowerShell
-*.clixml
-
-# Editors and operating systems
-.vscode/
-.idea/
+node_modules/
+**/node_modules/
+**/dist/
+**/out/
+.vscode-test/
+.env
+.env.*
+!.env.example
+coverage/
+*.vsix
 .DS_Store
 Thumbs.db
-
-# Common generated directories
-node_modules/
-.venv/
-venv/
-__pycache__/
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-dist/
-build/
-target/
-bin/
-obj/
-coverage/
-*.log
