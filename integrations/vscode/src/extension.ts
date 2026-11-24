@@ -165,18 +165,18 @@ export function activate(context: vscode.ExtensionContext): void {
 
   const commands: Array<[string, () => unknown]> = [
     ["universalCicd.openDashboard", () => {
-      const workspace = vscode.workspace.workspaceFolders?.[0];
-      const engine = resolveEngine();
-      const configuredEnginePath = vscode.workspace.getConfiguration("universalCicd").get<string>("enginePath", "").trim();
-      const panel = openDashboardPanel(context, () => ({
-        workspaceName: vscode.workspace.workspaceFolders?.[0]?.name ?? "",
-        workspacePath: vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? "",
-        engineFound: Boolean(resolveEngine()),
-        enginePath: resolveEngine()?.scriptPath ?? (configuredEnginePath || (workspace ? "cicd.ps1 não encontrado no workspace" : ""))
-      }));
+      const panel = openDashboardPanel(context, () => {
+        const workspace = vscode.workspace.workspaceFolders?.[0];
+        const engine = resolveEngine();
+        const configuredPath = vscode.workspace.getConfiguration("universalCicd").get<string>("enginePath", "").trim();
+        return {
+          workspaceName: workspace?.name ?? "",
+          workspacePath: workspace?.uri.fsPath ?? "",
+          engineFound: Boolean(engine),
+          enginePath: engine?.scriptPath ?? configuredPath
+        };
+      });
       context.subscriptions.push(panel);
-      void panel;
-      void engine;
     }],
     ["universalCicd.version", () => execute("version")],
     ["universalCicd.initializeProject", () => execute("init")],
