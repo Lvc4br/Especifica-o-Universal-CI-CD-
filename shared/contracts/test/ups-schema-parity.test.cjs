@@ -7,7 +7,7 @@ const validatorSource = fs.readFileSync(path.join(__dirname, "../src/ups-validat
 
 test("UPS schema and runtime validator share the 500-job implementation bound", () => {
   assert.equal(schema.properties.jobs.maxProperties, 500);
-  assert.match(validatorSource, /Object\.keys\(value\.jobs\)\.length>500/);
+  assert.match(validatorSource, /Object\\.keys\\(jobs\\)\\.length>500/);
   assert.match(validatorSource, /UPS_JOB_LIMIT/);
 });
 
