@@ -12,6 +12,7 @@
 - [ ] CI green on release candidate.
 - [ ] Regression and integration suite.
 - [ ] Extension packaging and install smoke test.
+- [ ] Verify VSIX contains the internal shared-contract runtime (not only a successful package command).
 - [ ] PowerShell engine compatibility check.
 - [ ] GitHub App permission/webhook audit if relevant.
 - [ ] Security review and unresolved-risk review.
