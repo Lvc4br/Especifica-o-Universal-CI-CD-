@@ -82,8 +82,8 @@ Todas as PRs abaixo permanecem draft/abertas e não foram mescladas; preservar a
 - O dashboard 0.8.0 continua local e não simula GitHub, runners remotos, telemetria ou execuções em tempo real.
 - PR #21: Monorepo CI e VS Code Extension CI passaram após correção da expectativa de versão no teste do manifesto.
 - PR #22 / versão 0.7.0: Monorepo CI passou no run `45467318370`; VS Code Extension CI passou no run `45467317904`.
-- PR #22 / versão 0.8.0: Monorepo CI passou no run [45481584885](https://github.com/Lvc4br/Especifica-o-Universal-CI-CD-/actions/runs/45481584885); VS Code Extension CI passou no run [45481584957](https://github.com/Lvc4br/Especifica-o-Universal-CI-CD-/actions/runs/45481584957), ambos no SHA `43292d5159e520a23b37e753572381f11316db75`.
-- VSIX `universal-cicd-vscode-0.8.0` foi empacotado com o runtime de `@universal-cicd/contracts` verificado no file list; artefato ID `14961798157`, expira em 8 de dezembro de 2026.
+- PR #22 / versão 0.8.0: Monorepo CI passou no run [45482289751](https://github.com/Lvc4br/Especifica-o-Universal-CI-CD-/actions/runs/45482289751); VS Code Extension CI passou no run [45482289804](https://github.com/Lvc4br/Especifica-o-Universal-CI-CD-/actions/runs/45482289804), ambos no SHA `e426ae9c2b99b32b01a487afaccbac293eda47a2`.
+- VSIX `universal-cicd-vscode-0.8.0` foi empacotado com o runtime de `@universal-cicd/contracts` verificado no file list; artefato ID `14961838893`, expira em 8 de dezembro de 2026.
 - Ajustes finais incluem descarte de listener ao fechar painel, atalho UPS no dashboard, paridade UPS schema/validator e verificação do runtime interno dentro do VSIX.
 - PR #22: VSIX `universal-cicd-vscode-0.7.0` empacotado e publicado como artefato ID `14956240032` (expira em 8 de dezembro de 2026).
 - Nenhuma PR desta cadeia foi mesclada em `main`.
@@ -96,4 +96,4 @@ Todas as PRs abaixo permanecem draft/abertas e não foram mescladas; preservar a
 
 ## Conclusão
 
-O projeto avançou até um dashboard VS Code capaz de inspecionar planos locais e abrir um DAG visual UPS v1. A extensão 0.8.0 passou pelos dois workflows de CI e gerou um VSIX instalável como artefato; ainda não é publicação de Marketplace nem produto pronto para produção. Continua sendo uma prévia em desenvolvimento por PRs empilhadas; não é produto pronto para produção. Revisão, integração ordenada, testes de segurança e validação com usuários continuam necessários.
+O projeto avançou até um dashboard VS Code capaz de inspecionar planos locais e abrir um DAG visual UPS v1. A extensão 0.8.0 passou pelos dois workflows de CI na revisão final e gerou o VSIX instalável como artefato; ainda não é publicação de Marketplace nem produto pronto para produção. Continua sendo uma prévia em desenvolvimento por PRs empilhadas; não é produto pronto para produção. Revisão, integração ordenada, testes de segurança e validação com usuários continuam necessários.
