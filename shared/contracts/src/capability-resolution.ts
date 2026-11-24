@@ -53,7 +53,7 @@ export function resolvePlanCapabilities(plan:UpsExecutionPlan, runners:Capabilit
  }
  if(issues.length) return {valid:false,issues};
 
- const sorted=[...runners].sort((a,b)=>a.id.localeCompare(b.id));
+ const sorted=[...runners].sort((a,b)=>a.id<b.id?-1:a.id>b.id?1:0);
  const resolutions:JobResolution[]=plan.jobs.map(job=>{
   const required=[...new Set(job.requiredCapabilities)].sort();
   const online=sorted.filter(r=>r.status==="online");
