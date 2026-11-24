@@ -29,3 +29,9 @@ test("rejects whitespace-only pipeline names and executables",()=>{
  const value={version:"1",name:"demo",jobs:{a:{steps:[{id:"s",run:{executable:"   ",args:[]}}]}}};
  assert.ok(validateUpsPipeline(value).issues.some(x=>x.code==="UPS_EXECUTABLE"));
 });
+
+test("rejects more than 100 steps in one job",()=>{
+ const steps=Array.from({length:101},(_,i)=>({id:"step_"+i,run:{executable:"node",args:[]}}));
+ const value={version:"1",name:"too-many-steps",jobs:{a:{steps}}};
+ assert.ok(validateUpsPipeline(value).issues.some(x=>x.code==="UPS_STEP_LIMIT"));
+});
