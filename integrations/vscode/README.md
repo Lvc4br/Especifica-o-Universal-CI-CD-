@@ -25,6 +25,8 @@ Detalhes do fluxo de dados, validação, fronteiras de confiança e limitações
 
 ## Inspecionar uma especificação UPS v1
 
+Além do relatório textual no canal Output, a extensão abre um painel gráfico ao lado com as ondas de dependência, arestas, jobs paralelizáveis, caminho crítico estrutural e diagnósticos. Selecione um nó para consultar dependências, capabilities e quantidade de steps. O grafo é somente leitura e não representa execução em tempo real.
+
 1. Abra a Command Palette (`Ctrl+Shift+P`).
 2. Execute **Universal CI/CD: Inspecionar pipeline UPS (somente leitura)**.
 3. Selecione um arquivo JSON UPS v1.
@@ -49,7 +51,7 @@ npm test
 npm run build
 ```
 
-Esta versão combina a Tree View nativa do VS Code com um painel Webview responsivo. O painel exibe o plano local mais recente; a visualização gráfica interativa de DAGs UPS v1 permanece como etapa futura; o comando de inspeção textual já apresenta a análise.
+Esta versão combina a Tree View nativa do VS Code com um painel Webview responsivo. O painel exibe o plano local mais recente; a o comando de inspeção UPS abre também um DAG gráfico interativo, com seleção de jobs, dependências, ondas e caminho crítico estrutural.
 
 ## Abrir o dashboard visual
 
@@ -61,4 +63,4 @@ Esta versão combina a Tree View nativa do VS Code com um painel Webview respons
 
 A validação e o empacotamento da extensão são executados pelo workflow **VS Code Extension CI** em Pull Requests que alterem a extensão. O artefato VSIX fica disponível na seção Artifacts da execução do GitHub Actions por 14 dias. Para instalar um pacote baixado, use **Extensions: Install from VSIX...** na Command Palette.
 
-O pacote da extensão contém a integração VS Code; o motor PowerShell continua sendo distribuído/configurado separadamente nesta preview. A versão 0.7.0 ainda não é uma publicação no Marketplace.
+O pacote da extensão contém a integração VS Code; o motor PowerShell continua sendo distribuído/configurado separadamente nesta preview. A versão 0.8.0 ainda não é uma publicação no Marketplace.
