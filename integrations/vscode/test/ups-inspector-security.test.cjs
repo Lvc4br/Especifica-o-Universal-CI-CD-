@@ -4,7 +4,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 const source = fs.readFileSync(path.join(__dirname, "../src/extension.ts"), "utf8");
-const inspector = source.split("async function inspectUpsFile()")[1]?.split("async function execute(")[0] ?? "";
+const inspector = source.split("async function inspectUpsFile(")[1]?.split("async function execute(")[0] ?? "";
 
 test("UPS inspector is bounded and does not invoke the process executor", () => {
   assert.ok(inspector.length > 0);
