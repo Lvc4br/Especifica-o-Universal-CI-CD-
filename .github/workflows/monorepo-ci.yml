@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   build-and-test:
-    name: Typecheck, build and VS Code adapter tests
+    name: Typecheck, build and integration tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -33,6 +33,9 @@ jobs:
 
       - name: Test VS Code engine adapter
         run: npm run test --workspace=@universal-cicd/vscode
+
+      - name: Test GitHub App
+        run: npm run test --workspace=@universal-cicd/github-app
 
       - name: Build all workspaces
         run: npm run build
