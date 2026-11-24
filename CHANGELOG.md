@@ -3,6 +3,13 @@
 ## Unreleased
 
 ### Added
+- First visual VS Code dashboard preview with workspace and PowerShell engine status, responsive UI, and shortcuts for existing local commands.
+- Secure webview message allowlist and nonce-based Content Security Policy; no remote assets or simulated GitHub/runner telemetry.
+
+### Security
+- Opening the dashboard does not execute pipelines; operational actions continue through existing guarded commands.
+
+### Added
 - Declarative Policy & Trust assessment for UPS v1 plans: max job count, forbidden executable and required capability rules.
 - Distinct block, human-review-required and warning findings; assessment explicitly does not authorize execution.
 - Policy validation and tests for outcomes, malformed rules, and input immutability.
