@@ -38,3 +38,8 @@
 ## [0.4.0-dev] - 2026-11-14
 - Runner de processos com argumentos separados, timeout e captura stdout/stderr.
 - Executor allowlisted, aprovação explícita e relatórios JSON.
+
+## Unreleased — UPS Execution Plan Generator
+- Added deterministic UPS v1 planning, dependency waves, capability summary and explanatory rationale.
+- Plan-only; no process execution.
+- Added planner tests.

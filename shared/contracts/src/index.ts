@@ -41,3 +41,6 @@ export interface IntegrationHealth {
 
 export { validateUpsPipeline } from "./ups-validator";
 export type { UpsValidationIssue, UpsValidationResult } from "./ups-validator";
+
+export { generateUpsExecutionPlan } from "./ups-execution-plan";
+export type { UpsExecutionPlan, UpsPlanResult, UpsPlannedJob, UpsPlannedStep } from "./ups-execution-plan";
