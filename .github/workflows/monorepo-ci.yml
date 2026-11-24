@@ -4,6 +4,7 @@ on:
     paths:
       - "integrations/**"
       - "Docs/VSCODE_UPS_INSPECTOR.md"
+      - "Docs/VSCODE_VISUAL_PIPELINE_INTELLIGENCE.md"
       - "Docs/PROJECT_STATUS.md"
       - "CHANGELOG.md"
       - "shared/**"
