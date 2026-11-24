@@ -10,6 +10,9 @@ test('selects deterministic lexical first compatible online runner',()=>{
  const r=resolvePlanCapabilities(plan,[{id:'z',status:'online',capabilities:['node','linux']},{id:'a',status:'online',capabilities:['node','linux']}]);
  assert.equal(r.valid,true); assert.equal(r.resolution.resolutions[0].selectedRunner,'a');
  assert.deepEqual(r.resolution.resolutions[0].compatibleRunnerIds,['a','z']);
+ const caseOrder=resolvePlanCapabilities(plan,[{id:'a',status:'online',capabilities:['node','linux']},{id:'A',status:'online',capabilities:['node','linux']}]);
+ assert.deepEqual(caseOrder.resolution.resolutions[0].compatibleRunnerIds,['A','a']);
+ assert.equal(caseOrder.resolution.resolutions[0].selectedRunner,'A');
 });
 test('reports missing capabilities and matching offline candidates',()=>{
  const r=resolvePlanCapabilities(plan,[{id:'runner',status:'online',capabilities:['node']},{id:'offline-cloud',status:'offline',capabilities:['cloud','credential']}]);
