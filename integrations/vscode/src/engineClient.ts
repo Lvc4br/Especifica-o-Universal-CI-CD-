@@ -77,6 +77,8 @@ export function runEngineCommand(options: EngineRunOptions): Promise<EngineRunRe
     let settled = false;
     let timedOut = false;
     let cancelled = false;
+    let timeout: ReturnType<typeof setTimeout> | undefined;
+    let cancellationPoll: ReturnType<typeof setInterval> | undefined;
 
     const child = spawn(
       options.executable,
@@ -94,19 +96,22 @@ export function runEngineCommand(options: EngineRunOptions): Promise<EngineRunRe
       }
     );
 
+    const cleanup = (): void => {
+      if (cancellationPoll) clearInterval(cancellationPoll);
+      if (timeout) clearTimeout(timeout);
+    };
+
     const finish = (result: EngineRunResult): void => {
       if (settled) return;
       settled = true;
-      clearInterval(cancellationPoll);
-      clearTimeout(timeout);
+      cleanup();
       resolve(result);
     };
 
     const fail = (error: Error): void => {
       if (settled) return;
       settled = true;
-      clearInterval(cancellationPoll);
-      clearTimeout(timeout);
+      cleanup();
       reject(error);
     };
 
@@ -130,12 +135,12 @@ export function runEngineCommand(options: EngineRunOptions): Promise<EngineRunRe
       finish({ exitCode, stdout, stderr, timedOut, cancelled });
     });
 
-    const timeout = setTimeout(() => {
+    timeout = setTimeout(() => {
       timedOut = true;
       child.kill();
     }, Math.max(1, options.timeoutMs));
 
-    const cancellationPoll = setInterval(() => {
+    cancellationPoll = setInterval(() => {
       if (options.shouldCancel?.()) {
         cancelled = true;
         child.kill();
