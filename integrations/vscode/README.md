@@ -32,7 +32,7 @@ Além do relatório textual no canal Output, a extensão abre um painel gráfico
 3. Selecione um arquivo JSON UPS v1.
 4. Consulte o canal **Universal CI/CD** no painel Output para ver validação, ondas de dependência, ordem topológica, caminho crítico estrutural e diagnósticos.
 
-O inspector usa os contratos compartilhados UPS v1, aceita arquivos de até 1 MB e até 500 jobs, e limita o relatório a 100.000 caracteres. Ele não executa steps, não contata runners e não concede aprovação ou autorização. O caminho crítico é contado em jobs, não em duração.
+O inspector usa os contratos compartilhados UPS v1, aceita arquivos de até 1 MB, até 500 jobs e até 100 steps por job, e limita o relatório a 100.000 caracteres. Ele não executa steps, não contata runners e não concede aprovação ou autorização. O caminho crítico é contado em jobs, não em duração.
 
 ## Segurança
 - O processo é iniciado com argumentos separados e `shell: false`.
