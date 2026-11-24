@@ -26,9 +26,11 @@ export function openUpsGraphPanel(context: vscode.ExtensionContext, payload: Gra
   const token = randomBytes(16).toString("base64");
   panel.webview.html = graphHtml(token);
   void panel.webview.postMessage({ type: "graph", payload });
-  panel.webview.onDidReceiveMessage(message => {
+  const messageListener = panel.webview.onDidReceiveMessage(message => {
     if (message?.command === "ready") void panel.webview.postMessage({ type: "graph", payload });
-  }, undefined, context.subscriptions);
+  });
+  panel.onDidDispose(() => messageListener.dispose());
+  context.subscriptions.push(panel);
   return panel;
 }
 
