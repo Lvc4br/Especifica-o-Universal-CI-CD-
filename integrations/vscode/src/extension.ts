@@ -4,9 +4,9 @@ import { join, resolve } from "node:path";
 import { EngineCommand, runEngineCommand } from "./engineClient";
 
 const output = vscode.window.createOutputChannel("Universal CI/CD");
+const MAX_DISPLAY_CHARS = 1_000_000;
 
 interface EngineLocation {
-  directory: string;
   scriptPath: string;
 }
 
@@ -17,26 +17,23 @@ function resolveEngine(): EngineLocation | undefined {
     .trim();
 
   if (configured) {
-    const directory = resolve(configured);
-    const scriptPath = join(directory, "cicd.ps1");
-    return existsSync(scriptPath) ? { directory, scriptPath } : undefined;
+    const scriptPath = join(resolve(configured), "cicd.ps1");
+    return existsSync(scriptPath) ? { scriptPath } : undefined;
   }
 
   for (const folder of vscode.workspace.workspaceFolders ?? []) {
     const scriptPath = join(folder.uri.fsPath, "cicd.ps1");
-    if (existsSync(scriptPath)) {
-      return { directory: folder.uri.fsPath, scriptPath };
-    }
+    if (existsSync(scriptPath)) return { scriptPath };
   }
 
   return undefined;
 }
 
-async function execute(command: EngineCommand, approved = false): Promise<void> {
+async function execute(command: EngineCommand, approved = false): Promise<boolean> {
   const workspace = vscode.workspace.workspaceFolders?.[0];
   if (!workspace) {
     void vscode.window.showWarningMessage("Abra uma pasta de projeto para usar o Universal CI/CD.");
-    return;
+    return false;
   }
 
   const engine = resolveEngine();
@@ -44,15 +41,26 @@ async function execute(command: EngineCommand, approved = false): Promise<void> 
     void vscode.window.showErrorMessage(
       "Não encontrei cicd.ps1. Configure universalCicd.enginePath com a pasta do motor PowerShell."
     );
-    return;
+    return false;
   }
 
   const config = vscode.workspace.getConfiguration("universalCicd");
   const executable = config.get<string>("powershellExecutable", "pwsh").trim() || "pwsh";
-  const timeoutSeconds = config.get<number>("timeoutSeconds", 600);
-  const timeoutMs = Math.max(1, timeoutSeconds) * 1000;
+  const configuredTimeout = config.get<number>("timeoutSeconds", 600);
+  const timeoutSeconds = Number.isFinite(configuredTimeout)
+    ? Math.min(86400, Math.max(1, Math.floor(configuredTimeout)))
+    : 600;
 
   output.clear();
+  let displayedChars = 0;
+  const appendOutput = (value: string): void => {
+    const remaining = MAX_DISPLAY_CHARS - displayedChars;
+    if (remaining <= 0) return;
+    const visible = value.slice(0, remaining);
+    displayedChars += visible.length;
+    output.append(visible);
+  };
+
   output.appendLine("Universal CI/CD");
   output.appendLine(`Comando: ${command}`);
   output.appendLine(`Projeto: ${workspace.uri.fsPath}`);
@@ -60,7 +68,7 @@ async function execute(command: EngineCommand, approved = false): Promise<void> 
   output.appendLine(`Aprovação explícita: ${approved ? "sim" : "não"}`);
   output.show(true);
 
-  await vscode.window.withProgress(
+  return vscode.window.withProgress(
     {
       location: vscode.ProgressLocation.Notification,
       title: `Universal CI/CD: ${command}`,
@@ -73,24 +81,23 @@ async function execute(command: EngineCommand, approved = false): Promise<void> 
           scriptPath: engine.scriptPath,
           command,
           projectPath: workspace.uri.fsPath,
-          timeoutMs,
+          timeoutMs: timeoutSeconds * 1000,
           approve: approved,
           shouldCancel: () => token.isCancellationRequested,
           onOutput: (stream, chunk) => {
-            if (stream === "stderr") output.append(`[stderr] ${chunk}`);
-            else output.append(chunk);
+            appendOutput(stream === "stderr" ? `[stderr] ${chunk}` : chunk);
           }
         });
 
         if (result.timedOut) {
           output.appendLine("\nTempo limite atingido; processo encerrado.");
           void vscode.window.showWarningMessage("Universal CI/CD: o comando excedeu o tempo limite.");
-          return;
+          return false;
         }
 
         if (result.cancelled) {
           output.appendLine("\nExecução cancelada pelo usuário.");
-          return;
+          return false;
         }
 
         output.appendLine(`\nProcesso encerrado com código: ${result.exitCode ?? "desconhecido"}`);
@@ -98,23 +105,30 @@ async function execute(command: EngineCommand, approved = false): Promise<void> 
           void vscode.window.showErrorMessage(
             `Universal CI/CD: comando finalizado com código ${result.exitCode ?? "desconhecido"}. Consulte a saída.`
           );
-        } else {
-          void vscode.window.showInformationMessage("Universal CI/CD: comando concluído.");
+          return false;
         }
+
+        void vscode.window.showInformationMessage("Universal CI/CD: comando concluído.");
+        return true;
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         output.appendLine(`\nErro: ${message}`);
         void vscode.window.showErrorMessage(message);
+        return false;
       }
     }
   );
 }
 
 async function executeWithApproval(command: "run" | "run-workspaces"): Promise<void> {
+  // Generate and display the current plan before requesting permission to execute it.
+  const planSucceeded = await execute("plan");
+  if (!planSucceeded) return;
+
   const choice = await vscode.window.showWarningMessage(
     command === "run"
-      ? "O motor poderá executar as etapas permitidas na configuração do projeto. Revise o plano antes de continuar."
-      : "O motor poderá executar etapas permitidas nos projetos descobertos do workspace. Revise o escopo antes de continuar.",
+      ? "O plano foi gerado no canal de saída. Ao aprovar, o motor executará as etapas permitidas na configuração do projeto."
+      : "O plano foi gerado no canal de saída. Ao aprovar, o motor executará as etapas permitidas nos projetos descobertos do workspace.",
     { modal: true },
     "Aprovar execução"
   );
