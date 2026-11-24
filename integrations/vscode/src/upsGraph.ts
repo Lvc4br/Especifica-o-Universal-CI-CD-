@@ -1,7 +1,6 @@
 import * as vscode from "vscode";
 import { randomBytes } from "node:crypto";
 import type { PipelineIntelligence } from "@universal-cicd/contracts";
-import type { UpsExecutionPlan } from "@universal-cicd/contracts";
 
 interface GraphJob {
   id: string;
