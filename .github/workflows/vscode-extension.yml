@@ -4,6 +4,11 @@ on:
   pull_request:
     paths:
       - "integrations/vscode/**"
+      - "Docs/VSCODE_UPS_INSPECTOR.md"
+      - "Docs/VSCODE_VISUAL_PIPELINE_INTELLIGENCE.md"
+      - "Docs/PROJECT_STATUS.md"
+      - "CHANGELOG.md"
+      - "shared/**"
       - "package.json"
       - "tsconfig.base.json"
       - ".github/workflows/vscode-extension.yml"
@@ -28,20 +33,33 @@ jobs:
       - name: Install monorepo dependencies
         run: npm install --no-audit --no-fund
 
+      - name: Build shared contracts
+        run: npm run build --workspace=@universal-cicd/contracts
+
       - name: Typecheck VS Code extension
         run: npm run typecheck --workspace universal-cicd-vscode
 
       - name: Build and test VS Code extension
         run: npm test --workspace universal-cicd-vscode
 
+      - name: Stage shared contracts in extension output
+        run: |
+          mkdir -p integrations/vscode/out/node_modules/@universal-cicd/contracts
+          cp -R shared/contracts/dist integrations/vscode/out/node_modules/@universal-cicd/contracts/dist
+          cp shared/contracts/package.json integrations/vscode/out/node_modules/@universal-cicd/contracts/package.json
+
+      - name: Verify shared contracts are included in the VSIX file list
+        working-directory: integrations/vscode
+        run: npx --yes @vscode/vsce ls | grep -F "out/node_modules/@universal-cicd/contracts/dist/index.js"
+
       - name: Package VS Code extension
         working-directory: integrations/vscode
-        run: npx --yes @vscode/vsce package --no-dependencies --out universal-cicd-0.6.0.vsix
+        run: npx --yes @vscode/vsce package --no-dependencies --out universal-cicd-0.8.0.vsix
 
       - name: Upload VSIX artifact
         uses: actions/upload-artifact@v4
         with:
-          name: universal-cicd-vscode-0.6.0
-          path: integrations/vscode/universal-cicd-0.6.0.vsix
+          name: universal-cicd-vscode-0.8.0
+          path: integrations/vscode/universal-cicd-0.8.0.vsix
           if-no-files-found: error
           retention-days: 14

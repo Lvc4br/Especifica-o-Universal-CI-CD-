@@ -1,12 +1,9 @@
-import type { PipelineStageState } from "./index";
-
 export interface UpsValidationIssue {
   code: string;
   path: string;
   message: string;
 }
 export interface UpsValidationResult { valid: boolean; issues: UpsValidationIssue[]; }
-type Pipeline = { version?: unknown; name?: unknown; jobs?: unknown };
 
 const ID = /^[A-Za-z0-9_-]+$/;
 const topKeys = new Set(["version","name","description","trigger","jobs"]);
@@ -27,7 +24,9 @@ export function validateUpsPipeline(value:unknown):UpsValidationResult {
  if(value.description!==undefined&&typeof value.description!=="string") issue(issues,"UPS_DESCRIPTION","description","Description must be a string.");
  if(value.trigger!==undefined&&!stringArray(value.trigger)) issue(issues,"UPS_TRIGGER","trigger","Trigger must be an array of strings.");
  if(!object(value.jobs)||Object.keys(value.jobs).length===0){issue(issues,"UPS_JOBS","jobs","At least one job is required.");return {valid:false,issues};}
- const jobs=value.jobs as Record<string,unknown>; const ids=new Set(Object.keys(jobs));
+ const jobs=value.jobs as Record<string,unknown>;
+ if(Object.keys(jobs).length>500){issue(issues,"UPS_JOB_LIMIT","jobs","A UPS v1 document may contain at most 500 jobs.");return {valid:false,issues};}
+ const ids=new Set(Object.keys(jobs));
  const deps:Record<string,string[]>={};
  for(const [jid,jv] of Object.entries(jobs)){
   const p="jobs."+jid;
@@ -40,9 +39,12 @@ export function validateUpsPipeline(value:unknown):UpsValidationResult {
   if(jv.timeoutSeconds!==undefined&&!validTimeout(jv.timeoutSeconds))issue(issues,"UPS_TIMEOUT",p+".timeoutSeconds","Timeout must be an integer between 1 and 86400.");
   if(jv.continueOnError!==undefined&&typeof jv.continueOnError!=="boolean")issue(issues,"UPS_CONTINUE",p+".continueOnError","continueOnError must be boolean.");
   deps[jid]=stringArray(jv.needs)?jv.needs:[];
+  if(stringArray(jv.needs)&&new Set(jv.needs).size!==jv.needs.length)issue(issues,"UPS_DUPLICATE_DEPENDENCY",p+".needs","Dependency IDs must be unique.");
+  if(stringArray(jv.runsOn)&&new Set(jv.runsOn).size!==jv.runsOn.length)issue(issues,"UPS_DUPLICATE_CAPABILITY",p+".runsOn","Required capabilities must be unique.");
   if(!Array.isArray(jv.steps)||!jv.steps.length){issue(issues,"UPS_STEPS",p+".steps","Job requires at least one step.");continue;}
+  if(jv.steps.length>100)issue(issues,"UPS_STEP_LIMIT",p+".steps","A job may contain at most 100 steps.");
   const stepIds=new Set<string>();
-  jv.steps.forEach((sv,i)=>{
+  jv.steps.slice(0,100).forEach((sv,i)=>{
    const sp=p+".steps["+i+"]";
    if(!object(sv)){issue(issues,"UPS_STEP",sp,"Step must be an object.");return;}
    for(const k of Object.keys(sv))if(!stepKeys.has(k))issue(issues,"UPS_UNKNOWN_FIELD",sp+"."+k,"Unknown step field.");

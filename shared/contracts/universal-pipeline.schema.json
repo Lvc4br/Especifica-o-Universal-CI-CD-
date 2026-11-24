@@ -15,7 +15,8 @@
     },
     "name": {
       "type": "string",
-      "minLength": 1
+      "minLength": 1,
+      "pattern": ".*\\S.*"
     },
     "description": {
       "type": "string"
@@ -31,6 +32,10 @@
       "minProperties": 1,
       "additionalProperties": {
         "$ref": "#/$defs/job"
+      },
+      "maxProperties": 500,
+      "propertyNames": {
+        "pattern": "^[A-Za-z0-9_-]+$"
       }
     }
   },
@@ -72,7 +77,8 @@
           "minItems": 1,
           "items": {
             "$ref": "#/$defs/step"
-          }
+          },
+          "maxItems": 100
         }
       }
     },
@@ -101,7 +107,8 @@
           "properties": {
             "executable": {
               "type": "string",
-              "minLength": 1
+              "minLength": 1,
+              "pattern": ".*\\S.*"
             },
             "args": {
               "type": "array",

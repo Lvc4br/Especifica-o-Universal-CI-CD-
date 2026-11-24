@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "build": "npm run build --workspace @universal-cicd/contracts && npm run build --workspace universal-cicd-vscode && npm run build --workspace @universal-cicd/github-app",
-    "typecheck": "npm run typecheck --workspaces --if-present"
+    "typecheck": "npm run build --workspace=@universal-cicd/contracts && npm run typecheck --workspaces --if-present"
   },
   "engines": {
     "node": ">=20"

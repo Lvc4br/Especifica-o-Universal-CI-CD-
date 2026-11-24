@@ -2,7 +2,7 @@
   "name": "universal-cicd-vscode",
   "displayName": "Universal CI/CD",
   "description": "Run and inspect the Universal CI/CD engine from Visual Studio Code.",
-  "version": "0.6.0",
+  "version": "0.8.0",
   "publisher": "Lvc4br",
   "license": "MIT",
   "engines": {
@@ -27,7 +27,8 @@
     "onCommand:universalCicd.run",
     "onCommand:universalCicd.runWorkspaces",
     "onCommand:universalCicd.refreshDashboard",
-    "onCommand:universalCicd.openOutput"
+    "onCommand:universalCicd.openOutput",
+    "onCommand:universalCicd.inspectUps"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -40,6 +41,10 @@
       ]
     },
     "commands": [
+      {
+        "command": "universalCicd.inspectUps",
+        "title": "Universal CI/CD: Inspecionar pipeline UPS (somente leitura)"
+      },
       {
         "command": "universalCicd.openDashboard",
         "title": "Universal CI/CD: Abrir dashboard"
@@ -134,5 +139,8 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/Lvc4br/Especifica-o-Universal-CI-CD-.git"
+  },
+  "dependencies": {
+    "@universal-cicd/contracts": "0.1.0"
   }
 }

@@ -5,6 +5,9 @@ import { EngineCommand, runEngineCommand } from "./engineClient";
 import { DashboardProvider } from "./dashboard";
 import { openDashboardPanel } from "./webviewDashboard";
 import { normalizePlanSnapshot } from "./planSnapshot";
+import { analyzePipelineIntelligence, generateUpsExecutionPlan, validateUpsPipeline } from "@universal-cicd/contracts";
+import { formatUpsAnalysis } from "./upsInspector";
+import { openUpsGraphPanel } from "./upsGraph";
 
 const output = vscode.window.createOutputChannel("Universal CI/CD");
 const MAX_DISPLAY_CHARS = 1_000_000;
@@ -47,6 +50,86 @@ function resolveEngine(): EngineLocation | undefined {
   }
 
   return undefined;
+}
+
+async function inspectUpsFile(context: vscode.ExtensionContext): Promise<void> {
+  const selected = await vscode.window.showOpenDialog({
+    canSelectMany: false,
+    openLabel: "Inspecionar UPS (somente leitura)",
+    filters: { "Universal Pipeline Specification": ["json"] }
+  });
+  if (!selected?.[0]) return;
+
+  output.clear();
+  output.appendLine("Universal CI/CD — UPS Inspector");
+  output.appendLine(`Arquivo selecionado: ${selected[0].fsPath}`);
+  output.appendLine("Leitura limitada a 1 MB; nenhum comando será executado.");
+  output.show(true);
+
+  try {
+    const bytes = await vscode.workspace.fs.readFile(selected[0]);
+    if (bytes.byteLength > 1_000_000) {
+      output.appendLine("ERRO: arquivo excede o limite de 1 MB.");
+      void vscode.window.showErrorMessage("UPS Inspector: o arquivo excede 1 MB.");
+      return;
+    }
+
+    const document = JSON.parse(Buffer.from(bytes).toString("utf8")) as unknown;
+    const jobs = (document as { jobs?: unknown } | null)?.jobs;
+    if (!jobs || typeof jobs !== "object" || Array.isArray(jobs) || Object.keys(jobs).length > 500) {
+      output.appendLine("ERRO: o documento deve conter um mapa jobs com no máximo 500 jobs.");
+      void vscode.window.showErrorMessage("UPS Inspector: limite de 500 jobs ou estrutura inválida.");
+      return;
+    }
+    const validation = validateUpsPipeline(document);
+    if (!validation.valid) {
+      output.appendLine("VALIDAÇÃO UPS: REPROVADA");
+      for (const issue of validation.issues.slice(0, 100)) {
+        output.appendLine(`[${issue.code}] ${issue.path}: ${issue.message}`);
+      }
+      if (validation.issues.length > 100) output.appendLine("Demais problemas omitidos pelo limite de saída.");
+      void vscode.window.showWarningMessage("UPS Inspector: documento inválido. Consulte o canal Output.");
+      return;
+    }
+
+    const planned = generateUpsExecutionPlan(document);
+    if (!planned.valid || !planned.plan) {
+      output.appendLine("Não foi possível gerar o plano declarativo.");
+      for (const issue of planned.issues.slice(0, 100)) {
+        output.appendLine(`[${issue.code}] ${issue.path}: ${issue.message}`);
+      }
+      return;
+    }
+
+    const intelligence = analyzePipelineIntelligence(planned.plan);
+    if (!intelligence.valid || !intelligence.analysis) {
+      output.appendLine("Análise de dependências indisponível.");
+      for (const issue of intelligence.issues) output.appendLine(issue);
+      return;
+    }
+
+    const report = formatUpsAnalysis(planned.plan, intelligence.analysis);
+    openUpsGraphPanel(context, {
+      pipelineName: planned.plan.pipelineName,
+      jobs: planned.plan.jobs.map(job => ({
+        id: job.id,
+        name: job.name?.trim() || job.id,
+        dependencies: [...job.dependencies],
+        requiredCapabilities: [...job.requiredCapabilities],
+        stepCount: job.steps.length
+      })),
+      analysis: intelligence.analysis
+    });
+    output.appendLine("");
+
+    output.append(report.slice(0, 100_000));
+    if (report.length > 100_000) output.appendLine("\nRelatório truncado no limite de 100.000 caracteres.");
+    void vscode.window.showInformationMessage("UPS Inspector: análise somente leitura concluída.");
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Não foi possível ler o documento.";
+    output.appendLine(`ERRO: ${message}`);
+    void vscode.window.showErrorMessage(`UPS Inspector: ${message}`);
+  }
 }
 
 async function execute(command: EngineCommand, approved = false): Promise<boolean> {
@@ -181,6 +264,7 @@ export function activate(context: vscode.ExtensionContext): void {
   );
 
   const commands: Array<[string, () => unknown]> = [
+    ["universalCicd.inspectUps", () => inspectUpsFile(context)],
     ["universalCicd.openDashboard", () => {
       const panel = openDashboardPanel(context, () => {
         const workspace = vscode.workspace.workspaceFolders?.[0];

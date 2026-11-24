@@ -19,9 +19,20 @@ A extensão conecta o VS Code ao motor PowerShell existente. O motor permanece r
 ## Interface
 A Tree View nativa organiza os comandos em Workspace, Análise, Execução e Relatórios. O comando **Universal CI/CD: Abrir dashboard** abre o painel visual com estado do workspace, detecção do motor, atalhos operacionais e áreas de inteligência. O item Motor também informa se a extensão encontrou o script `cicd.ps1`. A saída detalhada fica no canal **Universal CI/CD** do painel Output.
 
-O dashboard é uma preview local. Ele lê `.cicd/plans/latest-plan.json` do workspace e apresenta as etapas, tecnologias, status e motivos registrados pelo motor PowerShell. A visualização também se atualiza quando esse arquivo é criado, alterado ou removido por um comando externo, inclusive pela CLI, enquanto o painel está aberto. A leitura é limitada a 1 MB, valida o schema `1.0`, normaliza os campos e rejeita caminhos que escapem do workspace. Os cartões de inteligência e políticas descrevem capacidades existentes no Core, mas não representam serviços remotos conectados. Indicadores de GitHub, runners distribuídos e métricas em tempo real não são simulados.
+O dashboard inclui um atalho **Inspecionar UPS** na seção Inteligência de pipeline, que abre o seletor de especificação e o DAG visual. O dashboard é uma preview local. Ele lê `.cicd/plans/latest-plan.json` do workspace e apresenta as etapas, tecnologias, status e motivos registrados pelo motor PowerShell. A visualização também se atualiza quando esse arquivo é criado, alterado ou removido por um comando externo, inclusive pela CLI, enquanto o painel está aberto. A leitura é limitada a 1 MB, valida o schema `1.0`, normaliza os campos e rejeita caminhos que escapem do workspace. Os cartões de inteligência e políticas descrevem capacidades existentes no Core, mas não representam serviços remotos conectados. Indicadores de GitHub, runners distribuídos e métricas em tempo real não são simulados.
 
-Detalhes do fluxo de dados, validação, fronteiras de confiança e limitações: [VS Code Dashboard — Local Plan Inspector](../../Docs/VSCODE_DASHBOARD_PLAN_INSPECTOR.md).
+Detalhes do fluxo de dados, validação, fronteiras de confiança e limitações: [VS Code Dashboard — Local Plan Inspector](../../Docs/VSCODE_DASHBOARD_PLAN_INSPECTOR.md) e [VS Code UPS Inspector](../../Docs/VSCODE_UPS_INSPECTOR.md).
+
+## Inspecionar uma especificação UPS v1
+
+Além do relatório textual no canal Output, a extensão abre um painel gráfico ao lado com as ondas de dependência, arestas, jobs paralelizáveis, caminho crítico estrutural e diagnósticos. Selecione um nó para consultar dependências, capabilities e quantidade de steps. O grafo é somente leitura e não representa execução em tempo real.
+
+1. Abra a Command Palette (`Ctrl+Shift+P`).
+2. Execute **Universal CI/CD: Inspecionar pipeline UPS (somente leitura)**.
+3. Selecione um arquivo JSON UPS v1.
+4. Consulte o canal **Universal CI/CD** no painel Output para ver validação, ondas de dependência, ordem topológica, caminho crítico estrutural e diagnósticos.
+
+O inspector usa os contratos compartilhados UPS v1, aceita arquivos de até 1 MB, até 500 jobs e até 100 steps por job, e limita o relatório a 100.000 caracteres. Ele não executa steps, não contata runners e não concede aprovação ou autorização. O caminho crítico é contado em jobs, não em duração.
 
 ## Segurança
 - O processo é iniciado com argumentos separados e `shell: false`.
@@ -40,7 +51,7 @@ npm test
 npm run build
 ```
 
-Esta versão combina a Tree View nativa do VS Code com um painel Webview responsivo. O painel exibe o plano local mais recente; a visualização de DAGs UPS v1 e dependências entre jobs permanece como etapa futura.
+Esta versão combina a Tree View nativa do VS Code com um painel Webview responsivo. O painel exibe o plano local mais recente; a o comando de inspeção UPS abre também um DAG gráfico interativo, com seleção de jobs, dependências, ondas e caminho crítico estrutural.
 
 ## Abrir o dashboard visual
 
@@ -52,4 +63,4 @@ Esta versão combina a Tree View nativa do VS Code com um painel Webview respons
 
 A validação e o empacotamento da extensão são executados pelo workflow **VS Code Extension CI** em Pull Requests que alterem a extensão. O artefato VSIX fica disponível na seção Artifacts da execução do GitHub Actions por 14 dias. Para instalar um pacote baixado, use **Extensions: Install from VSIX...** na Command Palette.
 
-O pacote da extensão contém a integração VS Code; o motor PowerShell continua sendo distribuído/configurado separadamente nesta preview. A versão 0.6.0 ainda não é uma publicação no Marketplace.
+O pacote da extensão contém a integração VS Code; o motor PowerShell continua sendo distribuído/configurado separadamente nesta preview. A versão 0.8.0 ainda não é uma publicação no Marketplace.

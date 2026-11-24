@@ -73,7 +73,9 @@ Construir uma plataforma interoperável para análise, planejamento, integraçã
 4. Documentar threat model preliminar e política de execução.
 5. Melhorar DX: mensagens de diagnóstico, CLI e extensão VS Code.
 6. Criar demonstração reproduzível e onboarding.
-7. Evoluir o dashboard VS Code para consumir planos UPS v1 validados e renderizar DAGs reais; não inferir dependências do plano PowerShell legado.
+7. Evoluir o dashboard VS Code para consumir planos UPS v1 validados e renderizar DAGs reais; não inferir dependências do plano PowerShell legado. **Primeira entrega realizada na extensão 0.8.0 (PR #22); seguir com validação de UX, fixtures reais e testes de escala.**
+8. Reconciliar o histórico de PRs #1–#22, incluindo a fundação inicial e a preview Pages independente, antes de qualquer merge em `main`.
+9. Fechar a auditoria de conformidade UPS schema/runtime/planner e ampliar fixtures positivas/negativas.
 
 ## Métricas
 - Build e test pass rate; cobertura dos casos críticos.

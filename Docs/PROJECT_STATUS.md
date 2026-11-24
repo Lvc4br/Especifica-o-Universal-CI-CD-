@@ -8,6 +8,7 @@ Todas as PRs abaixo permanecem draft/abertas e não foram mescladas; preservar a
 
 | PR | Escopo | Base / dependência | Situação conhecida |
 |---|---|---|---|
+| #1 | Fundação monorepo VS Code/GitHub App | `main` | Draft; revisar sobreposição com #2 |
 | #2 | Arquitetura e modelo de produto | `main` | Draft |
 | #3 | Adaptador VS Code | #2 | Draft |
 | #4 | GitHub App / Check Run foundation | #3 | Draft |
@@ -26,9 +27,31 @@ Todas as PRs abaixo permanecem draft/abertas e não foram mescladas; preservar a
 | #17 | Protocolo de autorização/aprovação (design-only) | #16 | Draft |
 | #18 | Dashboard visual VS Code 0.4.0 | #17 | Draft; Extension CI passou e VSIX publicado como artefato |
 | #19 | Inspector do plano local no dashboard 0.5.0 | #18 | Draft; Extension CI e Monorepo CI passaram |
-| #21 | Atualização automática do inspector quando o plano local muda; dashboard 0.6.0 | #19 | Em validação CI |
+| #20 | Preview temporária GitHub Pages | #19 | Draft; preview separada, não é dependência da cadeia #21/#22 |
+| #21 | Atualização automática do inspector quando o plano local muda; dashboard 0.6.0 | #19 | Draft; Monorepo CI e VS Code CI passaram |
+| #22 | VS Code UPS Inspector com DAG visual interativo; extensão 0.8.0 | #21 | Draft; Monorepo CI e VS Code Extension CI passaram no SHA `43292d51` |
 
-## Marco mais recente — VS Code 0.6.0 (PR #21)
+## Marco em desenvolvimento — VS Code 0.8.0 (PR #22)
+
+- Comando UPS Inspector seleciona explicitamente um JSON UPS v1.
+- Reutiliza validação, geração plan-only e análise DAG dos contratos compartilhados.
+- Abre relatório textual e DAG visual lado a lado.
+- Dashboard principal inclui atalho direto para abrir o inspector UPS.
+- DAG mostra jobs, dependências, ondas, paralelismo estrutural, caminho crítico e diagnósticos.
+- Seleção de job mostra dependências, capabilities e steps; navegação por teclado.
+- Webview com CSP restritiva, sem assets remotos, sem bridge de comandos e sem `innerHTML`.
+- Limites herdados: arquivo de 1 MB, 500 jobs e relatório de 100.000 caracteres.
+- Não executa steps, não contata runners e não autoriza execução.
+
+## Marco anterior — VS Code 0.7.0 (PR #22)
+
+- Comando seleciona explicitamente um arquivo JSON UPS v1.
+- Validação, geração de plano plan-only e análise DAG reutilizam `@universal-cicd/contracts`.
+- Exibe ondas, dependências, ordem topológica, caminho crítico estrutural e diagnósticos no Output.
+- Limites: arquivo de 1 MB, 500 jobs e relatório de 100.000 caracteres.
+- Não executa steps, não contata runners e não autoriza execução.
+
+## Marco validado — VS Code 0.6.0 (PR #21)
 
 - O dashboard observa criação, alteração e remoção de `.cicd/plans/latest-plan.json`.
 - Planos gerados externamente pela CLI atualizam o painel aberto sem refresh manual.
@@ -56,7 +79,13 @@ Todas as PRs abaixo permanecem draft/abertas e não foram mescladas; preservar a
 - PostgreSQL é fundação no PR, não infraestrutura provisionada/conectada.
 - O executor local não é sandbox.
 - O protocolo de aprovação da PR #17 é design-only; não implementa identidade, tokens ou autorização.
-- O dashboard 0.6.0 não simula GitHub, runners remotos, telemetria ou execuções em tempo real.
+- O dashboard 0.8.0 continua local e não simula GitHub, runners remotos, telemetria ou execuções em tempo real.
+- PR #21: Monorepo CI e VS Code Extension CI passaram após correção da expectativa de versão no teste do manifesto.
+- PR #22 / versão 0.7.0: Monorepo CI passou no run `45467318370`; VS Code Extension CI passou no run `45467317904`.
+- PR #22 / versão 0.8.0: Monorepo CI passou no run [45482289751](https://github.com/Lvc4br/Especifica-o-Universal-CI-CD-/actions/runs/45482289751); VS Code Extension CI passou no run [45482289804](https://github.com/Lvc4br/Especifica-o-Universal-CI-CD-/actions/runs/45482289804), ambos no SHA `e426ae9c2b99b32b01a487afaccbac293eda47a2`.
+- VSIX `universal-cicd-vscode-0.8.0` foi empacotado com o runtime de `@universal-cicd/contracts` verificado no file list; artefato ID `14961838893`, expira em 8 de dezembro de 2026.
+- Ajustes finais incluem descarte de listener ao fechar painel, atalho UPS no dashboard, paridade UPS schema/validator e verificação do runtime interno dentro do VSIX.
+- PR #22: VSIX `universal-cicd-vscode-0.7.0` empacotado e publicado como artefato ID `14956240032` (expira em 8 de dezembro de 2026).
 - Nenhuma PR desta cadeia foi mesclada em `main`.
 
 ## Equipe
@@ -67,4 +96,4 @@ Todas as PRs abaixo permanecem draft/abertas e não foram mescladas; preservar a
 
 ## Conclusão
 
-O projeto avançou até um dashboard VS Code capaz de inspecionar o plano local real, com validação CI e artefato instalável. Continua sendo uma prévia em desenvolvimento por PRs empilhadas; não é produto pronto para produção. Revisão, integração ordenada, testes de segurança e validação com usuários continuam necessários.
+O projeto avançou até um dashboard VS Code capaz de inspecionar planos locais e abrir um DAG visual UPS v1. A extensão 0.8.0 passou pelos dois workflows de CI na revisão final e gerou o VSIX instalável como artefato; ainda não é publicação de Marketplace nem produto pronto para produção. Continua sendo uma prévia em desenvolvimento por PRs empilhadas; não é produto pronto para produção. Revisão, integração ordenada, testes de segurança e validação com usuários continuam necessários.

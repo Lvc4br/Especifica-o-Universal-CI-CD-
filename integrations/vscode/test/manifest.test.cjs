@@ -22,7 +22,8 @@ test("registers every command used by the dashboard", () => {
     "universalCicd.runWorkspaces",
     "universalCicd.history",
     "universalCicd.exportReport",
-    "universalCicd.openOutput"
+    "universalCicd.openOutput",
+    "universalCicd.inspectUps"
   ];
 
   for (const command of required) {
@@ -41,5 +42,5 @@ test("exposes the visual dashboard preview command", () => {
   const commandIds = new Set(manifest.contributes.commands.map(command => command.command));
   assert.ok(commandIds.has("universalCicd.openDashboard"));
   assert.ok(manifest.activationEvents.includes("onCommand:universalCicd.openDashboard"));
-  assert.equal(manifest.version, "0.6.0");
+  assert.equal(manifest.version, "0.8.0");
 });
