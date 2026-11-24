@@ -68,3 +68,17 @@ O projeto está em desenvolvimento e ainda não deve ser usado em produção. Co
 ## Licença
 
 Este projeto é distribuído sob a licença [MIT](LICENSE). Consulte o arquivo `LICENSE` para os termos completos.
+
+
+## Documentação do produto e arquitetura
+
+- [Visão geral do produto](Docs/PRODUCT_OVERVIEW.md)
+- [Stack técnica](Docs/TECH_STACK.md)
+- [Matriz de linguagens e ecossistemas](Docs/LANGUAGE_SUPPORT.md)
+- [Diagramas de arquitetura](Docs/ARCHITECTURE_DIAGRAMS.md)
+- [Análise competitiva e mercado](Docs/COMPETITIVE_ANALYSIS.md)
+- [Estado do projeto](Docs/PROJECT_STATUS.md)
+- [Roadmap](Docs/ROADMAP.md)
+- [Arquitetura do motor](Docs/ARCHITECTURE.md)
+
+> A matriz de linguagens representa adaptadores em diferentes níveis de maturidade. Adaptador implementado não equivale a suporte validado em todos os projetos.
