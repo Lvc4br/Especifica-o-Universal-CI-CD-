@@ -29,9 +29,18 @@ Todas as PRs abaixo permanecem draft/abertas e não foram mescladas; preservar a
 | #19 | Inspector do plano local no dashboard 0.5.0 | #18 | Draft; Extension CI e Monorepo CI passaram |
 | #20 | Preview temporária GitHub Pages | #19 | Draft; preview separada, não é dependência da cadeia #21/#22 |
 | #21 | Atualização automática do inspector quando o plano local muda; dashboard 0.6.0 | #19 | Draft; Monorepo CI e VS Code CI passaram |
-| #22 | VS Code UPS Inspector com DAG visual interativo; extensão 0.8.0 | #21 | Draft; CI verde no SHA `15730be6`; VSIX publicado como artefato |\n| #23 | Busca, rótulos de ondas e zoom do DAG; extensão 0.9.0 | #22 | Draft; Monorepo CI e VS Code Extension CI passaram |
+| #22 | VS Code UPS Inspector com DAG visual interativo; extensão 0.8.0 | #21 | Draft; CI verde no SHA `15730be6`; VSIX publicado como artefato |
+| #23 | Busca, rótulos de ondas e zoom do DAG; extensão 0.9.0 | #22 | Draft; Monorepo CI e VS Code Extension CI passaram |
 
-## Marco em desenvolvimento — VS Code 0.9.0 (PR #23)\n\n- DAG visual identifica cada onda explicitamente.\n- Busca por nome ou ID destaca jobs correspondentes.\n- Zoom ajustável entre 50% e 200%, com redefinição para 100%.\n- Mantém seleção de jobs, diagnósticos, caminho crítico e limites de segurança da versão 0.8.0.\n- Não altera o plano, não executa jobs e não contata runners.\n\n## Marco validado — VS Code 0.8.0 (PR #22)
+## Marco em desenvolvimento — VS Code 0.9.0 (PR #23)
+
+- DAG visual identifica cada onda explicitamente.
+- Busca por nome ou ID destaca jobs correspondentes.
+- Zoom ajustável entre 50% e 200%, com redefinição para 100%.
+- Mantém seleção de jobs, diagnósticos, caminho crítico e limites de segurança da versão 0.8.0.
+- Não altera o plano, não executa jobs e não contata runners.
+
+## Marco validado — VS Code 0.8.0 (PR #22)
 
 - Comando UPS Inspector seleciona explicitamente um JSON UPS v1.
 - Reutiliza validação, geração plan-only e análise DAG dos contratos compartilhados.
@@ -40,7 +49,9 @@ Todas as PRs abaixo permanecem draft/abertas e não foram mescladas; preservar a
 - DAG mostra jobs, dependências, ondas, paralelismo estrutural, caminho crítico e diagnósticos.
 - Seleção de job mostra dependências, capabilities e steps; navegação por teclado.
 - Webview com CSP restritiva, sem assets remotos, sem bridge de comandos e sem `innerHTML`.
-- Limites: arquivo de 1 MB, 500 jobs, 100 steps por job e relatório de 100.000 caracteres.\n- Schema e validator UPS alinham nomes/executáveis não vazios, IDs, unicidade de dependências/capabilities e limites de coleção.\n- Fixture Python testada ponta a ponta: validação, geração plan-only e análise DAG; executáveis declarados não são iniciados.
+- Limites: arquivo de 1 MB, 500 jobs, 100 steps por job e relatório de 100.000 caracteres.
+- Schema e validator UPS alinham nomes/executáveis não vazios, IDs, unicidade de dependências/capabilities e limites de coleção.
+- Fixture Python testada ponta a ponta: validação, geração plan-only e análise DAG; executáveis declarados não são iniciados.
 - Não executa steps, não contata runners e não autoriza execução.
 
 ## Marco anterior — VS Code 0.7.0 (PR #22)
@@ -86,7 +97,8 @@ Todas as PRs abaixo permanecem draft/abertas e não foram mescladas; preservar a
 - VSIX `universal-cicd-vscode-0.8.0` foi empacotado com o runtime de `@universal-cicd/contracts` verificado no file list; artefato ID `14963600158`, expira em 8 de dezembro de 2026.
 - Ajustes finais incluem descarte de listener ao fechar painel, atalho UPS no dashboard, paridade UPS schema/validator e verificação do runtime interno dentro do VSIX.
 - PR #22: VSIX `universal-cicd-vscode-0.7.0` empacotado e publicado como artefato ID `14956240032` (expira em 8 de dezembro de 2026).
-- PR #23 / versão 0.9.0: Monorepo CI run `45483236417` e VS Code Extension CI run `45483236308` passaram; VSIX artefato ID `14962716420`.\n- Nenhuma PR desta cadeia foi mesclada em `main`.
+- PR #23 / versão 0.9.0: Monorepo CI run `45483236417` e VS Code Extension CI run `45483236308` passaram; VSIX artefato ID `14962716420`.
+- Nenhuma PR desta cadeia foi mesclada em `main`.
 
 ## Equipe
 
