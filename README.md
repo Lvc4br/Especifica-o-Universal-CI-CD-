@@ -79,6 +79,10 @@ Contrato em fase de draft: ainda não integrado ao motor PowerShell, VS Code ou 
 Este projeto é distribuído sob a licença [MIT](LICENSE). Consulte o arquivo `LICENSE` para os termos completos.
 
 
+## Prévia web temporária
+
+A [prévia pública do dashboard](https://lvc4br.github.io/Especifica-o-Universal-CI-CD-/) será acessível pelo navegador após a ativação inicial do GitHub Pages e a conclusão do workflow. É uma demonstração estática, não executa pipelines nem acessa workspaces locais. Consulte [a documentação da prévia](Docs/TEMPORARY_GITHUB_PAGES_PREVIEW.md).
+
 ## Documentação do produto e arquitetura
 
 - [Visão geral do produto](Docs/PRODUCT_OVERVIEW.md)

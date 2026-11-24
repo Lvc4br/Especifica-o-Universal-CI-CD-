@@ -1,0 +1,56 @@
+name: Temporary GitHub Pages Preview
+
+on:
+  push:
+    branches:
+      - feat/github-pages-preview
+    paths:
+      - "site/**"
+      - ".github/workflows/pages-preview.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages-preview
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Validate static preview
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate preview entrypoint
+        run: |
+          test -s site/index.html
+          grep -q '<html lang="pt-BR">' site/index.html
+          grep -q 'Prévia pública temporária' site/index.html
+          grep -q 'Não utilizar em produção' site/index.html
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    name: Deploy temporary preview
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
