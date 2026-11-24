@@ -8,6 +8,7 @@ Todas as PRs abaixo permanecem draft/abertas e não foram mescladas; preservar a
 
 | PR | Escopo | Base / dependência | Situação conhecida |
 |---|---|---|---|
+| #1 | Fundação monorepo VS Code/GitHub App | `main` | Draft; revisar sobreposição com #2 |
 | #2 | Arquitetura e modelo de produto | `main` | Draft |
 | #3 | Adaptador VS Code | #2 | Draft |
 | #4 | GitHub App / Check Run foundation | #3 | Draft |
@@ -26,8 +27,9 @@ Todas as PRs abaixo permanecem draft/abertas e não foram mescladas; preservar a
 | #17 | Protocolo de autorização/aprovação (design-only) | #16 | Draft |
 | #18 | Dashboard visual VS Code 0.4.0 | #17 | Draft; Extension CI passou e VSIX publicado como artefato |
 | #19 | Inspector do plano local no dashboard 0.5.0 | #18 | Draft; Extension CI e Monorepo CI passaram |
+| #20 | Preview temporária GitHub Pages | #19 | Draft; preview separada, não é dependência da cadeia #21/#22 |
 | #21 | Atualização automática do inspector quando o plano local muda; dashboard 0.6.0 | #19 | Draft; Monorepo CI e VS Code CI passaram |
-| #22 | VS Code UPS Inspector com DAG visual interativo; extensão 0.8.0 | #21 | Draft; nova validação CI em andamento |
+| #22 | VS Code UPS Inspector com DAG visual interativo; extensão 0.8.0 | #21 | Draft; validação CI da revisão final em andamento |
 
 ## Marco em desenvolvimento — VS Code 0.8.0 (PR #22)
 
@@ -80,8 +82,8 @@ Todas as PRs abaixo permanecem draft/abertas e não foram mescladas; preservar a
 - O dashboard 0.6.0 não simula GitHub, runners remotos, telemetria ou execuções em tempo real.
 - PR #21: Monorepo CI e VS Code Extension CI passaram após correção da expectativa de versão no teste do manifesto.
 - PR #22 / versão 0.7.0: Monorepo CI passou no run `45467318370`; VS Code Extension CI passou no run `45467317904`.
-- PR #22 / versão 0.8.0: Monorepo CI e VS Code Extension CI passaram no commit `17c303758f7ddacdc87c58456781b9415224320e`; VSIX `universal-cicd-vscode-0.8.0` artefato ID `14960639636`.
-- Ajustes posteriores de ciclo de vida do painel e integração com dashboard estão em nova execução CI.
+- PR #22 / versão 0.8.0: DAG visual e atalho do dashboard implementados; validação CI verde em commits intermediários. A revisão final inclui verificação explícita da inclusão do runtime de contratos no VSIX e aguarda CI final.
+- Ajustes posteriores incluem descarte de listener, integração do atalho no dashboard, paridade UPS schema/validator e validação de inclusão do runtime interno no VSIX.
 - PR #22: VSIX `universal-cicd-vscode-0.7.0` empacotado e publicado como artefato ID `14956240032` (expira em 8 de dezembro de 2026).
 - Nenhuma PR desta cadeia foi mesclada em `main`.
 
@@ -93,4 +95,4 @@ Todas as PRs abaixo permanecem draft/abertas e não foram mescladas; preservar a
 
 ## Conclusão
 
-O projeto avançou até um dashboard VS Code capaz de inspecionar planos locais e abrir um DAG visual UPS v1; a versão 0.8.0 aguarda validação CI. Continua sendo uma prévia em desenvolvimento por PRs empilhadas; não é produto pronto para produção. Revisão, integração ordenada, testes de segurança e validação com usuários continuam necessários.
+O projeto avançou até um dashboard VS Code capaz de inspecionar planos locais e abrir um DAG visual UPS v1; a versão 0.8.0 aguarda validação CI final da revisão mais recente. Continua sendo uma prévia em desenvolvimento por PRs empilhadas; não é produto pronto para produção. Revisão, integração ordenada, testes de segurança e validação com usuários continuam necessários.
