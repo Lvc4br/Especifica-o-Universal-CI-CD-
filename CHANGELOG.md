@@ -3,6 +3,16 @@
 ## Unreleased
 
 ### Added
+- Dashboard VS Code lê o último plano PowerShell salvo em `.cicd/plans/latest-plan.json` e apresenta tecnologias, etapas, status e motivos.
+- Normalização defensiva do snapshot: schema `1.0`, limite de tamanho/quantidade de etapas, strings limitadas e estados desconhecidos tratados sem quebrar a interface.
+- Testes automatizados para planos válidos/inválidos, dados excessivos e texto não confiável.
+
+### Security
+- O painel lê somente o arquivo de plano esperado dentro do workspace, rejeita symlinks/paths fora da raiz e limita a leitura a 1 MB.
+- Campos do plano são renderizados via `textContent`; nenhum dado do arquivo é interpretado como HTML.
+
+
+### Added
 - First visual VS Code dashboard preview with workspace and PowerShell engine status, responsive UI, and shortcuts for existing local commands.
 - Secure webview message allowlist and nonce-based Content Security Policy; no remote assets or simulated GitHub/runner telemetry.
 
