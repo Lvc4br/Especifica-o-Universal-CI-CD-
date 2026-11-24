@@ -26,3 +26,10 @@ test("dashboard messages can invoke only the explicit command allowlist", () => 
   assert.match(source, /if \(!COMMANDS\.has\(message\.command\)\) return/);
   assert.doesNotMatch(source, /"universalCicd\.run",/);
 });
+
+test("dashboard renders plan fields as text and never as executable markup", () => {
+  assert.match(source, /renderPlan\(plan\)/);
+  assert.match(source, /\.textContent\s*=/);
+  assert.doesNotMatch(source, /\.innerHTML\s*=/);
+  assert.match(source, /renderPlan\(state\.plan\)/);
+});
