@@ -26,9 +26,18 @@ Todas as PRs abaixo permanecem draft/abertas e não foram mescladas; preservar a
 | #17 | Protocolo de autorização/aprovação (design-only) | #16 | Draft |
 | #18 | Dashboard visual VS Code 0.4.0 | #17 | Draft; Extension CI passou e VSIX publicado como artefato |
 | #19 | Inspector do plano local no dashboard 0.5.0 | #18 | Draft; Extension CI e Monorepo CI passaram |
-| #21 | Atualização automática do inspector quando o plano local muda; dashboard 0.6.0 | #19 | Em validação CI |
+| #21 | Atualização automática do inspector quando o plano local muda; dashboard 0.6.0 | #19 | Draft; Monorepo CI e VS Code CI passaram |
+| #22 | Comando VS Code UPS Inspector somente leitura; extensão 0.7.0 | #21 | Em validação CI |
 
-## Marco mais recente — VS Code 0.6.0 (PR #21)
+## Marco em desenvolvimento — VS Code 0.7.0 (PR #22)
+
+- Comando seleciona explicitamente um arquivo JSON UPS v1.
+- Validação, geração de plano plan-only e análise DAG reutilizam `@universal-cicd/contracts`.
+- Exibe ondas, dependências, ordem topológica, caminho crítico estrutural e diagnósticos no Output.
+- Limites: arquivo de 1 MB, 500 jobs e relatório de 100.000 caracteres.
+- Não executa steps, não contata runners e não autoriza execução.
+
+## Marco validado — VS Code 0.6.0 (PR #21)
 
 - O dashboard observa criação, alteração e remoção de `.cicd/plans/latest-plan.json`.
 - Planos gerados externamente pela CLI atualizam o painel aberto sem refresh manual.
@@ -57,6 +66,7 @@ Todas as PRs abaixo permanecem draft/abertas e não foram mescladas; preservar a
 - O executor local não é sandbox.
 - O protocolo de aprovação da PR #17 é design-only; não implementa identidade, tokens ou autorização.
 - O dashboard 0.6.0 não simula GitHub, runners remotos, telemetria ou execuções em tempo real.
+- PR #21: Monorepo CI e VS Code Extension CI passaram após correção da expectativa de versão no teste do manifesto.
 - Nenhuma PR desta cadeia foi mesclada em `main`.
 
 ## Equipe
