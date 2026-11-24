@@ -13,18 +13,36 @@
 - A extensão consulta apenas o status do motor nesta etapa.
 
 
-## Unreleased
+## [0.5.0-dev] - 2026-11-16
+- Adicionada licença MIT com aviso de copyright.
+- Atualizadas as instruções de distribuição para refletir os termos da licença.
+- Corrigida a estrutura do executor e removida duplicação/inconsistência no módulo de empacotamento de artefatos.
+- Reforçadas exclusões do ZIP de código-fonte para diretórios de dependências, caches, credenciais comuns e links simbólicos.
+- Corrigido o workflow de release para gerar e anexar o pacote ZIP sem linhas YAML escapadas incorretamente.
+- Adicionado guia de distribuição beta, requisitos de avaliação, segurança e critérios de saída da beta.
+- Adicionados modelos de issue para relatos de bugs e sugestões.
+- Adicionada política de reporte responsável de vulnerabilidades.
 
-### Added
-- Initial monorepo foundation for the VS Code extension and GitHub App.
-- Shared TypeScript contracts for pipeline stages, run summaries and integration health.
-- VS Code command to invoke the existing PowerShell engine status command.
-- Read-only Probot event handlers for pull request and installation events.
+## [0.5.0-dev] - 2026-11-14
+- Expandido o planejamento e executor para Go (vet/test/build).
+- Adicionado Rust (cargo fmt check/test/build).
+- Adicionado C#/.NET (dotnet format/test/build).
+- Adicionado Java via Maven e Gradle (validate/check, test, package/build).
+- Adicionada etapa build para JavaScript/TypeScript via script npm.
+- Relatórios identificam versão 0.5.0-dev.
+- CLI aceita -ProjectPath e mantém configuração, planos e relatórios dentro do projeto-alvo.
+- Adicionadas fixtures reais de Go, Rust, .NET e Maven e job de integração que executa check/test/build e valida os relatórios.
+- Smoke tests ampliados para verificar detecção/planejamento e allowlists desses ecossistemas.
 
-### Security
-- GitHub App event handlers are observers only; no repository mutations, workflow dispatches or deployments are performed.
-- The VS Code integration does not bypass the engine's explicit approval model.
+## [0.4.0-dev] - 2026-11-14
+- Runner de processos com argumentos separados, timeout e captura stdout/stderr.
+- Executor allowlisted, aprovação explícita e relatórios JSON.
 
-## 0.5.0-dev
+## 0.5.0-dev — integração Python e JavaScript
 
-See repository history for prior changes.
+- Adicionado build de pacotes Python por `python -m build`, condicionado à presença de `[build-system]` em `pyproject.toml`.
+- Removido o comportamento permissivo `npm --if-present`; scripts npm inexistentes são `NOT_APPLICABLE`.
+- Adicionadas fixtures com testes e builds reais para Python e JavaScript.
+- CI agora executa pipelines completos dos dois ecossistemas e valida os resultados no relatório JSON.
+- Smoke tests cobrem a detecção de scripts npm ausentes e o planejamento do build Python.
+
