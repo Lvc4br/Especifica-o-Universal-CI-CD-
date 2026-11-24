@@ -31,6 +31,9 @@ jobs:
       - name: Typecheck all workspaces
         run: npm run typecheck
 
+      - name: Test shared contracts
+        run: npm run test --workspace=@universal-cicd/contracts
+
       - name: Test VS Code engine adapter
         run: npm run test --workspace=@universal-cicd/vscode
 
