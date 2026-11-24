@@ -8,24 +8,30 @@
   "engines": { "vscode": "^1.90.0" },
   "categories": ["Other", "Programming Languages"],
   "activationEvents": [
+    "onCommand:universalCicd.version",
+    "onCommand:universalCicd.initializeProject",
     "onCommand:universalCicd.showStatus",
     "onCommand:universalCicd.detect",
     "onCommand:universalCicd.plan",
     "onCommand:universalCicd.validateConfig",
     "onCommand:universalCicd.discoverProjects",
     "onCommand:universalCicd.history",
+    "onCommand:universalCicd.exportReport",
     "onCommand:universalCicd.run",
     "onCommand:universalCicd.runWorkspaces"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
+      { "command": "universalCicd.version", "title": "Universal CI/CD: Versão do motor" },
+      { "command": "universalCicd.initializeProject", "title": "Universal CI/CD: Inicializar projeto" },
       { "command": "universalCicd.showStatus", "title": "Universal CI/CD: Status do projeto" },
       { "command": "universalCicd.detect", "title": "Universal CI/CD: Detectar tecnologias" },
       { "command": "universalCicd.plan", "title": "Universal CI/CD: Gerar plano" },
       { "command": "universalCicd.validateConfig", "title": "Universal CI/CD: Validar configuração" },
       { "command": "universalCicd.discoverProjects", "title": "Universal CI/CD: Descobrir projetos do workspace" },
       { "command": "universalCicd.history", "title": "Universal CI/CD: Histórico" },
+      { "command": "universalCicd.exportReport", "title": "Universal CI/CD: Exportar relatório" },
       { "command": "universalCicd.run", "title": "Universal CI/CD: Executar pipeline (com aprovação)" },
       { "command": "universalCicd.runWorkspaces", "title": "Universal CI/CD: Executar projetos do workspace (com aprovação)" }
     ],
