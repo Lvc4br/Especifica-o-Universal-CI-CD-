@@ -65,6 +65,15 @@ Os modelos pressupõem PowerShell 7 e executam o pipeline com aprovação no pr�
 O projeto está em desenvolvimento e ainda não deve ser usado em produção. Consulte [DISTRIBUTION.md](DISTRIBUTION.md) para requisitos, instalação de avaliação, segurança, feedback e critérios para uma futura beta. Releases empacotadas são artefatos de avaliação, não uma declaração de estabilidade.
 
 
+## Universal Pipeline Specification v1 (draft)
+
+- [Contrato UPS v1](Docs/UNIVERSAL_PIPELINE_SPEC_V1.md)
+- [Schema JSON](shared/contracts/universal-pipeline.schema.json)
+- [Exemplo](Docs/examples/ups-python.json)
+- [Matriz de fixtures e validação](Docs/VALIDATION_FIXTURE_MATRIX.md)
+
+Contrato em fase de draft: ainda não integrado ao motor PowerShell, VS Code ou providers remotos.
+
 ## Licença
 
 Este projeto é distribuído sob a licença [MIT](LICENSE). Consulte o arquivo `LICENSE` para os termos completos.
