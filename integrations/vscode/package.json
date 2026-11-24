@@ -2,7 +2,7 @@
   "name": "universal-cicd-vscode",
   "displayName": "Universal CI/CD",
   "description": "Run and inspect the Universal CI/CD engine from Visual Studio Code.",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "publisher": "Lvc4br",
   "license": "MIT",
   "engines": {
