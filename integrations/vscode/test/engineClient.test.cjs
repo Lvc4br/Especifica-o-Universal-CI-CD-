@@ -31,6 +31,11 @@ test("adds the approval switch only for an approved run", () => {
   assert.equal(args.at(-1), "-Approve");
 });
 
+test("passes the configured timeout to the PowerShell engine", () => {
+  const args = buildEngineArgs("/opt/engine/cicd.ps1", "run", "/workspace", false, 90);
+  assert.deepEqual(args.slice(-2), ["-TimeoutSeconds", "90"]);
+});
+
 test("does not add approval to read-only commands", () => {
   const args = buildEngineArgs("/opt/engine/cicd.ps1", "plan", "/workspace", true);
   assert.equal(args.includes("-Approve"), false);
