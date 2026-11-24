@@ -3,6 +3,7 @@ import { existsSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { EngineCommand, runEngineCommand } from "./engineClient";
 import { DashboardProvider } from "./dashboard";
+import { openDashboardPanel } from "./webviewDashboard";
 
 const output = vscode.window.createOutputChannel("Universal CI/CD");
 const MAX_DISPLAY_CHARS = 1_000_000;
@@ -163,6 +164,20 @@ export function activate(context: vscode.ExtensionContext): void {
   );
 
   const commands: Array<[string, () => unknown]> = [
+    ["universalCicd.openDashboard", () => {
+      const panel = openDashboardPanel(context, () => {
+        const workspace = vscode.workspace.workspaceFolders?.[0];
+        const engine = resolveEngine();
+        const configuredPath = vscode.workspace.getConfiguration("universalCicd").get<string>("enginePath", "").trim();
+        return {
+          workspaceName: workspace?.name ?? "",
+          workspacePath: workspace?.uri.fsPath ?? "",
+          engineFound: Boolean(engine),
+          enginePath: engine?.scriptPath ?? configuredPath
+        };
+      });
+      context.subscriptions.push(panel);
+    }],
     ["universalCicd.version", () => execute("version")],
     ["universalCicd.initializeProject", () => execute("init")],
     ["universalCicd.showStatus", () => execute("status")],

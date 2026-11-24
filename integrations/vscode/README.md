@@ -17,7 +17,9 @@ A extensão conecta o VS Code ao motor PowerShell existente. O motor permanece r
 6. Só use os comandos de execução depois de revisar o plano e confirmar a aprovação modal.
 
 ## Interface
-A Tree View nativa organiza os comandos em Workspace, Análise, Execução e Relatórios. O item Motor informa se a extensão encontrou o script `cicd.ps1`. A saída detalhada fica no canal **Universal CI/CD** do painel Output.
+A Tree View nativa organiza os comandos em Workspace, Análise, Execução e Relatórios. O comando **Universal CI/CD: Abrir dashboard** abre o painel visual com estado do workspace, detecção do motor, atalhos operacionais e áreas de inteligência. O item Motor também informa se a extensão encontrou o script `cicd.ps1`. A saída detalhada fica no canal **Universal CI/CD** do painel Output.
+
+O dashboard é uma preview local. Os cartões de inteligência e políticas descrevem capacidades já existentes no Core, mas não representam serviços remotos conectados. Indicadores de GitHub, runners distribuídos e métricas em tempo real não são simulados.
 
 ## Segurança
 - O processo é iniciado com argumentos separados e `shell: false`.
@@ -37,3 +39,15 @@ npm run build
 ```
 
 Esta versão usa a Tree View nativa do VS Code. Um painel webview e visualização gráfica de pipelines ficam para uma etapa posterior.
+
+## Abrir o dashboard visual
+
+1. Instale a extensão Universal CI/CD no VS Code.
+2. Abra uma pasta de projeto.
+3. Abra a Command Palette com `Ctrl+Shift+P`.
+4. Execute **Universal CI/CD: Abrir dashboard**.
+5. Configure `universalCicd.enginePath` com a pasta que contém `cicd.ps1`, caso o motor não esteja na raiz do workspace.
+
+A validação e o empacotamento da extensão são executados pelo workflow **VS Code Extension CI** em Pull Requests que alterem a extensão. O artefato VSIX fica disponível na seção Artifacts da execução do GitHub Actions por 14 dias. Para instalar um pacote baixado, use **Extensions: Install from VSIX...** na Command Palette.
+
+O pacote da extensão contém a integração VS Code; o motor PowerShell continua sendo distribuído/configurado separadamente nesta preview. A versão 0.4.0 ainda não é uma publicação no Marketplace.

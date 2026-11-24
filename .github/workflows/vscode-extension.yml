@@ -1,0 +1,47 @@
+name: VS Code Extension CI
+
+on:
+  pull_request:
+    paths:
+      - "integrations/vscode/**"
+      - "package.json"
+      - "tsconfig.base.json"
+      - ".github/workflows/vscode-extension.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-and-package:
+    name: Validate and package VS Code extension
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install monorepo dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Typecheck VS Code extension
+        run: npm run typecheck --workspace universal-cicd-vscode
+
+      - name: Build and test VS Code extension
+        run: npm test --workspace universal-cicd-vscode
+
+      - name: Package VS Code extension
+        working-directory: integrations/vscode
+        run: npx --yes @vscode/vsce package --no-dependencies --out universal-cicd-0.4.0.vsix
+
+      - name: Upload VSIX artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: universal-cicd-vscode-0.4.0
+          path: integrations/vscode/universal-cicd-0.4.0.vsix
+          if-no-files-found: error
+          retention-days: 14
