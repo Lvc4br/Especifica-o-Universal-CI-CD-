@@ -8,7 +8,7 @@ The UPS Inspector opens a second VS Code Webview panel that renders the validate
 
 1. Run **Universal CI/CD: Inspecionar pipeline UPS (somente leitura)**.
 2. Select a UPS v1 JSON document.
-3. The extension enforces the 1 MB input and 500-job bounds.
+3. The extension enforces the 1 MB input, 500-job and 100-step-per-job bounds.
 4. The shared UPS validator checks the document.
 5. The shared planner creates a declarative plan-only representation.
 6. Pipeline Intelligence computes deterministic dependency waves, topological order, structural critical path and diagnostics.
