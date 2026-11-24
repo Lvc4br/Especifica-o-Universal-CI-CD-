@@ -3,6 +3,14 @@
 ## Unreleased
 
 ### Added
+- Declarative Policy & Trust assessment for UPS v1 plans: max job count, forbidden executable and required capability rules.
+- Distinct block, human-review-required and warning findings; assessment explicitly does not authorize execution.
+- Policy validation and tests for outcomes, malformed rules, and input immutability.
+
+### Security
+- Policy evaluation is assessment-only; no approvals, secrets, runner contact or command execution.
+
+### Added
 - Deterministic, analysis-only Pipeline Intelligence Engine for UPS v1 dependency graphs.
 - Stable topological ordering, structural critical path, parallel waves, independent/terminal jobs, fan-out and actionable diagnostics.
 - Tests for DAGs, cycles, missing/duplicate dependencies, malformed inputs, deterministic output and input immutability.
