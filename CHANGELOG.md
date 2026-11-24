@@ -3,6 +3,8 @@
 ## Unreleased
 
 ### Added
+- Draft Universal Pipeline Specification v1: JSON Schema, example pipeline, portability and safety invariants.
+- Initial ecosystem fixture validation matrix with honest planned status and acceptance criteria.
 - Tree View nativa no Explorer com atalhos organizados por workspace, análise, execução e relatórios.
 - Indicador de localização do motor PowerShell e atalhos para inicializar e descobrir projetos.
 - Guia de instalação, configuração, comandos, testes e segurança da extensão VS Code.
