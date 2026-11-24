@@ -3,6 +3,9 @@ on:
   pull_request:
     paths:
       - "integrations/**"
+      - "Docs/VSCODE_UPS_INSPECTOR.md"
+      - "Docs/PROJECT_STATUS.md"
+      - "CHANGELOG.md"
       - "shared/**"
       - "package.json"
       - "tsconfig.base.json"
