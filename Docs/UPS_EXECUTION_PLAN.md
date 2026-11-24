@@ -13,4 +13,6 @@ Transforms a validated UPS v1 document into a deterministic plan. This is **plan
 ## API
 `generateUpsExecutionPlan(value)` returns `{ valid, issues, plan? }`. Valid output includes `executionMode: "plan-only"`, ordered jobs, parallel groups and summary.
 
+The documented Python example is exercised end-to-end through validation, planning and DAG analysis in the shared-contract test suite. The test inspects the declared executables but does not run them.
+
 The plan is descriptive, not execution authorization. Runner policy, approval, credentials, environment handling and isolation remain separate.
