@@ -23,3 +23,9 @@ test("rejects invalid job identifiers and more than 500 jobs",()=>{
  const jobs={};for(let i=0;i<501;i++)jobs["job_"+i]={steps:[{id:"s",run:{executable:"node",args:[]}}]};
  assert.ok(validateUpsPipeline({version:"1",name:"large",jobs}).issues.some(x=>x.code==="UPS_JOB_LIMIT"));
 });
+
+test("rejects whitespace-only pipeline names and executables",()=>{
+ assert.ok(validateUpsPipeline({...good,name:"   "}).issues.some(x=>x.code==="UPS_NAME"));
+ const value={version:"1",name:"demo",jobs:{a:{steps:[{id:"s",run:{executable:"   ",args:[]}}]}}};
+ assert.ok(validateUpsPipeline(value).issues.some(x=>x.code==="UPS_EXECUTABLE"));
+});
