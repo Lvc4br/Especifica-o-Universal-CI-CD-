@@ -10,3 +10,10 @@ coverage/
 *.vsix
 .DS_Store
 Thumbs.db
+
+# Node/TypeScript integration build output
+**/out/
+*.vsix
+.env
+.env.*
+!.env.example
