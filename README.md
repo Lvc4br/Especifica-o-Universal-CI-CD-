@@ -81,7 +81,7 @@ Este projeto é distribuído sob a licença [MIT](LICENSE). Consulte o arquivo `
 
 ## Prévia web temporária
 
-A [prévia pública do dashboard](https://lvc4br.github.io/Especifica-o-Universal-CI-CD-/) permite conhecer a interface pelo navegador. É uma demonstração estática, não executa pipelines nem acessa workspaces locais. Consulte [a documentação da prévia](Docs/TEMPORARY_GITHUB_PAGES_PREVIEW.md).
+A [prévia pública do dashboard](https://lvc4br.github.io/Especifica-o-Universal-CI-CD-/) será acessível pelo navegador após a ativação inicial do GitHub Pages e a conclusão do workflow. É uma demonstração estática, não executa pipelines nem acessa workspaces locais. Consulte [a documentação da prévia](Docs/TEMPORARY_GITHUB_PAGES_PREVIEW.md).
 
 ## Documentação do produto e arquitetura
 
