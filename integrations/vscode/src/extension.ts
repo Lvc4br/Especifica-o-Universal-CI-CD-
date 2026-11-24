@@ -82,6 +82,7 @@ async function execute(command: EngineCommand, approved = false): Promise<boolea
           command,
           projectPath: workspace.uri.fsPath,
           timeoutMs: timeoutSeconds * 1000,
+          timeoutSeconds,
           approve: approved,
           shouldCancel: () => token.isCancellationRequested,
           onOutput: (stream, chunk) => {
@@ -142,12 +143,15 @@ export function activate(context: vscode.ExtensionContext): void {
   context.subscriptions.push(output);
 
   const commands: Array<[string, () => unknown]> = [
+    ["universalCicd.version", () => execute("version")],
+    ["universalCicd.initializeProject", () => execute("init")],
     ["universalCicd.showStatus", () => execute("status")],
     ["universalCicd.detect", () => execute("detect")],
     ["universalCicd.plan", () => execute("plan")],
     ["universalCicd.validateConfig", () => execute("validate-config")],
     ["universalCicd.discoverProjects", () => execute("discover-projects")],
     ["universalCicd.history", () => execute("history")],
+    ["universalCicd.exportReport", () => execute("export-report")],
     ["universalCicd.run", () => executeWithApproval("run")],
     ["universalCicd.runWorkspaces", () => executeWithApproval("run-workspaces")]
   ];
