@@ -25,6 +25,9 @@ A Tree View nativa organiza os comandos em Workspace, Análise, Execução e Rel
 - A execução local exige geração bem-sucedida do plano e confirmação explícita.
 - O timeout padrão é 600 segundos e pode ser ajustado nas configurações.
 
+## Testes
+O conjunto automatizado valida a construção segura dos argumentos do motor, a exigência de aprovação explícita, o timeout e as contribuições de comandos e da Tree View no manifesto da extensão.
+
 ## Desenvolvimento
 ```bash
 npm install
