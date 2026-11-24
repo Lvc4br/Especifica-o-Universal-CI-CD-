@@ -39,3 +39,15 @@ npm run build
 ```
 
 Esta versão usa a Tree View nativa do VS Code. Um painel webview e visualização gráfica de pipelines ficam para uma etapa posterior.
+
+## Abrir o dashboard visual
+
+1. Instale a extensão Universal CI/CD no VS Code.
+2. Abra uma pasta de projeto.
+3. Abra a Command Palette com `Ctrl+Shift+P`.
+4. Execute **Universal CI/CD: Abrir dashboard**.
+5. Configure `universalCicd.enginePath` com a pasta que contém `cicd.ps1`, caso o motor não esteja na raiz do workspace.
+
+A validação e o empacotamento da extensão são executados pelo workflow **VS Code Extension CI** em Pull Requests que alterem a extensão. O artefato VSIX fica disponível na seção Artifacts da execução do GitHub Actions por 14 dias. Para instalar um pacote baixado, use **Extensions: Install from VSIX...** na Command Palette.
+
+O pacote da extensão contém a integração VS Code; o motor PowerShell continua sendo distribuído/configurado separadamente nesta preview. A versão 0.4.0 ainda não é uma publicação no Marketplace.
