@@ -1,0 +1,18 @@
+{
+  "name": "universal-cicd-monorepo",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Monorepo for the Universal CI/CD engine integrations.",
+  "workspaces": [
+    "shared/contracts",
+    "integrations/vscode",
+    "integrations/github-app"
+  ],
+  "scripts": {
+    "build": "npm run build --workspace @universal-cicd/contracts && npm run build --workspace @universal-cicd/vscode && npm run build --workspace @universal-cicd/github-app",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
