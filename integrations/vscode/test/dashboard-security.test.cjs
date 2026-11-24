@@ -33,3 +33,11 @@ test("dashboard renders plan fields as text and never as executable markup", () 
   assert.doesNotMatch(source, /\.innerHTML\s*=/);
   assert.match(source, /renderPlan\(state\.plan\)/);
 });
+
+test("dashboard watches the local plan file and disposes watcher resources", () => {
+  assert.match(source, /createFileSystemWatcher\("\*\*\/\.cicd\/plans\/latest-plan\.json"\)/);
+  assert.match(source, /planWatcher\.onDidCreate\(refresh\)/);
+  assert.match(source, /planWatcher\.onDidChange\(refresh\)/);
+  assert.match(source, /planWatcher\.onDidDelete\(refresh\)/);
+  assert.match(source, /planWatcher\.dispose\(\)/);
+});
