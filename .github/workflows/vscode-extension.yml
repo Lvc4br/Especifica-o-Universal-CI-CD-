@@ -38,9 +38,15 @@ jobs:
       - name: Build and test VS Code extension
         run: npm test --workspace universal-cicd-vscode
 
+      - name: Stage shared contracts in extension output
+        run: |
+          mkdir -p integrations/vscode/out/node_modules/@universal-cicd/contracts
+          cp -R shared/contracts/dist integrations/vscode/out/node_modules/@universal-cicd/contracts/dist
+          cp shared/contracts/package.json integrations/vscode/out/node_modules/@universal-cicd/contracts/package.json
+
       - name: Package VS Code extension
         working-directory: integrations/vscode
-        run: npx --yes @vscode/vsce package --out universal-cicd-0.7.0.vsix
+        run: npx --yes @vscode/vsce package --no-dependencies --out universal-cicd-0.7.0.vsix
 
       - name: Upload VSIX artifact
         uses: actions/upload-artifact@v4
