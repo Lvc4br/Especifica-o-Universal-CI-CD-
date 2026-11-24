@@ -41,5 +41,5 @@ test("exposes the visual dashboard preview command", () => {
   const commandIds = new Set(manifest.contributes.commands.map(command => command.command));
   assert.ok(commandIds.has("universalCicd.openDashboard"));
   assert.ok(manifest.activationEvents.includes("onCommand:universalCicd.openDashboard"));
-  assert.equal(manifest.version, "0.6.0");
+  assert.equal(manifest.version, "0.7.0");
 });
