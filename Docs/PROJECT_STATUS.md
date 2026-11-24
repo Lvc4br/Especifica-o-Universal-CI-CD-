@@ -34,6 +34,7 @@ Todas as PRs abaixo permanecem draft/abertas e não foram mescladas; preservar a
 - Comando UPS Inspector seleciona explicitamente um JSON UPS v1.
 - Reutiliza validação, geração plan-only e análise DAG dos contratos compartilhados.
 - Abre relatório textual e DAG visual lado a lado.
+- Dashboard principal inclui atalho direto para abrir o inspector UPS.
 - DAG mostra jobs, dependências, ondas, paralelismo estrutural, caminho crítico e diagnósticos.
 - Seleção de job mostra dependências, capabilities e steps; navegação por teclado.
 - Webview com CSP restritiva, sem assets remotos, sem bridge de comandos e sem `innerHTML`.
@@ -79,7 +80,8 @@ Todas as PRs abaixo permanecem draft/abertas e não foram mescladas; preservar a
 - O dashboard 0.6.0 não simula GitHub, runners remotos, telemetria ou execuções em tempo real.
 - PR #21: Monorepo CI e VS Code Extension CI passaram após correção da expectativa de versão no teste do manifesto.
 - PR #22 / versão 0.7.0: Monorepo CI passou no run `45467318370`; VS Code Extension CI passou no run `45467317904`.
-- PR #22 / versão 0.8.0: implementação do DAG visual adicionada; aguardando nova validação CI.
+- PR #22 / versão 0.8.0: Monorepo CI e VS Code Extension CI passaram no commit `17c303758f7ddacdc87c58456781b9415224320e`; VSIX `universal-cicd-vscode-0.8.0` artefato ID `14960639636`.
+- Ajustes posteriores de ciclo de vida do painel e integração com dashboard estão em nova execução CI.
 - PR #22: VSIX `universal-cicd-vscode-0.7.0` empacotado e publicado como artefato ID `14956240032` (expira em 8 de dezembro de 2026).
 - Nenhuma PR desta cadeia foi mesclada em `main`.
 
