@@ -43,6 +43,6 @@ test("dashboard watches the local plan file and disposes watcher resources", () 
 });
 
 test("dashboard exposes the read-only UPS inspector through its allowlist", () => {
-  assert.match(source, /"universalCicd\\.inspectUps"/);
+  assert.ok(source.includes('"universalCicd.inspectUps"'));
   assert.match(source, /INSPECIONAR UPS/);
 });
