@@ -30,3 +30,14 @@ test("UPS graph distinguishes structural critical path and diagnostics", () => {
 test("UPS graph message listener is disposed when its panel closes", () => {
   assert.match(source, /panel\.onDidDispose\(\(\) => messageListener\.dispose\(\)\)/);
 });
+
+test("UPS graph provides wave labels, job search and bounded zoom controls", () => {
+  assert.match(source, /id="job-search"/);
+  assert.match(source, /id="zoom-in"/);
+  assert.match(source, /id="zoom-out"/);
+  assert.match(source, /id="zoom-reset"/);
+  assert.match(source, /Onda /);
+  assert.match(source, /toLocaleLowerCase/);
+  assert.match(source, /Math\.min\(2/);
+  assert.match(source, /Math\.max\(0\.5/);
+});

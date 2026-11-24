@@ -23,6 +23,8 @@ The UPS Inspector opens a second VS Code Webview panel that renders the validate
 - Selecting a node shows its ID, declared dependencies, required capabilities, number of steps and wave position.
 - Diagnostics include severity, affected job IDs, explanation and recommendation.
 - The graph is scrollable for large pipelines and supports keyboard selection with Enter/Space.
+- Wave columns have explicit labels; a text search highlights matching jobs by name or ID.
+- Zoom controls scale the SVG between 50% and 200%, with a reset-to-100% action.
 
 ## Security controls
 

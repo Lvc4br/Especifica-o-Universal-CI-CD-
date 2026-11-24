@@ -3,6 +3,9 @@
 ## Unreleased
 
 ### Added
+- VS Code 0.9.0: navegação do DAG UPS com rótulos de ondas, busca por nome/ID e zoom entre 50% e 200%, sem alterar o plano ou executar jobs.
+
+### Added
 - VS Code 0.8.0: painel gráfico interativo para DAG UPS v1, com ondas, arestas de dependência, caminho crítico estrutural, seleção de jobs e diagnósticos; atalho integrado à seção Inteligência de pipeline do dashboard.
 - Visualização alimentada exclusivamente pelo UPS Validator, Execution Plan Generator e Pipeline Intelligence compartilhados; sem execução, runners ou telemetria simulada.
 - UPS v1 schema e runtime validator alinhados para nomes/executáveis não vazios, IDs de jobs, unicidade de `needs`/`runsOn` e limite máximo de 500 jobs e 100 steps por job; testes de paridade e fixture end-to-end adicionados.
