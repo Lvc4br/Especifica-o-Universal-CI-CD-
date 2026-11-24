@@ -27,7 +27,8 @@
     "onCommand:universalCicd.run",
     "onCommand:universalCicd.runWorkspaces",
     "onCommand:universalCicd.refreshDashboard",
-    "onCommand:universalCicd.openOutput"
+    "onCommand:universalCicd.openOutput",
+    "onCommand:universalCicd.inspectUps"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -40,6 +41,10 @@
       ]
     },
     "commands": [
+      {
+        "command": "universalCicd.inspectUps",
+        "title": "Universal CI/CD: Inspecionar pipeline UPS (somente leitura)"
+      },
       {
         "command": "universalCicd.openDashboard",
         "title": "Universal CI/CD: Abrir dashboard"
