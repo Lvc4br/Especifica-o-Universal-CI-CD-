@@ -48,6 +48,10 @@ jobs:
           cp -R shared/contracts/dist integrations/vscode/out/node_modules/@universal-cicd/contracts/dist
           cp shared/contracts/package.json integrations/vscode/out/node_modules/@universal-cicd/contracts/package.json
 
+      - name: Verify shared contracts are included in the VSIX file list
+        working-directory: integrations/vscode
+        run: npx --yes @vscode/vsce ls | grep -F "out/node_modules/@universal-cicd/contracts/dist/index.js"
+
       - name: Package VS Code extension
         working-directory: integrations/vscode
         run: npx --yes @vscode/vsce package --no-dependencies --out universal-cicd-0.8.0.vsix
