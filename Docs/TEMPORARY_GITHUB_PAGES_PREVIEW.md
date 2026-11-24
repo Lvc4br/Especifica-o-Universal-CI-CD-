@@ -7,13 +7,15 @@
 
 `https://lvc4br.github.io/Especifica-o-Universal-CI-CD-/`
 
-O endereço só estará ativo depois que o workflow `Temporary GitHub Pages Preview` concluir o deploy e o GitHub Pages aceitar a configuração do repositório.
+O endereço só estará ativo depois que o proprietário habilitar GitHub Pages em **Settings → Pages → Build and deployment → Source: GitHub Actions** e o workflow `Temporary GitHub Pages Preview` concluir o deploy. O repositório estava com Pages desabilitado (`has_pages=false`) e a integração GitHub usada nesta sessão não tem permissão administrativa para ativar o serviço via API.
 
 ## Como funciona
 
 - A página estática fica em `site/index.html`.
 - O workflow `.github/workflows/pages-preview.yml` valida a entrada, configura Pages, publica o artefato e faz o deploy.
 - O deploy é acionado por alterações em `site/**` na branch temporária `feat/github-pages-preview`, ou manualmente.
+- Primeira execução (run `45437918148`) validou o site, mas falhou ao tentar habilitar Pages: o GitHub retornou `Resource not accessible by integration`. Não houve publicação ainda.
+- Depois de selecionar **GitHub Actions** em Settings → Pages, reexecute o workflow em Actions → Temporary GitHub Pages Preview → Run workflow, escolhendo `feat/github-pages-preview`.
 - A publicação utiliza GitHub Actions e o ambiente `github-pages`; não é necessário colocar o site na raiz do produto.
 
 ## Escopo e limites
