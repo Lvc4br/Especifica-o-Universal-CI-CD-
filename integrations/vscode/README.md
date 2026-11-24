@@ -21,7 +21,7 @@ A Tree View nativa organiza os comandos em Workspace, Análise, Execução e Rel
 
 O dashboard é uma preview local. Ele lê `.cicd/plans/latest-plan.json` do workspace e apresenta as etapas, tecnologias, status e motivos registrados pelo motor PowerShell. A visualização também se atualiza quando esse arquivo é criado, alterado ou removido por um comando externo, inclusive pela CLI, enquanto o painel está aberto. A leitura é limitada a 1 MB, valida o schema `1.0`, normaliza os campos e rejeita caminhos que escapem do workspace. Os cartões de inteligência e políticas descrevem capacidades existentes no Core, mas não representam serviços remotos conectados. Indicadores de GitHub, runners distribuídos e métricas em tempo real não são simulados.
 
-Detalhes do fluxo de dados, validação, fronteiras de confiança e limitações: [VS Code Dashboard — Local Plan Inspector](../../Docs/VSCODE_DASHBOARD_PLAN_INSPECTOR.md).
+Detalhes do fluxo de dados, validação, fronteiras de confiança e limitações: [VS Code Dashboard — Local Plan Inspector](../../Docs/VSCODE_DASHBOARD_PLAN_INSPECTOR.md) e [VS Code UPS Inspector](../../Docs/VSCODE_UPS_INSPECTOR.md).
 
 ## Inspecionar uma especificação UPS v1
 
