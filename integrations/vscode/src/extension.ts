@@ -1,9 +1,10 @@
 import * as vscode from "vscode";
-import { existsSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { existsSync, lstatSync, readFileSync, realpathSync } from "node:fs";
+import { isAbsolute, join, relative, resolve } from "node:path";
 import { EngineCommand, runEngineCommand } from "./engineClient";
 import { DashboardProvider } from "./dashboard";
 import { openDashboardPanel } from "./webviewDashboard";
+import { normalizePlanSnapshot } from "./planSnapshot";
 
 const output = vscode.window.createOutputChannel("Universal CI/CD");
 const MAX_DISPLAY_CHARS = 1_000_000;
@@ -11,6 +12,22 @@ let dashboard: DashboardProvider | undefined;
 
 interface EngineLocation {
   scriptPath: string;
+}
+
+function readLatestPlan(workspacePath: string | undefined) {
+  if (!workspacePath) return undefined;
+  try {
+    const workspaceRoot = realpathSync(workspacePath);
+    const candidate = join(workspaceRoot, ".cicd", "plans", "latest-plan.json");
+    const resolved = realpathSync(candidate);
+    const relativePath = relative(workspaceRoot, resolved);
+    if (relativePath.startsWith("..") || isAbsolute(relativePath)) return undefined;
+    const info = lstatSync(candidate);
+    if (!info.isFile() || info.isSymbolicLink() || info.size > 1_000_000) return undefined;
+    return normalizePlanSnapshot(JSON.parse(readFileSync(resolved, "utf8")) as unknown);
+  } catch {
+    return undefined;
+  }
 }
 
 function resolveEngine(): EngineLocation | undefined {
@@ -173,7 +190,8 @@ export function activate(context: vscode.ExtensionContext): void {
           workspaceName: workspace?.name ?? "",
           workspacePath: workspace?.uri.fsPath ?? "",
           engineFound: Boolean(engine),
-          enginePath: engine?.scriptPath ?? configuredPath
+          enginePath: engine?.scriptPath ?? configuredPath,
+          plan: readLatestPlan(workspace?.uri.fsPath)
         };
       });
       context.subscriptions.push(panel);

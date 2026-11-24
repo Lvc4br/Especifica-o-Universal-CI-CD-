@@ -73,6 +73,7 @@ Construir uma plataforma interoperável para análise, planejamento, integraçã
 4. Documentar threat model preliminar e política de execução.
 5. Melhorar DX: mensagens de diagnóstico, CLI e extensão VS Code.
 6. Criar demonstração reproduzível e onboarding.
+7. Evoluir o dashboard VS Code para consumir planos UPS v1 validados e renderizar DAGs reais; não inferir dependências do plano PowerShell legado.
 
 ## Métricas
 - Build e test pass rate; cobertura dos casos críticos.
