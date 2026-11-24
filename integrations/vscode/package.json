@@ -1,0 +1,47 @@
+{
+  "name": "@universal-cicd/vscode",
+  "displayName": "Universal CI/CD",
+  "description": "Run and inspect the Universal CI/CD engine from Visual Studio Code.",
+  "version": "0.1.0",
+  "publisher": "Lvc4br",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": ["Other", "Programming Languages"],
+  "activationEvents": ["onCommand:universalCicd.showStatus"],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "universalCicd.showStatus",
+        "title": "Universal CI/CD: Show Project Status"
+      }
+    ],
+    "configuration": {
+      "title": "Universal CI/CD",
+      "properties": {
+        "universalCicd.enginePath": {
+          "type": "string",
+          "default": "",
+          "description": "Absolute path to the directory containing cicd.ps1. If empty, the extension searches the opened workspace."
+        },
+        "universalCicd.powershellExecutable": {
+          "type": "string",
+          "default": "pwsh",
+          "description": "PowerShell 7 executable name or absolute path."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "tsc -p .",
+    "typecheck": "tsc -p . --noEmit",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/vscode": "^1.90.0",
+    "typescript": "^5.6.0"
+  }
+}

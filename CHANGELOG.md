@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased
+
+### Added
+- Criada a fundação monorepo para a extensão VS Code e o GitHub App.
+- Adicionados contratos TypeScript compartilhados para etapas, execuções e saúde das integrações.
+- Adicionado comando da extensão VS Code para consultar o status do motor PowerShell existente.
+- Adicionados handlers observadores do Probot para eventos de Pull Request e instalação.
+
+### Security
+- Os handlers iniciais do GitHub App são somente observadores; não executam workflows, criam checks ou fazem deploy.
+- A extensão consulta apenas o status do motor nesta etapa.
+
+
 ## [0.5.0-dev] - 2026-11-16
 - Adicionada licença MIT com aviso de copyright.
 - Atualizadas as instruções de distribuição para refletir os termos da licença.

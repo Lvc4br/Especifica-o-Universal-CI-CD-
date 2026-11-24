@@ -25,3 +25,10 @@ bin/
 obj/
 coverage/
 *.log
+
+# Node/TypeScript integration build output
+**/out/
+*.vsix
+.env
+.env.*
+!.env.example
