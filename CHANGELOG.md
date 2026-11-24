@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Dashboard VS Code atualiza o inspector automaticamente quando `.cicd/plans/latest-plan.json` é criado, alterado ou removido, inclusive por processos externos/CLI.
 - Dashboard VS Code lê o último plano PowerShell salvo em `.cicd/plans/latest-plan.json` e apresenta tecnologias, etapas, status e motivos.
 - Normalização defensiva do snapshot: schema `1.0`, limite de tamanho/quantidade de etapas, strings limitadas e estados desconhecidos tratados sem quebrar a interface.
 - Testes automatizados para planos válidos/inválidos, dados excessivos e texto não confiável.
