@@ -1,4 +1,27 @@
 import * as vscode from "vscode";
+import { randomBytes } from "node:crypto";
+
+export interface DashboardState {
+  workspaceName: string;
+  workspacePath: string;
+  engineFound: boolean;
+  enginePath: string;
+}
+
+const COMMANDS = new Set([
+  "universalCicd.detect",
+  "universalCicd.validateConfig",
+  "universalCicd.plan",
+  "universalCicd.showStatus",
+  "universalCicd.history",
+  "universalCicd.exportReport",
+  "universalCicd.run",
+  "universalCicd.refreshDashboard",
+  "universalCicd.openOutput"
+]);
+
+function nonce(): string {\n  return randomBytes(16).toString("base64");\n}mport * as vscode from "vscode";
+import { randomBytes } from "node:crypto";
 
 export interface DashboardState {
   workspaceName: string;
