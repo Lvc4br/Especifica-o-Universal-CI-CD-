@@ -90,7 +90,7 @@ button{font:inherit;cursor:pointer}.shell{max-width:1180px;margin:0 auto;padding
 </head>
 <body>
 <div class="shell">
-<header class="top"><div class="brand"><div class="mark">U</div><div><div class="brandname">UNIVERSAL CI/CD</div><div class="subbrand">Developer workflow intelligence</div></div></div><div class="version">PREVIEW · 0.4.0</div></header>
+<header class="top"><div class="brand"><div class="mark">U</div><div><div class="brandname">UNIVERSAL CI/CD</div><div class="subbrand">Developer workflow intelligence</div></div></div><div class="version">PREVIEW · 0.5.0</div></header>
 <section class="hero">
 <div class="hero-main"><div class="eyebrow">Seu centro de engenharia</div><h1>Do código ao pipeline.<br>Com clareza em cada etapa.</h1><p>Analise projetos, entenda dependências e prepare fluxos de CI/CD em um único espaço de trabalho — com decisões transparentes e controle humano.</p><div class="actions"><button class="btn primary" data-command="universalCicd.plan">⌁ Gerar plano</button><button class="btn" data-command="universalCicd.detect">Detectar projeto</button><button class="btn" data-command="universalCicd.showStatus">Ver status</button></div></div>
 <aside class="hero-side"><div><div class="eyebrow">Conexão local</div><div class="statusline"><span id="engine-dot" class="dot"></span><span id="engine-status">Verificando motor…</span></div><div id="engine-path" class="path">Aguardando informações do workspace</div></div><div class="workspace"><small>WORKSPACE ATIVO</small><strong id="workspace-name">Nenhuma pasta aberta</strong><div id="workspace-path" class="path"></div></div></aside>
