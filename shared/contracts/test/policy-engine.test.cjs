@@ -11,3 +11,15 @@ test("required capabilities are checked per job",()=>{const r=evaluatePipelinePo
 test("rejects duplicate and malformed policy rules",()=>{assert.equal(evaluatePipelinePolicy(plan,{schemaVersion:"1",policyId:"p",rules:[{id:"x",type:"max-jobs",limit:2,effect:"block"},{id:"x",type:"max-jobs",limit:3,effect:"warn"}]}).valid,false);assert.equal(evaluatePipelinePolicy(plan,{schemaVersion:"1",policyId:"p",rules:[{id:"x",type:"max-jobs",limit:0,effect:"block"}]}).valid,false);});
 test("rejects unsupported or malformed plans and policies",()=>{assert.equal(evaluatePipelinePolicy({...plan,executionMode:"execute"},{schemaVersion:"1",policyId:"p",rules:[]}).valid,false);assert.equal(evaluatePipelinePolicy(plan,{schemaVersion:"1",policyId:"",rules:[]}).valid,false);});
 test("empty rule set is valid and input remains unchanged",()=>{const p=JSON.stringify(plan);const policy={schemaVersion:"1",policyId:"empty",rules:[]};const before=JSON.stringify(policy);const r=evaluatePipelinePolicy(plan,policy);assert.equal(r.valid,true);assert.equal(JSON.stringify(plan),p);assert.equal(JSON.stringify(policy),before);});
+
+test("rejects malformed nested jobs and duplicate job IDs without throwing",()=>{
+ const malformed={...plan,jobs:[{id:"x",requiredCapabilities:[],steps:[{executable:"npm"}]},{id:"x",requiredCapabilities:[],steps:[]}]};
+ const result=evaluatePipelinePolicy(malformed,{schemaVersion:"1",policyId:"p",rules:[]});
+ assert.equal(result.valid,false);assert.match(result.issues.join(" "),/Duplicate plan job ID/);
+ const badStep={...plan,jobs:[{id:"x",requiredCapabilities:[],steps:[{executable:""}]}]};
+ assert.equal(evaluatePipelinePolicy(badStep,{schemaVersion:"1",policyId:"p",rules:[]}).valid,false);
+});
+test("accepts jobs with no declared capabilities when the policy does not require them",()=>{
+ const noCaps={...plan,jobs:[{id:"job",requiredCapabilities:[],steps:[{executable:"npm",args:[]}]}]};
+ assert.equal(evaluatePipelinePolicy(noCaps,{schemaVersion:"1",policyId:"p",rules:[]}).valid,true);
+});
