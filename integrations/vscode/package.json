@@ -2,21 +2,48 @@
   "name": "@universal-cicd/vscode",
   "displayName": "Universal CI/CD",
   "description": "Run and inspect the Universal CI/CD engine from Visual Studio Code.",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "publisher": "Lvc4br",
   "license": "MIT",
-  "engines": {
-    "vscode": "^1.90.0"
-  },
+  "engines": { "vscode": "^1.90.0" },
   "categories": ["Other", "Programming Languages"],
-  "activationEvents": ["onCommand:universalCicd.showStatus"],
+  "activationEvents": [
+    "onView:universalCicd.dashboard",
+    "onCommand:universalCicd.version",
+    "onCommand:universalCicd.initializeProject",
+    "onCommand:universalCicd.showStatus",
+    "onCommand:universalCicd.detect",
+    "onCommand:universalCicd.plan",
+    "onCommand:universalCicd.validateConfig",
+    "onCommand:universalCicd.discoverProjects",
+    "onCommand:universalCicd.history",
+    "onCommand:universalCicd.exportReport",
+    "onCommand:universalCicd.run",
+    "onCommand:universalCicd.runWorkspaces",
+    "onCommand:universalCicd.refreshDashboard",
+    "onCommand:universalCicd.openOutput"
+  ],
   "main": "./out/extension.js",
   "contributes": {
+    "views": {
+      "explorer": [
+        { "id": "universalCicd.dashboard", "name": "Universal CI/CD" }
+      ]
+    },
     "commands": [
-      {
-        "command": "universalCicd.showStatus",
-        "title": "Universal CI/CD: Show Project Status"
-      }
+      { "command": "universalCicd.version", "title": "Universal CI/CD: Versão do motor" },
+      { "command": "universalCicd.initializeProject", "title": "Universal CI/CD: Inicializar projeto" },
+      { "command": "universalCicd.showStatus", "title": "Universal CI/CD: Status do projeto" },
+      { "command": "universalCicd.detect", "title": "Universal CI/CD: Detectar tecnologias" },
+      { "command": "universalCicd.plan", "title": "Universal CI/CD: Gerar plano" },
+      { "command": "universalCicd.validateConfig", "title": "Universal CI/CD: Validar configuração" },
+      { "command": "universalCicd.discoverProjects", "title": "Universal CI/CD: Descobrir projetos do workspace" },
+      { "command": "universalCicd.history", "title": "Universal CI/CD: Histórico" },
+      { "command": "universalCicd.exportReport", "title": "Universal CI/CD: Exportar relatório" },
+      { "command": "universalCicd.run", "title": "Universal CI/CD: Executar pipeline (com aprovação)" },
+      { "command": "universalCicd.runWorkspaces", "title": "Universal CI/CD: Executar projetos do workspace (com aprovação)" },
+      { "command": "universalCicd.refreshDashboard", "title": "Universal CI/CD: Atualizar painel" },
+      { "command": "universalCicd.openOutput", "title": "Universal CI/CD: Abrir saída" }
     ],
     "configuration": {
       "title": "Universal CI/CD",
@@ -24,12 +51,19 @@
         "universalCicd.enginePath": {
           "type": "string",
           "default": "",
-          "description": "Absolute path to the directory containing cicd.ps1. If empty, the extension searches the opened workspace."
+          "description": "Caminho absoluto da pasta que contém cicd.ps1. Se vazio, a extensão procura no workspace."
         },
         "universalCicd.powershellExecutable": {
           "type": "string",
           "default": "pwsh",
-          "description": "PowerShell 7 executable name or absolute path."
+          "description": "Nome do executável PowerShell 7 ou caminho absoluto."
+        },
+        "universalCicd.timeoutSeconds": {
+          "type": "number",
+          "default": 600,
+          "minimum": 1,
+          "maximum": 86400,
+          "description": "Tempo limite para comandos do motor, em segundos."
         }
       }
     }
@@ -37,6 +71,7 @@
   "scripts": {
     "build": "tsc -p .",
     "typecheck": "tsc -p . --noEmit",
+    "test": "npm run build && node --test test/*.test.cjs",
     "package": "vsce package"
   },
   "devDependencies": {
