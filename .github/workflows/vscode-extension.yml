@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "integrations/vscode/**"
+      - "shared/**"
       - "package.json"
       - "tsconfig.base.json"
       - ".github/workflows/vscode-extension.yml"
@@ -39,12 +40,12 @@ jobs:
 
       - name: Package VS Code extension
         working-directory: integrations/vscode
-        run: npx --yes @vscode/vsce package --no-dependencies --out universal-cicd-0.6.0.vsix
+        run: npx --yes @vscode/vsce package --out universal-cicd-0.7.0.vsix
 
       - name: Upload VSIX artifact
         uses: actions/upload-artifact@v4
         with:
-          name: universal-cicd-vscode-0.6.0
-          path: integrations/vscode/universal-cicd-0.6.0.vsix
+          name: universal-cicd-vscode-0.7.0
+          path: integrations/vscode/universal-cicd-0.7.0.vsix
           if-no-files-found: error
           retention-days: 14
