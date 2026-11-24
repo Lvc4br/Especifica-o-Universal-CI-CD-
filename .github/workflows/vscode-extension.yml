@@ -28,6 +28,9 @@ jobs:
       - name: Install monorepo dependencies
         run: npm install --no-audit --no-fund
 
+      - name: Build shared contracts
+        run: npm run build --workspace=@universal-cicd/contracts
+
       - name: Typecheck VS Code extension
         run: npm run typecheck --workspace universal-cicd-vscode
 
