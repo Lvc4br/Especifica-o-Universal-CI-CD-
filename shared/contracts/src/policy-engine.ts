@@ -17,15 +17,29 @@ export interface PolicyAssessment {
 export interface PolicyEvaluationResult { valid:boolean; assessment?:PolicyAssessment; issues:string[]; }
 function isRecord(v:unknown):v is Record<string,unknown>{return typeof v==="object"&&v!==null&&!Array.isArray(v);}
 function nonEmpty(v:unknown):v is string{return typeof v==="string"&&v.trim().length>0;}
+function stringList(v:unknown):v is string[]{return Array.isArray(v)&&v.length>0&&v.every(nonEmpty);}
 function normalized(v:string):string{return v.trim().toLowerCase();}
 
 /** Evaluates declarative policy against a plan. This is not an execution authorization. */
 export function evaluatePipelinePolicy(planInput:unknown, policyInput:unknown):PolicyEvaluationResult {
+ const issues:string[]=[];
  if(!isRecord(planInput)||planInput.schemaVersion!=="1"||planInput.generatedFrom!=="UPS v1"||planInput.executionMode!=="plan-only"||planInput.valid!==true||!nonEmpty(planInput.pipelineName)||!Array.isArray(planInput.jobs)||planInput.jobs.length===0)
   return {valid:false,issues:["Input must be a non-empty, structurally identified UPS v1 plan-only object."]};
+ const jobIds=new Set<string>();
+ for(const [index,job] of (planInput.jobs as unknown[]).entries()){
+  if(!isRecord(job)||!nonEmpty(job.id)||!stringList(job.requiredCapabilities)&&!Array.isArray(job.requiredCapabilities)||!Array.isArray(job.steps)){
+   issues.push("Plan job at index "+index+" has malformed identity, capabilities or steps.");continue;
+  }
+  if(jobIds.has(job.id))issues.push("Duplicate plan job ID: "+job.id);jobIds.add(job.id);
+  if(!job.requiredCapabilities.every(nonEmpty))issues.push("Job "+job.id+" has malformed required capabilities.");
+  for(const [stepIndex,step] of job.steps.entries()){
+   if(!isRecord(step)||!nonEmpty(step.executable))issues.push("Job "+job.id+" has an invalid executable at step "+stepIndex+".");
+  }
+ }
+ if(issues.length)return {valid:false,issues};
  if(!isRecord(policyInput)||policyInput.schemaVersion!=="1"||!nonEmpty(policyInput.policyId)||!Array.isArray(policyInput.rules))
   return {valid:false,issues:["Policy must have schemaVersion 1, a non-empty policyId and a rules array."]};
- const issues:string[]=[];const ruleIds=new Set<string>();
+ const ruleIds=new Set<string>();
  for(const [i,raw] of (policyInput.rules as unknown[]).entries()){
   if(!isRecord(raw)){issues.push("Policy rule at index "+i+" must be an object.");continue;}
   const id=raw.id;
@@ -35,7 +49,7 @@ export function evaluatePipelinePolicy(planInput:unknown, policyInput:unknown):P
   if(raw.type==="max-jobs"){if(!Number.isInteger(raw.limit)||Number(raw.limit)<1)issues.push("Rule "+id+" requires a positive integer limit.");}
   else if(raw.type==="forbidden-executables"||raw.type==="required-capabilities"){
    const values=raw.type==="forbidden-executables"?raw.executables:raw.capabilities;
-   if(!Array.isArray(values)||values.length===0||!values.every(nonEmpty))issues.push("Rule "+id+" requires a non-empty string list.");
+   if(!stringList(values))issues.push("Rule "+id+" requires a non-empty string list.");
   } else issues.push("Rule "+id+" has an unsupported type.");
  }
  if(issues.length)return {valid:false,issues};
