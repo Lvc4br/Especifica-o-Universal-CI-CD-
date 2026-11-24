@@ -18,7 +18,8 @@ const COMMANDS = new Set([
   "universalCicd.history",
   "universalCicd.exportReport",
   "universalCicd.refreshDashboard",
-  "universalCicd.openOutput"
+  "universalCicd.openOutput",
+  "universalCicd.inspectUps"
 ]);
 
 function nonce(): string {
