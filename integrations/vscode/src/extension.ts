@@ -109,7 +109,6 @@ async function inspectUpsFile(context: vscode.ExtensionContext): Promise<void> {
     }
 
     const report = formatUpsAnalysis(planned.plan, intelligence.analysis);
-    const jobById = new Map(planned.plan.jobs.map(job => [job.id, job]));
     openUpsGraphPanel(context, {
       pipelineName: planned.plan.pipelineName,
       jobs: planned.plan.jobs.map(job => ({
