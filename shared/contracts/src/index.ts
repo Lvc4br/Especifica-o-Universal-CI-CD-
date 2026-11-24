@@ -38,3 +38,6 @@ export interface IntegrationHealth {
   version?: string;
   message?: string;
 }
+
+export { validateUpsPipeline } from "./ups-validator";
+export type { UpsValidationIssue, UpsValidationResult } from "./ups-validator";
