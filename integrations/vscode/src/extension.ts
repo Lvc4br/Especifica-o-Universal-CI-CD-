@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { existsSync, lstatSync, readFileSync, realpathSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { isAbsolute, join, relative, resolve } from "node:path";
 import { EngineCommand, runEngineCommand } from "./engineClient";
 import { DashboardProvider } from "./dashboard";
 import { openDashboardPanel } from "./webviewDashboard";
@@ -20,8 +20,8 @@ function readLatestPlan(workspacePath: string | undefined) {
     const workspaceRoot = realpathSync(workspacePath);
     const candidate = join(workspaceRoot, ".cicd", "plans", "latest-plan.json");
     const resolved = realpathSync(candidate);
-    const relative = require("node:path").relative(workspaceRoot, resolved) as string;
-    if (relative.startsWith("..") || require("node:path").isAbsolute(relative)) return undefined;
+    const relativePath = relative(workspaceRoot, resolved);
+    if (relativePath.startsWith("..") || isAbsolute(relativePath)) return undefined;
     const info = lstatSync(candidate);
     if (!info.isFile() || info.isSymbolicLink() || info.size > 1_000_000) return undefined;
     return normalizePlanSnapshot(JSON.parse(readFileSync(resolved, "utf8")) as unknown);
