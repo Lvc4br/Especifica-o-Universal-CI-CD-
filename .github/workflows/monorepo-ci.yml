@@ -1,0 +1,39 @@
+name: Monorepo CI
+on:
+  pull_request:
+    paths:
+      - "integrations/**"
+      - "shared/**"
+      - "package.json"
+      - "tsconfig.base.json"
+      - ".github/workflows/monorepo-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    name: Typecheck, build and VS Code adapter tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install workspace dependencies
+        run: npm install --ignore-scripts
+
+      - name: Typecheck all workspaces
+        run: npm run typecheck
+
+      - name: Test VS Code engine adapter
+        run: npm run test --workspace=@universal-cicd/vscode
+
+      - name: Build all workspaces
+        run: npm run build
