@@ -1,7 +1,7 @@
 # VS Code Dashboard — Local Plan Inspector
 
-**Status:** implemented in draft PR #19, stacked on PR #18.  
-**Extension preview:** 0.5.0.  
+**Status:** baseline implemented in draft PR #19; live file refresh added in draft PR #21, stacked on PR #19.  
+**Extension preview:** 0.6.0.  
 **Source of truth:** the existing PowerShell engine.
 
 ## Data flow
@@ -17,7 +17,7 @@ flowchart LR
   G --> H[DOM textContent rendering]
 ```
 
-The dashboard reads the latest local plan after the panel opens and after a dashboard command completes. The extension does not regenerate or reinterpret the plan's operational meaning; the PowerShell engine remains responsible for producing it.
+The dashboard reads the latest local plan after the panel opens, after a dashboard command completes, and whenever the watched `.cicd/plans/latest-plan.json` file is created, changed, or deleted while the panel is open. This also covers plans generated externally through the PowerShell CLI. The extension does not regenerate or reinterpret the plan's operational meaning; the PowerShell engine remains responsible for producing it.
 
 ## Accepted input
 
@@ -47,6 +47,8 @@ The plan file is workspace data and must be treated as untrusted. The Webview do
 - Shows each step's name, status and reason.
 - Shows an explicit empty state if no valid local plan is available.
 - Refreshes the snapshot after a dashboard-triggered command completes.
+- Watches the expected plan file for create/change/delete events and updates the open panel without requiring a manual refresh.
+- Disposes the watcher and event subscriptions when the panel closes.
 
 ## Deliberate limitations
 
