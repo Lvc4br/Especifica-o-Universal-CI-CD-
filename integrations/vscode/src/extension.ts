@@ -110,7 +110,7 @@ async function inspectUpsFile(): Promise<void> {
     output.appendLine("");
     const report = formatUpsAnalysis(planned.plan, intelligence.analysis);
     output.append(report.slice(0, 100_000));
-    if (report.length > 100_000) output.appendLine("\\nRelatório truncado no limite de 100.000 caracteres.");
+    if (report.length > 100_000) output.appendLine("\nRelatório truncado no limite de 100.000 caracteres.");
     void vscode.window.showInformationMessage("UPS Inspector: análise somente leitura concluída.");
   } catch (error) {
     const message = error instanceof Error ? error.message : "Não foi possível ler o documento.";
