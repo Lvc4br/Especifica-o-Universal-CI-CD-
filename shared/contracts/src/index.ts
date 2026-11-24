@@ -50,3 +50,6 @@ export type { CapabilityRunner, CapabilityResolution, CapabilityResolutionResult
 
 export { analyzePipelineIntelligence } from "./pipeline-intelligence";
 export type { PipelineIntelligence, PipelineIntelligenceDiagnostic, PipelineIntelligenceResult } from "./pipeline-intelligence";
+
+export { evaluatePipelinePolicy } from "./policy-engine";
+export type { PipelinePolicyRule, PipelinePolicySet, PolicyAssessment, PolicyEvaluationResult, PolicyEffect, PolicyFinding } from "./policy-engine";

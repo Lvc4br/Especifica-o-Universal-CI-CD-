@@ -5,7 +5,7 @@
 **Equipe:** Luca (produto, arquitetura e implementação-base), Higor (gestão, planejamento e validação), Arthur (design e experiência visual, etapa futura).
 
 ## Visão
-Construir uma plataforma interoperável para análise, planejamento, integração e futura orquestração de pipelines de desenvolvimento, com interfaces VS Code, GitHub e CLI, extensibilidade e inteligência contextual opcional.
+Construir uma plataforma interoperável para análise, planejamento, integração e futura orquestração de pipelines de desenvolvimento, com interfaces VS Code, GitHub e CLI, extensibilidade e inteligência contextual opcional. Um dashboard web próprio é uma interface futura planejada, sem ser pré-requisito para o Core ou para as integrações iniciais.
 
 ## Princípios
 - Local-first e portabilidade; formatos e resultados exportáveis.
@@ -36,8 +36,9 @@ Construir uma plataforma interoperável para análise, planejamento, integraçã
 
 ### Gate 3 — Policy & Trust
 - Threat model, policy engine, consentimento, approvals e trilhas de auditoria.
+- Primeira avaliação declarativa em modo assessment-only; não autoriza execução.
 - Secrets não disponíveis em fase de planejamento.
-- **Exit:** testes de policy e revisão de segurança; riscos mitigados documentados.
+- **Exit:** enforcement em componente confiável, identidade e auditoria de aprovações, testes de policy e revisão de segurança; riscos mitigados documentados.
 
 ### Gate 4 — Local execution hardening
 - Runner lifecycle, cancelamento, timeouts, limites de recursos e output.
@@ -81,6 +82,11 @@ Construir uma plataforma interoperável para análise, planejamento, integraçã
 - Custo de hosting, runners e IA por unidade.
 - Segurança: vulnerabilidades abertas/tempo de correção, incidentes, gates completos.
 - Comunidade: contribuições, issues reproduzíveis, documentação.
+
+## Interfaces futuras
+- Site institucional e documentação pública para posicionamento, onboarding e comunidade.
+- Dashboard web autenticado para observabilidade e gestão, somente após definir identidade, autorização, tenancy, API e threat model.
+- O site e o dashboard serão interfaces do Universal CI/CD, não dependências do motor Core.
 
 ## Decisões pendentes
 - Licença e política de contribuição.
