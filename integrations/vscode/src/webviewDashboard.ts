@@ -20,35 +20,8 @@ const COMMANDS = new Set([
   "universalCicd.openOutput"
 ]);
 
-function nonce(): string {\n  return randomBytes(16).toString("base64");\n}mport * as vscode from "vscode";
-import { randomBytes } from "node:crypto";
-
-export interface DashboardState {
-  workspaceName: string;
-  workspacePath: string;
-  engineFound: boolean;
-  enginePath: string;
-}
-
-const COMMANDS = new Set([
-  "universalCicd.detect",
-  "universalCicd.validateConfig",
-  "universalCicd.plan",
-  "universalCicd.showStatus",
-  "universalCicd.history",
-  "universalCicd.exportReport",
-  "universalCicd.run",
-  "universalCicd.refreshDashboard",
-  "universalCicd.openOutput"
-]);
-
 function nonce(): string {
-  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let value = "";
-  for (let index = 0; index < 32; index += 1) {
-    value += alphabet.charAt(Math.floor(Math.random() * alphabet.length));
-  }
-  return value;
+  return randomBytes(16).toString("base64");
 }
 
 export function openDashboardPanel(
