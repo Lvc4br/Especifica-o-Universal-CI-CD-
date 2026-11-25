@@ -7,7 +7,7 @@ import { openDashboardPanel } from "./webviewDashboard";
 import { normalizePlanSnapshot } from "./planSnapshot";
 import { analyzePipelineIntelligence, generateUpsExecutionPlan, validateUpsPipeline } from "@universal-cicd/contracts";
 import { formatUpsAnalysis } from "./upsInspector";
-import { createStaticSiteWorkflow } from "./staticSiteWorkflow";
+import { createStaticSiteWorkflow, normalizeStaticSiteDirectory } from "./staticSiteWorkflow";
 import { openUpsGraphPanel } from "./upsGraph";
 
 const output = vscode.window.createOutputChannel("Universal CI/CD");
@@ -180,25 +180,47 @@ async function createStaticSiteWorkflowFile(): Promise<void> {
     return;
   }
 
-  const indexPath = vscode.Uri.joinPath(workspace.uri, "index.html");
-  try {
-    const stat = await vscode.workspace.fs.stat(indexPath);
-    if (stat.type !== vscode.FileType.File || stat.size > 1_000_000) {
-      void vscode.window.showWarningMessage("index.html não é um arquivo regular ou excede 1 MB.");
-      return;
-    }
-  } catch {
-    void vscode.window.showWarningMessage("Não encontrei index.html na raiz. Este assistente atende sites estáticos publicados a partir da raiz do workspace.");
-    return;
-  }
-
   const branch = await vscode.window.showInputBox({
     title: "Branch de publicação do GitHub Pages",
-    prompt: "A validação roda em pull requests e pushes; o deploy ocorre somente em push nesta branch.",
+    prompt: "A validação roda em pull requests e pushes; o deploy ocorre somente nesta branch.",
     value: "main",
     validateInput: value => /^[A-Za-z0-9._/-]{1,100}$/.test(value) && !value.includes("..") ? undefined : "Informe um nome de branch válido."
   });
   if (!branch) return;
+
+  const publishDirectory = await vscode.window.showInputBox({
+    title: "Pasta que contém o site pronto",
+    prompt: "Informe um caminho relativo ao projeto. Exemplos: . (raiz), site, public, dist ou build.",
+    value: ".",
+    validateInput: value => {
+      const normalized = normalizeStaticSiteDirectory(value);
+      return normalized ? undefined : "Use apenas pastas relativas, sem .., barras invertidas ou caracteres especiais.";
+    }
+  });
+  if (publishDirectory === undefined) return;
+  const safeDirectory = normalizeStaticSiteDirectory(publishDirectory);
+  if (!safeDirectory) return;
+
+  const siteDirectory = safeDirectory === "." ? workspace.uri : vscode.Uri.joinPath(workspace.uri, ...safeDirectory.split("/"));
+  const indexPath = vscode.Uri.joinPath(siteDirectory, "index.html");
+  try {
+    const rootRealPath = realpathSync(workspace.uri.fsPath);
+    const directoryRealPath = realpathSync(siteDirectory.fsPath);
+    const relativeDirectory = relative(rootRealPath, directoryRealPath);
+    if (relativeDirectory.startsWith("..") || isAbsolute(relativeDirectory)) {
+      void vscode.window.showErrorMessage("A pasta de publicação precisa permanecer dentro do workspace.");
+      return;
+    }
+    const directoryStat = await vscode.workspace.fs.stat(siteDirectory);
+    const indexStat = await vscode.workspace.fs.stat(indexPath);
+    if (directoryStat.type !== vscode.FileType.Directory || indexStat.type !== vscode.FileType.File || indexStat.size > 1_000_000) {
+      void vscode.window.showWarningMessage("A pasta escolhida precisa conter um index.html regular de até 1 MB.");
+      return;
+    }
+  } catch {
+    void vscode.window.showWarningMessage("Não encontrei index.html na pasta escolhida. Confira o caminho relativo e tente novamente.");
+    return;
+  }
 
   const workflowUri = vscode.Uri.joinPath(workspace.uri, ".github", "workflows", "universal-cicd-static-site.yml");
   try {
@@ -210,7 +232,7 @@ async function createStaticSiteWorkflowFile(): Promise<void> {
   }
 
   const approved = await vscode.window.showWarningMessage(
-    "Criar workflow GitHub Actions? Ele instalará html-validate e Prettier durante a CI e publicará no GitHub Pages após push na branch escolhida. A geração não executa nem publica nada.",
+    "Criar workflow GitHub Actions? Ele instalará html-validate e Prettier durante a CI e publicará a pasta '" + safeDirectory + "' no GitHub Pages após validação. A geração não executa nem publica nada.",
     { modal: true },
     "Criar workflow"
   );
@@ -218,7 +240,7 @@ async function createStaticSiteWorkflowFile(): Promise<void> {
 
   await vscode.workspace.fs.createDirectory(vscode.Uri.joinPath(workspace.uri, ".github", "workflows"));
   try {
-    writeFileSync(workflowUri.fsPath, createStaticSiteWorkflow(branch), { encoding: "utf8", flag: "wx" });
+    writeFileSync(workflowUri.fsPath, createStaticSiteWorkflow(branch, safeDirectory), { encoding: "utf8", flag: "wx" });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Não foi possível criar o workflow.";
     void vscode.window.showErrorMessage("CI/CD de site estático: " + message);
@@ -231,7 +253,7 @@ async function createStaticSiteWorkflowFile(): Promise<void> {
   output.appendLine("Workflow CI/CD para HTML/CSS criado.");
   output.appendLine("Arquivo: " + workflowUri.fsPath);
   output.appendLine("CI: valida HTML com html-validate e verifica HTML/CSS com Prettier.");
-  output.appendLine("CD: publica o conteúdo da raiz no GitHub Pages após push na branch " + branch + ".");
+  output.appendLine("CD: publica a pasta '" + safeDirectory + "' no GitHub Pages após validação na branch " + branch + ".");
   output.appendLine("Nenhuma execução, instalação local, alteração de Pages ou publicação ocorreu durante a geração.");
   output.appendLine("Antes do primeiro deploy, habilite GitHub Pages com origem GitHub Actions nas configurações do repositório.");
   output.show(true);
