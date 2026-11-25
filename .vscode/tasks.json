@@ -1,0 +1,40 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Universal CI/CD: Build shared contracts",
+      "type": "npm",
+      "script": "build",
+      "path": "shared/contracts",
+      "problemMatcher": []
+    },
+    {
+      "label": "Universal CI/CD: Build extension",
+      "type": "npm",
+      "script": "build",
+      "path": "integrations/vscode",
+      "dependsOn": ["Universal CI/CD: Build shared contracts"],
+      "problemMatcher": []
+    },
+    {
+      "label": "Universal CI/CD: Stage shared contracts",
+      "type": "shell",
+      "command": "node",
+      "args": [
+        "-e",
+        "const fs=require('fs');const path=require('path');const s='shared/contracts';const d='integrations/vscode/out/node_modules/@universal-cicd/contracts';fs.mkdirSync(d,{recursive:true});fs.cpSync(path.join(s,'dist'),path.join(d,'dist'),{recursive:true});fs.copyFileSync(path.join(s,'package.json'),path.join(d,'package.json'));"
+      ],
+      "dependsOn": ["Universal CI/CD: Build extension"],
+      "problemMatcher": []
+    },
+    {
+      "label": "Universal CI/CD: Prepare Development Host",
+      "dependsOn": ["Universal CI/CD: Stage shared contracts"],
+      "dependsOrder": "sequence",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
+}
