@@ -1,0 +1,18 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Universal CI/CD: Extension Development Host",
+      "type": "extensionHost",
+      "request": "launch",
+      "runtimeExecutable": "${execPath}",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}/integrations/vscode"
+      ],
+      "outFiles": [
+        "${workspaceFolder}/integrations/vscode/out/**/*.js"
+      ],
+      "preLaunchTask": "Universal CI/CD: Prepare Development Host"
+    }
+  ]
+}
