@@ -99,6 +99,79 @@ async function diagnoseEngine(): Promise<void> {
   if (healthy) void vscode.window.showInformationMessage("Universal CI/CD: motor localizado e comando de versão concluído.");
 }
 
+async function analyzeWorkspace(): Promise<void> {
+  const workspace = vscode.workspace.workspaceFolders?.[0];
+  if (!workspace) {
+    void vscode.window.showWarningMessage("Abra uma pasta de projeto para analisar as tecnologias.");
+    return;
+  }
+
+  const root = workspace.uri.fsPath;
+  const markers: Array<{ file: string; label: string; suggestion: string }> = [
+    { file: "package.json", label: "Node.js / JavaScript / TypeScript", suggestion: "Instalar dependências com o gerenciador já adotado pelo projeto e executar os scripts de teste/build declarados." },
+    { file: "pyproject.toml", label: "Python (pyproject.toml)", suggestion: "Validar ambiente Python e usar as ferramentas declaradas no projeto para testes e qualidade." },
+    { file: "requirements.txt", label: "Python (requirements.txt)", suggestion: "Preparar ambiente virtual e instalar dependências somente após revisão do usuário." },
+    { file: "Pipfile", label: "Python (Pipenv)", suggestion: "Usar Pipenv conforme o lockfile e scripts do projeto." },
+    { file: "go.mod", label: "Go", suggestion: "Executar validações e testes Go em uma etapa dedicada." },
+    { file: "Cargo.toml", label: "Rust / Cargo", suggestion: "Usar Cargo para checagem, testes e build." },
+    { file: "pom.xml", label: "Java / Maven", suggestion: "Inspecionar os plugins e perfis Maven antes de propor build e testes." },
+    { file: "build.gradle", label: "Java / Kotlin / Gradle", suggestion: "Inspecionar tasks e wrapper Gradle antes de propor build e testes." },
+    { file: "build.gradle.kts", label: "Kotlin / Gradle", suggestion: "Inspecionar tasks e wrapper Gradle antes de propor build e testes." },
+    { file: "composer.json", label: "PHP / Composer", suggestion: "Usar scripts Composer declarados para validação e testes." },
+    { file: " *.sln", label: ".NET / Visual Studio Solution", suggestion: "Inspecionar projetos e SDK antes de propor restore, build e testes." },
+    { file: "Dockerfile", label: "Docker", suggestion: "Validar contexto e instruções do Dockerfile; build de imagem exige aprovação." },
+    { file: ".github/workflows", label: "GitHub Actions existente", suggestion: "Considerar integração ou importação assistida, sem sobrescrever workflows existentes." }
+  ];
+  const found = markers.filter(marker => {
+    if (marker.file === " *.sln") {
+      try { return require("node:fs").readdirSync(root).some((name: string) => name.toLowerCase().endsWith(".sln")); } catch { return false; }
+    }
+    return existsSync(join(root, marker.file));
+  });
+
+  output.clear();
+  output.appendLine("Universal CI/CD — Análise do projeto");
+  output.appendLine(`Workspace: ${workspace.name}`);
+  output.appendLine("Modo: somente leitura; nenhum comando ou instalação será executado.");
+  output.appendLine("");
+  if (found.length === 0) {
+    output.appendLine("Nenhum manifesto conhecido foi encontrado na raiz do workspace.");
+    output.appendLine("A análise atual não percorre subpastas para evitar varreduras inesperadas.");
+  } else {
+    output.appendLine("Tecnologias e arquivos detectados:");
+    for (const item of found) {
+      output.appendLine(`• ${item.label} — ${item.file.trim()}`);
+      output.appendLine(`  Sugestão: ${item.suggestion}`);
+    }
+  }
+
+  const packageJsonPath = join(root, "package.json");
+  if (existsSync(packageJsonPath)) {
+    try {
+      const info = (await vscode.workspace.fs.stat(vscode.Uri.file(packageJsonPath))).size;
+      if (info <= 256_000) {
+        const manifest = JSON.parse(readFileSync(packageJsonPath, "utf8")) as { scripts?: Record<string, unknown>; packageManager?: unknown };
+        output.appendLine("");
+        output.appendLine("Scripts declarados em package.json:");
+        const scripts = manifest.scripts && typeof manifest.scripts === "object" ? manifest.scripts : {};
+        const names = Object.keys(scripts).sort();
+        if (names.length) for (const name of names.slice(0, 30)) output.appendLine(`• ${name}: ${String(scripts[name]).slice(0, 180)}`);
+        else output.appendLine("Nenhum script foi declarado.");
+        if (manifest.packageManager) output.appendLine(`Gerenciador declarado: ${String(manifest.packageManager).slice(0, 100)}`);
+      } else {
+        output.appendLine("package.json excede o limite de leitura de 256 KB; scripts não foram inspecionados.");
+      }
+    } catch {
+      output.appendLine("package.json existe, mas não pôde ser interpretado como JSON válido.");
+    }
+  }
+
+  output.appendLine("");
+  output.appendLine("Próximo passo: revisar as sugestões e criar um pipeline explicitamente. Esta análise não gera UPS nem altera arquivos.");
+  output.show(true);
+  void vscode.window.showInformationMessage("Universal CI/CD: análise de tecnologias concluída em modo somente leitura.");
+}
+
 async function inspectUpsFile(context: vscode.ExtensionContext): Promise<void> {
   const selected = await vscode.window.showOpenDialog({
     canSelectMany: false,
@@ -332,6 +405,7 @@ export function activate(context: vscode.ExtensionContext): void {
       await execute("version");
     }],
     ["universalCicd.diagnoseEngine", () => diagnoseEngine()],
+    ["universalCicd.analyzeWorkspace", () => analyzeWorkspace()],
     ["universalCicd.inspectUps", () => inspectUpsFile(context)],
     ["universalCicd.openDashboard", () => {
       const panel = openDashboardPanel(context, () => {
