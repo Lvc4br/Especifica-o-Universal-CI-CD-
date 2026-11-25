@@ -30,7 +30,8 @@
     "onCommand:universalCicd.openOutput",
     "onCommand:universalCicd.inspectUps",
     "onCommand:universalCicd.configureEngine",
-    "onCommand:universalCicd.diagnoseEngine"
+    "onCommand:universalCicd.diagnoseEngine",
+    "onCommand:universalCicd.analyzeWorkspace"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -110,6 +111,10 @@
       {
         "command": "universalCicd.diagnoseEngine",
         "title": "Universal CI/CD: Diagnosticar motor"
+      },
+      {
+        "command": "universalCicd.analyzeWorkspace",
+        "title": "Universal CI/CD: Analisar tecnologias do projeto"
       }
     ],
     "configuration": {
