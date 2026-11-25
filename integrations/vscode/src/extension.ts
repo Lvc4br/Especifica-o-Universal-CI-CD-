@@ -52,6 +52,53 @@ function resolveEngine(): EngineLocation | undefined {
   return undefined;
 }
 
+async function diagnoseEngine(): Promise<void> {
+  const config = vscode.workspace.getConfiguration("universalCicd");
+  const configuredPath = config.get<string>("enginePath", "").trim();
+  const executable = config.get<string>("powershellExecutable", "pwsh").trim() || "pwsh";
+  const folders = vscode.workspace.workspaceFolders ?? [];
+  const candidates = folders.map(folder => join(folder.uri.fsPath, "cicd.ps1"));
+  const configuredScript = configuredPath ? join(resolve(configuredPath), "cicd.ps1") : "";
+  const validConfigured = Boolean(configuredScript && existsSync(configuredScript));
+  const workspaceScript = candidates.find(path => existsSync(path));
+  const engine = resolveEngine();
+
+  output.clear();
+  output.appendLine("Universal CI/CD — Diagnóstico do motor");
+  output.appendLine("=====================================");
+  output.appendLine(`PowerShell configurado: ${executable}`);
+  output.appendLine(`Pasta configurada: ${configuredPath || "(não configurada)"}`);
+  output.appendLine(`Arquivo configurado: ${configuredScript || "(nenhum)"}`);
+  output.appendLine(`Arquivo configurado encontrado: ${validConfigured ? "SIM" : "NÃO"}`);
+  output.appendLine(`Workspace aberto: ${folders.length ? "SIM" : "NÃO"}`);
+  output.appendLine(`Motor encontrado na raiz de workspace: ${workspaceScript || "NÃO"}`);
+  output.appendLine(`Motor selecionado: ${engine?.scriptPath || "NÃO LOCALIZADO"}`);
+  output.show(true);
+
+  if (!engine) {
+    const choice = await vscode.window.showWarningMessage(
+      configuredPath && !validConfigured
+        ? "O caminho configurado não contém cicd.ps1. Configure novamente a localização do motor."
+        : "O motor Universal CI/CD não foi localizado. Selecione a pasta que contém cicd.ps1.",
+      "Configurar motor", "Abrir configurações"
+    );
+    if (choice === "Configurar motor") await vscode.commands.executeCommand("universalCicd.configureEngine");
+    if (choice === "Abrir configurações") await vscode.commands.executeCommand("workbench.action.openSettings", "universalCicd");
+    dashboard?.refresh();
+    return;
+  }
+
+  output.appendLine("");
+  output.appendLine("Verificando se o PowerShell consegue iniciar e carregar o motor...");
+  const healthy = await execute("version");
+  if (healthy) {
+    output.appendLine("Diagnóstico concluído: o comando de versão retornou sucesso.");
+    void vscode.window.showInformationMessage("Universal CI/CD: motor localizado e comando de versão concluído.");
+  } else {
+    output.appendLine("Diagnóstico inconclusivo: consulte a saída acima para identificar falha de inicialização ou do motor.");
+  }
+}
+
 async function inspectUpsFile(context: vscode.ExtensionContext): Promise<void> {
   const selected = await vscode.window.showOpenDialog({
     canSelectMany: false,
@@ -284,6 +331,7 @@ export function activate(context: vscode.ExtensionContext): void {
       dashboard?.refresh();
       await execute("version");
     }],
+    ["universalCicd.diagnoseEngine", () => diagnoseEngine()],
     ["universalCicd.inspectUps", () => inspectUpsFile(context)],
     ["universalCicd.openDashboard", () => {
       const panel = openDashboardPanel(context, () => {
