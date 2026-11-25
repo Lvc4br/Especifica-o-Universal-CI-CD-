@@ -3,6 +3,8 @@ name: VS Code Extension CI
 on:
   pull_request:
     paths:
+      - ".vscode/**"
+      - "Docs/VSCODE_DEVELOPMENT_HOST.md"
       - "integrations/vscode/**"
       - "Docs/VSCODE_UPS_INSPECTOR.md"
       - "Docs/VSCODE_VISUAL_PIPELINE_INTELLIGENCE.md"
