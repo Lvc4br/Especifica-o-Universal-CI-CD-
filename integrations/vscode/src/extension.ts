@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { existsSync, lstatSync, readFileSync, realpathSync } from "node:fs";
+import { existsSync, lstatSync, readFileSync, readdirSync, realpathSync } from "node:fs";
 import { isAbsolute, join, relative, resolve } from "node:path";
 import { EngineCommand, runEngineCommand } from "./engineClient";
 import { DashboardProvider } from "./dashboard";
@@ -118,7 +118,7 @@ async function analyzeWorkspace(): Promise<void> {
     { file: "build.gradle", label: "Java / Kotlin / Gradle", suggestion: "Inspecionar tasks e wrapper Gradle antes de propor build e testes." },
     { file: "build.gradle.kts", label: "Kotlin / Gradle", suggestion: "Inspecionar tasks e wrapper Gradle antes de propor build e testes." },
     { file: "composer.json", label: "PHP / Composer", suggestion: "Usar scripts Composer declarados para validação e testes." },
-    { file: " *.sln", label: ".NET / Visual Studio Solution", suggestion: "Inspecionar projetos e SDK antes de propor restore, build e testes." },
+    { file: "*.sln", label: ".NET / Visual Studio Solution", suggestion: "Inspecionar projetos e SDK antes de propor restore, build e testes." },
     { file: "Dockerfile", label: "Docker", suggestion: "Validar contexto e instruções do Dockerfile; build de imagem exige aprovação." },
     { file: ".github/workflows", label: "GitHub Actions existente", suggestion: "Considerar integração ou importação assistida, sem sobrescrever workflows existentes." }
   ];
