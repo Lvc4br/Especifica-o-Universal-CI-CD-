@@ -68,3 +68,8 @@ O pacote da extensão contém a integração VS Code; o motor PowerShell continu
 
 ### Validação do pacote VSIX
 O CI verifica integridade ZIP e confirma que o manifesto, entrypoint compilado e runtime dos contratos compartilhados estão presentes no pacote 0.9.0.
+
+
+## Desenvolvimento sem VSIX
+
+Abra a raiz do monorepo no VS Code e pressione F5 com **Universal CI/CD: Extension Development Host** selecionado em Run and Debug. A configuração em `.vscode/launch.json` prepara os contratos compartilhados e compila a extensão antes de abrir uma janela separada de desenvolvimento. Consulte [Development Host](../../Docs/VSCODE_DEVELOPMENT_HOST.md). Esse fluxo não instala a extensão no perfil normal nem publica no Marketplace.
