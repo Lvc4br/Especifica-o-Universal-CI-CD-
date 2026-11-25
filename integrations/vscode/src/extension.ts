@@ -172,6 +172,113 @@ async function analyzeWorkspace(): Promise<void> {
   void vscode.window.showInformationMessage("Universal CI/CD: análise de tecnologias concluída em modo somente leitura.");
 }
 
+async function createPipelineFromWorkspace(): Promise<void> {
+  const workspace = vscode.workspace.workspaceFolders?.[0];
+  if (!workspace) {
+    void vscode.window.showWarningMessage("Abra um projeto Node.js para criar um pipeline.");
+    return;
+  }
+
+  const manifestPath = join(workspace.uri.fsPath, "package.json");
+  if (!existsSync(manifestPath)) {
+    void vscode.window.showWarningMessage("Não encontrei package.json na raiz. Nesta versão, o assistente gera pipelines apenas para scripts Node.js.");
+    return;
+  }
+
+  let manifest: { name?: string; scripts?: Record<string, unknown> };
+  try {
+    const stat = await vscode.workspace.fs.stat(vscode.Uri.file(manifestPath));
+    if (stat.size > 256_000) throw new Error("package.json excede 256 KB.");
+    manifest = JSON.parse(readFileSync(manifestPath, "utf8")) as typeof manifest;
+    if (!manifest || typeof manifest !== "object" || Array.isArray(manifest)) throw new Error("Raiz JSON inválida.");
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Não foi possível ler package.json.";
+    void vscode.window.showErrorMessage("Assistente de pipeline: " + message);
+    return;
+  }
+
+  const scripts = manifest.scripts && typeof manifest.scripts === "object"
+    ? Object.entries(manifest.scripts).filter(([name, value]) => /^[A-Za-z0-9:_-]{1,80}$/.test(name) && typeof value === "string").slice(0, 100)
+    : [];
+  if (!scripts.length) {
+    void vscode.window.showWarningMessage("package.json não declara scripts utilizáveis.");
+    return;
+  }
+
+  const selected = await vscode.window.showQuickPick(
+    scripts.map(([name, command]) => ({
+      label: name,
+      description: String(command).slice(0, 100),
+      picked: /^(test|lint|build|typecheck|check)$/i.test(name),
+      name
+    })),
+    { canPickMany: true, title: "Selecione scripts para incluir no pipeline", placeHolder: "Os scripts serão declarados no UPS; nenhum será executado agora." }
+  );
+  if (!selected?.length) return;
+
+  const jobs = {
+    ci: {
+      name: "Verificações do projeto",
+      steps: selected.map((item, index) => ({
+        id: "script_" + (index + 1),
+        name: "npm run " + item.name,
+        run: { executable: "npm", args: ["run", item.name] }
+      }))
+    }
+  };
+  const pipeline = {
+    version: "1",
+    name: typeof manifest.name === "string" && manifest.name.trim() ? manifest.name.trim() : workspace.name,
+    description: "Pipeline inicial gerado a partir dos scripts declarados em package.json. Revise antes de executar.",
+    trigger: ["manual"],
+    jobs
+  };
+  const validation = validateUpsPipeline(pipeline);
+  if (!validation.valid) {
+    output.clear();
+    output.appendLine("O pipeline gerado não passou na validação UPS:");
+    for (const issue of validation.issues) output.appendLine(`[${issue.code}] ${issue.path}: ${issue.message}`);
+    output.show(true);
+    void vscode.window.showErrorMessage("O pipeline gerado não passou na validação UPS. Consulte Output.");
+    return;
+  }
+
+  const destination = await vscode.window.showSaveDialog({
+    defaultUri: vscode.Uri.joinPath(workspace.uri, ".cicd", "pipeline.ups.json"),
+    saveLabel: "Salvar pipeline UPS",
+    filters: { "UPS JSON": ["json"] }
+  });
+  if (!destination) return;
+
+  try {
+    await vscode.workspace.fs.stat(destination);
+    const choice = await vscode.window.showWarningMessage(
+      "O arquivo já existe. Para evitar sobrescrita, escolha outro nome ou local.",
+      { modal: true },
+      "Escolher outro local"
+    );
+    if (choice === "Escolher outro local") {
+      await vscode.commands.executeCommand("universalCicd.createPipeline");
+    }
+    return;
+  } catch {
+    // A inexistência do destino permite criar um novo arquivo.
+  }
+
+  await vscode.workspace.fs.createDirectory(vscode.Uri.file(join(destination.fsPath, "..")));
+  await vscode.workspace.fs.writeFile(destination, Buffer.from(JSON.stringify(pipeline, null, 2) + "\n", "utf8"));
+  output.clear();
+  output.appendLine("Pipeline UPS criado e validado.");
+  output.appendLine("Arquivo: " + destination.fsPath);
+  output.appendLine("Scripts selecionados:");
+  for (const item of selected) output.appendLine("• npm run " + item.name + " — não executado");
+  output.appendLine("Revise o conteúdo e use o UPS Inspector para gerar um plano somente leitura.");
+  output.show(true);
+  const document = await vscode.workspace.openTextDocument(destination);
+  await vscode.window.showTextDocument(document);
+  void vscode.window.showInformationMessage("Pipeline UPS criado. Nenhum script foi executado.");
+}
+
 async function inspectUpsFile(context: vscode.ExtensionContext): Promise<void> {
   const selected = await vscode.window.showOpenDialog({
     canSelectMany: false,
@@ -406,6 +513,7 @@ export function activate(context: vscode.ExtensionContext): void {
     }],
     ["universalCicd.diagnoseEngine", () => diagnoseEngine()],
     ["universalCicd.analyzeWorkspace", () => analyzeWorkspace()],
+    ["universalCicd.createPipeline", () => createPipelineFromWorkspace()],
     ["universalCicd.inspectUps", () => inspectUpsFile(context)],
     ["universalCicd.openDashboard", () => {
       const panel = openDashboardPanel(context, () => {
