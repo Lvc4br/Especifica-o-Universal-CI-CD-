@@ -32,7 +32,8 @@
     "onCommand:universalCicd.configureEngine",
     "onCommand:universalCicd.diagnoseEngine",
     "onCommand:universalCicd.analyzeWorkspace",
-    "onCommand:universalCicd.createPipeline"
+    "onCommand:universalCicd.createPipeline",
+    "onCommand:universalCicd.createStaticSiteWorkflow"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -120,6 +121,10 @@
       {
         "command": "universalCicd.createPipeline",
         "title": "Universal CI/CD: Criar pipeline a partir de scripts Node.js"
+      },
+      {
+        "command": "universalCicd.createStaticSiteWorkflow",
+        "title": "Universal CI/CD: Configurar CI/CD para HTML e CSS (GitHub Pages)"
       }
     ],
     "configuration": {
