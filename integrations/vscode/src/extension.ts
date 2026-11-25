@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { existsSync, lstatSync, readFileSync, readdirSync, realpathSync } from "node:fs";
+import { existsSync, lstatSync, readFileSync, readdirSync, realpathSync, writeFileSync } from "node:fs";
 import { isAbsolute, join, relative, resolve } from "node:path";
 import { EngineCommand, runEngineCommand } from "./engineClient";
 import { DashboardProvider } from "./dashboard";
@@ -218,7 +218,7 @@ async function createStaticSiteWorkflowFile(): Promise<void> {
 
   await vscode.workspace.fs.createDirectory(vscode.Uri.joinPath(workspace.uri, ".github", "workflows"));
   try {
-    await vscode.workspace.fs.writeFile(workflowUri, Buffer.from(createStaticSiteWorkflow(branch), "utf8"));
+    writeFileSync(workflowUri.fsPath, createStaticSiteWorkflow(branch), { encoding: "utf8", flag: "wx" });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Não foi possível criar o workflow.";
     void vscode.window.showErrorMessage("CI/CD de site estático: " + message);
