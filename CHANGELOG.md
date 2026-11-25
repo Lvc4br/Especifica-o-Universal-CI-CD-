@@ -3,6 +3,9 @@
 ## Unreleased
 
 ### Added
+- CI: verificação de integridade do VSIX 0.9.0, identidade/versionamento do manifesto e presença do entrypoint e runtime compartilhado.
+
+### Added
 - VS Code 0.9.0: navegação do DAG UPS com rótulos de ondas, busca por nome/ID e zoom entre 50% e 200%, sem alterar o plano ou executar jobs.
 
 ### Added

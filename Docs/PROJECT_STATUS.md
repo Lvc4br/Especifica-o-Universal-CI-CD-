@@ -109,3 +109,14 @@ Todas as PRs abaixo permanecem draft/abertas e não foram mescladas; preservar a
 ## Conclusão
 
 O projeto avançou até um dashboard VS Code capaz de inspecionar planos locais e abrir um DAG visual UPS v1. A extensão 0.8.0 e a navegação 0.9.0 passaram pelos workflows de CI e geraram VSIX instaláveis como artefatos; ainda não são publicações no Marketplace nem produto pronto para produção. Continua sendo uma prévia em desenvolvimento por PRs empilhadas; não é produto pronto para produção. Revisão, integração ordenada, testes de segurança e validação com usuários continuam necessários.
+
+
+## Qualidade de distribuição — verificação VSIX
+- Verificador pós-empacotamento criado: ZIP íntegro, manifest identity/version, entrypoint e runtime de contratos.
+- O workflow VS Code Extension CI executa a verificação antes de enviar artefato.
+- Evidência final pendente de CI na PR #24.
+
+
+## Instalação de release — checklist
+- Criado `Docs/VSIX_RELEASE_SMOKE_CHECKLIST.md` para validação manual do candidato de release: instalação pelo VS Code, reload, Explorer, dashboard, inspector, logs e fixture inválida.
+- Checklist diferencia verificação automatizada do pacote e smoke test GUI real; não declara instalação manual concluída.
