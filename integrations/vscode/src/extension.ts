@@ -123,8 +123,8 @@ async function analyzeWorkspace(): Promise<void> {
     { file: ".github/workflows", label: "GitHub Actions existente", suggestion: "Considerar integração ou importação assistida, sem sobrescrever workflows existentes." }
   ];
   const found = markers.filter(marker => {
-    if (marker.file === " *.sln") {
-      try { return require("node:fs").readdirSync(root).some((name: string) => name.toLowerCase().endsWith(".sln")); } catch { return false; }
+    if (marker.file === "*.sln") {
+      try { return readdirSync(root).some(name => name.toLowerCase().endsWith(".sln")); } catch { return false; }
     }
     return existsSync(join(root, marker.file));
   });
