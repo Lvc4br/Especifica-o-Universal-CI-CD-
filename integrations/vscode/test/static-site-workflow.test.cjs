@@ -21,6 +21,6 @@ test("static site workflow sanitizes invalid branch names", () => {
 test("static site workflow generation has no deploy trigger for pull requests", () => {
   const workflow = createStaticSiteWorkflow("release");
   assert.match(workflow, /pull_request:/);
-  assert.match(workflow, /github.event_name == 'push'/);
+  assert.match(workflow, /github.event_name != 'pull_request'/);
   assert.match(workflow, /refs\/heads\/release/);
 });
