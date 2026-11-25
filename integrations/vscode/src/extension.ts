@@ -206,9 +206,11 @@ async function createStaticSiteWorkflowFile(): Promise<void> {
   try {
     const rootRealPath = realpathSync(workspace.uri.fsPath);
     const directoryRealPath = realpathSync(siteDirectory.fsPath);
+    const indexRealPath = realpathSync(indexPath.fsPath);
     const relativeDirectory = relative(rootRealPath, directoryRealPath);
-    if (relativeDirectory.startsWith("..") || isAbsolute(relativeDirectory)) {
-      void vscode.window.showErrorMessage("A pasta de publicação precisa permanecer dentro do workspace.");
+    const relativeIndex = relative(rootRealPath, indexRealPath);
+    if (relativeDirectory.startsWith("..") || isAbsolute(relativeDirectory) || relativeIndex.startsWith("..") || isAbsolute(relativeIndex)) {
+      void vscode.window.showErrorMessage("A pasta e o index.html precisam permanecer dentro do workspace.");
       return;
     }
     const directoryStat = await vscode.workspace.fs.stat(siteDirectory);
