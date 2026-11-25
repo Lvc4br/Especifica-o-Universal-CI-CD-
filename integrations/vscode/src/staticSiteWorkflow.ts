@@ -41,7 +41,7 @@ jobs:
 
   deploy:
     name: Deploy to GitHub Pages
-    if: github.event_name == 'push' && github.ref == 'refs/heads/${safeBranch}'
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/${safeBranch}'
     needs: validate
     runs-on: ubuntu-latest
     permissions:
