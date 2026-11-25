@@ -28,7 +28,9 @@
     "onCommand:universalCicd.runWorkspaces",
     "onCommand:universalCicd.refreshDashboard",
     "onCommand:universalCicd.openOutput",
-    "onCommand:universalCicd.inspectUps"
+    "onCommand:universalCicd.inspectUps",
+    "onCommand:universalCicd.configureEngine",
+    "onCommand:universalCicd.diagnoseEngine"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -100,6 +102,14 @@
       {
         "command": "universalCicd.openOutput",
         "title": "Universal CI/CD: Abrir saída"
+      },
+      {
+        "command": "universalCicd.configureEngine",
+        "title": "Universal CI/CD: Configurar localização do motor"
+      },
+      {
+        "command": "universalCicd.diagnoseEngine",
+        "title": "Universal CI/CD: Diagnosticar motor"
       }
     ],
     "configuration": {

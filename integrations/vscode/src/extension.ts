@@ -52,6 +52,53 @@ function resolveEngine(): EngineLocation | undefined {
   return undefined;
 }
 
+async function diagnoseEngine(): Promise<void> {
+  const config = vscode.workspace.getConfiguration("universalCicd");
+  const configuredPath = config.get<string>("enginePath", "").trim();
+  const executable = config.get<string>("powershellExecutable", "pwsh").trim() || "pwsh";
+  const folders = vscode.workspace.workspaceFolders ?? [];
+  const candidates = folders.map(folder => join(folder.uri.fsPath, "cicd.ps1"));
+  const configuredScript = configuredPath ? join(resolve(configuredPath), "cicd.ps1") : "";
+  const validConfigured = Boolean(configuredScript && existsSync(configuredScript));
+  const workspaceScript = candidates.find(path => existsSync(path));
+  const engine = resolveEngine();
+  const details = [
+    "Universal CI/CD — Diagnóstico do motor",
+    "=====================================",
+    `PowerShell configurado: ${executable}`,
+    `Pasta configurada: ${configuredPath || "(não configurada)"}`,
+    `Arquivo configurado: ${configuredScript || "(nenhum)"}`,
+    `Arquivo configurado encontrado: ${validConfigured ? "SIM" : "NÃO"}`,
+    `Workspace aberto: ${folders.length ? "SIM" : "NÃO"}`,
+    `Motor encontrado na raiz de workspace: ${workspaceScript || "NÃO"}`,
+    `Motor selecionado: ${engine?.scriptPath || "NÃO LOCALIZADO"}`
+  ];
+
+  if (!engine) {
+    output.clear();
+    output.appendLine(details.join("\n"));
+    output.show(true);
+    const choice = await vscode.window.showWarningMessage(
+      configuredPath && !validConfigured
+        ? "O caminho configurado não contém cicd.ps1. Configure novamente a localização do motor."
+        : "O motor Universal CI/CD não foi localizado. Selecione a pasta que contém cicd.ps1.",
+      "Configurar motor", "Abrir configurações"
+    );
+    if (choice === "Configurar motor") await vscode.commands.executeCommand("universalCicd.configureEngine");
+    if (choice === "Abrir configurações") await vscode.commands.executeCommand("workbench.action.openSettings", "universalCicd");
+    dashboard?.refresh();
+    return;
+  }
+
+  const healthy = await execute("version");
+  output.appendLine("");
+  output.appendLine(details.join("\n"));
+  output.appendLine(healthy
+    ? "Resultado: o motor foi localizado e o comando de versão concluiu com sucesso."
+    : "Resultado: o comando de versão falhou. Verifique PowerShell, permissões e saída acima.");
+  if (healthy) void vscode.window.showInformationMessage("Universal CI/CD: motor localizado e comando de versão concluído.");
+}
+
 async function inspectUpsFile(context: vscode.ExtensionContext): Promise<void> {
   const selected = await vscode.window.showOpenDialog({
     canSelectMany: false,
@@ -264,6 +311,27 @@ export function activate(context: vscode.ExtensionContext): void {
   );
 
   const commands: Array<[string, () => unknown]> = [
+    ["universalCicd.configureEngine", async () => {
+      const selected = await vscode.window.showOpenDialog({
+        canSelectMany: false, canSelectFolders: true, canSelectFiles: false,
+        openLabel: "Selecionar pasta do motor Universal CI/CD"
+      });
+      if (!selected?.[0]) return;
+      const scriptPath = join(selected[0].fsPath, "cicd.ps1");
+      if (!existsSync(scriptPath)) {
+        void vscode.window.showErrorMessage("A pasta selecionada não contém cicd.ps1.");
+        return;
+      }
+      const scope = vscode.workspace.workspaceFolders?.length
+        ? vscode.ConfigurationTarget.Workspace
+        : vscode.ConfigurationTarget.Global;
+      await vscode.workspace.getConfiguration("universalCicd").update("enginePath", selected[0].fsPath, scope);
+      output.appendLine("Motor configurado: " + scriptPath);
+      output.appendLine("Verificando versão do motor...");
+      dashboard?.refresh();
+      await execute("version");
+    }],
+    ["universalCicd.diagnoseEngine", () => diagnoseEngine()],
     ["universalCicd.inspectUps", () => inspectUpsFile(context)],
     ["universalCicd.openDashboard", () => {
       const panel = openDashboardPanel(context, () => {

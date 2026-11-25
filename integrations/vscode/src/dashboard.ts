@@ -123,6 +123,8 @@ export class DashboardProvider implements vscode.TreeDataProvider<DashboardItem>
     switch (section) {
       case "workspace":
         return [
+          { label: "Diagnosticar motor", command: "universalCicd.diagnoseEngine", icon: "activity" },
+          { label: "Configurar motor", command: "universalCicd.configureEngine", icon: "settings" },
           { label: "Inicializar projeto", command: "universalCicd.initializeProject", icon: "folder-plus" },
           { label: "Descobrir projetos", command: "universalCicd.discoverProjects", icon: "folder-search" },
           { label: "Atualizar painel", command: "universalCicd.refreshDashboard", icon: "refresh-cw" }
