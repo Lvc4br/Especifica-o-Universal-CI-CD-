@@ -1,11 +1,21 @@
 /**
- * Generates a GitHub Actions workflow for a plain HTML/CSS site.
- * This is declarative output only: generation never contacts GitHub or deploys.
+ * Generates a GitHub Actions workflow for a static HTML/CSS site.
+ * Generation is declarative only: it never contacts GitHub or deploys.
  */
-export function createStaticSiteWorkflow(branchName = "main"): string {
+export function normalizeStaticSiteDirectory(directory = "."): string | undefined {
+  const value = directory.trim();
+  if (value === ".") return ".";
+  if (!value || value.length > 200 || value.startsWith("/") || value.includes("\\") || value.includes(":")) return undefined;
+  const segments = value.split("/");
+  if (segments.some(segment => !segment || segment === "." || segment === ".." || !/^[A-Za-z0-9_. -]{1,80}$/.test(segment))) return undefined;
+  return segments.join("/");
+}
+
+export function createStaticSiteWorkflow(branchName = "main", publishDirectory = "."): string {
   const safeBranch = /^[A-Za-z0-9._/-]{1,100}$/.test(branchName) && !branchName.includes("..")
     ? branchName
     : "main";
+  const safeDirectory = normalizeStaticSiteDirectory(publishDirectory) ?? ".";
 
   return `name: Universal CI/CD — Static site
 
@@ -58,7 +68,7 @@ jobs:
       - name: Upload static site
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: '${safeDirectory}'
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
