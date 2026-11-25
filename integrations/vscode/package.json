@@ -31,7 +31,8 @@
     "onCommand:universalCicd.inspectUps",
     "onCommand:universalCicd.configureEngine",
     "onCommand:universalCicd.diagnoseEngine",
-    "onCommand:universalCicd.analyzeWorkspace"
+    "onCommand:universalCicd.analyzeWorkspace",
+    "onCommand:universalCicd.createPipeline"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -115,6 +116,10 @@
       {
         "command": "universalCicd.analyzeWorkspace",
         "title": "Universal CI/CD: Analisar tecnologias do projeto"
+      },
+      {
+        "command": "universalCicd.createPipeline",
+        "title": "Universal CI/CD: Criar pipeline a partir de scripts Node.js"
       }
     ],
     "configuration": {
