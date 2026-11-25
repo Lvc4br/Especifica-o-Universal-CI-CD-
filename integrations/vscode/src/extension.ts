@@ -62,20 +62,22 @@ async function diagnoseEngine(): Promise<void> {
   const validConfigured = Boolean(configuredScript && existsSync(configuredScript));
   const workspaceScript = candidates.find(path => existsSync(path));
   const engine = resolveEngine();
-
-  output.clear();
-  output.appendLine("Universal CI/CD — Diagnóstico do motor");
-  output.appendLine("=====================================");
-  output.appendLine(`PowerShell configurado: ${executable}`);
-  output.appendLine(`Pasta configurada: ${configuredPath || "(não configurada)"}`);
-  output.appendLine(`Arquivo configurado: ${configuredScript || "(nenhum)"}`);
-  output.appendLine(`Arquivo configurado encontrado: ${validConfigured ? "SIM" : "NÃO"}`);
-  output.appendLine(`Workspace aberto: ${folders.length ? "SIM" : "NÃO"}`);
-  output.appendLine(`Motor encontrado na raiz de workspace: ${workspaceScript || "NÃO"}`);
-  output.appendLine(`Motor selecionado: ${engine?.scriptPath || "NÃO LOCALIZADO"}`);
-  output.show(true);
+  const details = [
+    "Universal CI/CD — Diagnóstico do motor",
+    "=====================================",
+    `PowerShell configurado: ${executable}`,
+    `Pasta configurada: ${configuredPath || "(não configurada)"}`,
+    `Arquivo configurado: ${configuredScript || "(nenhum)"}`,
+    `Arquivo configurado encontrado: ${validConfigured ? "SIM" : "NÃO"}`,
+    `Workspace aberto: ${folders.length ? "SIM" : "NÃO"}`,
+    `Motor encontrado na raiz de workspace: ${workspaceScript || "NÃO"}`,
+    `Motor selecionado: ${engine?.scriptPath || "NÃO LOCALIZADO"}`
+  ];
 
   if (!engine) {
+    output.clear();
+    output.appendLine(details.join("\n"));
+    output.show(true);
     const choice = await vscode.window.showWarningMessage(
       configuredPath && !validConfigured
         ? "O caminho configurado não contém cicd.ps1. Configure novamente a localização do motor."
@@ -88,15 +90,13 @@ async function diagnoseEngine(): Promise<void> {
     return;
   }
 
-  output.appendLine("");
-  output.appendLine("Verificando se o PowerShell consegue iniciar e carregar o motor...");
   const healthy = await execute("version");
-  if (healthy) {
-    output.appendLine("Diagnóstico concluído: o comando de versão retornou sucesso.");
-    void vscode.window.showInformationMessage("Universal CI/CD: motor localizado e comando de versão concluído.");
-  } else {
-    output.appendLine("Diagnóstico inconclusivo: consulte a saída acima para identificar falha de inicialização ou do motor.");
-  }
+  output.appendLine("");
+  output.appendLine(details.join("\n"));
+  output.appendLine(healthy
+    ? "Resultado: o motor foi localizado e o comando de versão concluiu com sucesso."
+    : "Resultado: o comando de versão falhou. Verifique PowerShell, permissões e saída acima.");
+  if (healthy) void vscode.window.showInformationMessage("Universal CI/CD: motor localizado e comando de versão concluído.");
 }
 
 async function inspectUpsFile(context: vscode.ExtensionContext): Promise<void> {
