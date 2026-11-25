@@ -31,6 +31,8 @@ Todas as PRs abaixo permanecem draft/abertas e não foram mescladas; preservar a
 | #21 | Atualização automática do inspector quando o plano local muda; dashboard 0.6.0 | #19 | Draft; Monorepo CI e VS Code CI passaram |
 | #22 | VS Code UPS Inspector com DAG visual interativo; extensão 0.8.0 | #21 | Draft; CI verde no SHA `15730be6`; VSIX publicado como artefato |
 | #23 | Busca, rótulos de ondas e zoom do DAG; extensão 0.9.0 | #22 | Draft; Monorepo CI e VS Code Extension CI passaram |
+| #24 | Verificação de integridade VSIX e checklist de smoke manual | #23 | Draft; CI verificada no último SHA da cadeia |
+| #25 | Extension Development Host (F5) | #24 | Draft; Monorepo CI e VS Code Extension CI passaram no SHA `5f6afdbe` |
 
 ## Marco em desenvolvimento — VS Code 0.9.0 (PR #23)
 
@@ -120,3 +122,12 @@ O projeto avançou até um dashboard VS Code capaz de inspecionar planos locais 
 ## Instalação de release — checklist
 - Criado `Docs/VSIX_RELEASE_SMOKE_CHECKLIST.md` para validação manual do candidato de release: instalação pelo VS Code, reload, Explorer, dashboard, inspector, logs e fixture inválida.
 - Checklist diferencia verificação automatizada do pacote e smoke test GUI real; não declara instalação manual concluída.
+
+
+## Marco de desenvolvimento local — PR #25
+
+- `.vscode/launch.json` inicia um Extension Development Host com `--extensionDevelopmentPath`.
+- Tarefas encadeadas compilam contracts e VS Code, fazem staging dos contracts runtime e preparam o launch.
+- Documentação em `Docs/VSCODE_DEVELOPMENT_HOST.md` e README da extensão.
+- CI do monorepo e VS Code Extension passou no SHA `5f6afdbe44ed49cf95001039bc3f6632d3e0489d`.
+- Ainda não é confirmação de teste F5 em desktop real. PR draft, empilhada sobre #24.
