@@ -115,3 +115,8 @@ O projeto avançou até um dashboard VS Code capaz de inspecionar planos locais 
 - Verificador pós-empacotamento criado: ZIP íntegro, manifest identity/version, entrypoint e runtime de contratos.
 - O workflow VS Code Extension CI executa a verificação antes de enviar artefato.
 - Evidência final pendente de CI na PR #24.
+
+
+## Instalação de release — checklist
+- Criado `Docs/VSIX_RELEASE_SMOKE_CHECKLIST.md` para validação manual do candidato de release: instalação pelo VS Code, reload, Explorer, dashboard, inspector, logs e fixture inválida.
+- Checklist diferencia verificação automatizada do pacote e smoke test GUI real; não declara instalação manual concluída.
