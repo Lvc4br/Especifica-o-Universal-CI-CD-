@@ -264,6 +264,26 @@ export function activate(context: vscode.ExtensionContext): void {
   );
 
   const commands: Array<[string, () => unknown]> = [
+    ["universalCicd.configureEngine", async () => {
+      const selected = await vscode.window.showOpenDialog({
+        canSelectMany: false, canSelectFolders: true, canSelectFiles: false,
+        openLabel: "Selecionar pasta do motor Universal CI/CD"
+      });
+      if (!selected?.[0]) return;
+      const scriptPath = join(selected[0].fsPath, "cicd.ps1");
+      if (!existsSync(scriptPath)) {
+        void vscode.window.showErrorMessage("A pasta selecionada não contém cicd.ps1.");
+        return;
+      }
+      const scope = vscode.workspace.workspaceFolders?.length
+        ? vscode.ConfigurationTarget.Workspace
+        : vscode.ConfigurationTarget.Global;
+      await vscode.workspace.getConfiguration("universalCicd").update("enginePath", selected[0].fsPath, scope);
+      output.appendLine("Motor configurado: " + scriptPath);
+      output.appendLine("Verificando versão do motor...");
+      dashboard?.refresh();
+      await execute("version");
+    }],
     ["universalCicd.inspectUps", () => inspectUpsFile(context)],
     ["universalCicd.openDashboard", () => {
       const panel = openDashboardPanel(context, () => {
