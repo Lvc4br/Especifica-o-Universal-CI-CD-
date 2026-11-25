@@ -250,22 +250,14 @@ async function createPipelineFromWorkspace(): Promise<void> {
   });
   if (!destination) return;
 
-  try {
-    await vscode.workspace.fs.stat(destination);
-    const choice = await vscode.window.showWarningMessage(
-      "O arquivo já existe. Para evitar sobrescrita, escolha outro nome ou local.",
-      { modal: true },
-      "Escolher outro local"
+  if (existsSync(destination.fsPath)) {
+    void vscode.window.showWarningMessage(
+      "O arquivo já existe. Nenhum conteúdo foi sobrescrito; execute novamente e escolha outro nome ou local."
     );
-    if (choice === "Escolher outro local") {
-      await vscode.commands.executeCommand("universalCicd.createPipeline");
-    }
     return;
-  } catch {
-    // A inexistência do destino permite criar um novo arquivo.
   }
 
-  await vscode.workspace.fs.createDirectory(vscode.Uri.file(join(destination.fsPath, "..")));
+  await vscode.workspace.fs.createDirectory(vscode.Uri.file(resolve(destination.fsPath, "..")));
   await vscode.workspace.fs.writeFile(destination, Buffer.from(JSON.stringify(pipeline, null, 2) + "\n", "utf8"));
   output.clear();
   output.appendLine("Pipeline UPS criado e validado.");
