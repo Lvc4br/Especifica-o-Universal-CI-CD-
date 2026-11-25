@@ -133,6 +133,7 @@ export class DashboardProvider implements vscode.TreeDataProvider<DashboardItem>
         return [
           { label: "Analisar tecnologias do projeto", command: "universalCicd.analyzeWorkspace", icon: "scan-search" },
           { label: "Criar pipeline (Node.js)", command: "universalCicd.createPipeline", icon: "file-plus" },
+          { label: "Configurar CI/CD (HTML/CSS + Pages)", command: "universalCicd.createStaticSiteWorkflow", icon: "globe" },
           { label: "Detectar tecnologias (engine)", command: "universalCicd.detect", icon: "search" },
           { label: "Validar configuração", command: "universalCicd.validateConfig", icon: "shield-check" },
           { label: "Gerar plano", command: "universalCicd.plan", icon: "list-checks" },

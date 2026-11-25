@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { existsSync, lstatSync, readFileSync, readdirSync, realpathSync } from "node:fs";
+import { existsSync, lstatSync, readFileSync, readdirSync, realpathSync, writeFileSync } from "node:fs";
 import { isAbsolute, join, relative, resolve } from "node:path";
 import { EngineCommand, runEngineCommand } from "./engineClient";
 import { DashboardProvider } from "./dashboard";
@@ -7,6 +7,7 @@ import { openDashboardPanel } from "./webviewDashboard";
 import { normalizePlanSnapshot } from "./planSnapshot";
 import { analyzePipelineIntelligence, generateUpsExecutionPlan, validateUpsPipeline } from "@universal-cicd/contracts";
 import { formatUpsAnalysis } from "./upsInspector";
+import { createStaticSiteWorkflow, normalizeStaticSiteDirectory } from "./staticSiteWorkflow";
 import { openUpsGraphPanel } from "./upsGraph";
 
 const output = vscode.window.createOutputChannel("Universal CI/CD");
@@ -170,6 +171,95 @@ async function analyzeWorkspace(): Promise<void> {
   output.appendLine("Próximo passo: revisar as sugestões e criar um pipeline explicitamente. Esta análise não gera UPS nem altera arquivos.");
   output.show(true);
   void vscode.window.showInformationMessage("Universal CI/CD: análise de tecnologias concluída em modo somente leitura.");
+}
+
+async function createStaticSiteWorkflowFile(): Promise<void> {
+  const workspace = vscode.workspace.workspaceFolders?.[0];
+  if (!workspace) {
+    void vscode.window.showWarningMessage("Abra uma pasta de projeto para configurar CI/CD de site estático.");
+    return;
+  }
+
+  const branch = await vscode.window.showInputBox({
+    title: "Branch de publicação do GitHub Pages",
+    prompt: "A validação roda em pull requests e pushes; o deploy ocorre somente nesta branch.",
+    value: "main",
+    validateInput: value => /^[A-Za-z0-9._/-]{1,100}$/.test(value) && !value.includes("..") ? undefined : "Informe um nome de branch válido."
+  });
+  if (!branch) return;
+
+  const publishDirectory = await vscode.window.showInputBox({
+    title: "Pasta que contém o site pronto",
+    prompt: "Informe um caminho relativo ao projeto. Exemplos: . (raiz), site, public, dist ou build.",
+    value: ".",
+    validateInput: value => {
+      const normalized = normalizeStaticSiteDirectory(value);
+      return normalized ? undefined : "Use apenas pastas relativas, sem .., barras invertidas ou caracteres especiais.";
+    }
+  });
+  if (publishDirectory === undefined) return;
+  const safeDirectory = normalizeStaticSiteDirectory(publishDirectory);
+  if (!safeDirectory) return;
+
+  const siteDirectory = safeDirectory === "." ? workspace.uri : vscode.Uri.joinPath(workspace.uri, ...safeDirectory.split("/"));
+  const indexPath = vscode.Uri.joinPath(siteDirectory, "index.html");
+  try {
+    const rootRealPath = realpathSync(workspace.uri.fsPath);
+    const directoryRealPath = realpathSync(siteDirectory.fsPath);
+    const indexRealPath = realpathSync(indexPath.fsPath);
+    const relativeDirectory = relative(rootRealPath, directoryRealPath);
+    const relativeIndex = relative(rootRealPath, indexRealPath);
+    if (relativeDirectory.startsWith("..") || isAbsolute(relativeDirectory) || relativeIndex.startsWith("..") || isAbsolute(relativeIndex)) {
+      void vscode.window.showErrorMessage("A pasta e o index.html precisam permanecer dentro do workspace.");
+      return;
+    }
+    const directoryStat = await vscode.workspace.fs.stat(siteDirectory);
+    const indexStat = await vscode.workspace.fs.stat(indexPath);
+    if (directoryStat.type !== vscode.FileType.Directory || indexStat.type !== vscode.FileType.File || indexStat.size > 1_000_000) {
+      void vscode.window.showWarningMessage("A pasta escolhida precisa conter um index.html regular de até 1 MB.");
+      return;
+    }
+  } catch {
+    void vscode.window.showWarningMessage("Não encontrei index.html na pasta escolhida. Confira o caminho relativo e tente novamente.");
+    return;
+  }
+
+  const workflowUri = vscode.Uri.joinPath(workspace.uri, ".github", "workflows", "universal-cicd-static-site.yml");
+  try {
+    await vscode.workspace.fs.stat(workflowUri);
+    void vscode.window.showWarningMessage("O workflow de destino já existe. Nenhum arquivo foi sobrescrito.");
+    return;
+  } catch {
+    // A missing destination is the expected safe path.
+  }
+
+  const approved = await vscode.window.showWarningMessage(
+    "Criar workflow GitHub Actions? Ele instalará html-validate e Prettier durante a CI e publicará a pasta '" + safeDirectory + "' no GitHub Pages após validação. A geração não executa nem publica nada.",
+    { modal: true },
+    "Criar workflow"
+  );
+  if (approved !== "Criar workflow") return;
+
+  await vscode.workspace.fs.createDirectory(vscode.Uri.joinPath(workspace.uri, ".github", "workflows"));
+  try {
+    writeFileSync(workflowUri.fsPath, createStaticSiteWorkflow(branch, safeDirectory), { encoding: "utf8", flag: "wx" });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Não foi possível criar o workflow.";
+    void vscode.window.showErrorMessage("CI/CD de site estático: " + message);
+    return;
+  }
+
+  const document = await vscode.workspace.openTextDocument(workflowUri);
+  await vscode.window.showTextDocument(document);
+  output.clear();
+  output.appendLine("Workflow CI/CD para HTML/CSS criado.");
+  output.appendLine("Arquivo: " + workflowUri.fsPath);
+  output.appendLine("CI: valida HTML com html-validate e verifica HTML/CSS com Prettier.");
+  output.appendLine("CD: publica a pasta '" + safeDirectory + "' no GitHub Pages após validação na branch " + branch + ".");
+  output.appendLine("Nenhuma execução, instalação local, alteração de Pages ou publicação ocorreu durante a geração.");
+  output.appendLine("Antes do primeiro deploy, habilite GitHub Pages com origem GitHub Actions nas configurações do repositório.");
+  output.show(true);
+  void vscode.window.showInformationMessage("Workflow criado. Revise o YAML e configure GitHub Pages como origem GitHub Actions.");
 }
 
 async function createPipelineFromWorkspace(): Promise<void> {
@@ -506,6 +596,7 @@ export function activate(context: vscode.ExtensionContext): void {
     ["universalCicd.diagnoseEngine", () => diagnoseEngine()],
     ["universalCicd.analyzeWorkspace", () => analyzeWorkspace()],
     ["universalCicd.createPipeline", () => createPipelineFromWorkspace()],
+    ["universalCicd.createStaticSiteWorkflow", () => createStaticSiteWorkflowFile()],
     ["universalCicd.inspectUps", () => inspectUpsFile(context)],
     ["universalCicd.openDashboard", () => {
       const panel = openDashboardPanel(context, () => {
